@@ -35,7 +35,6 @@ public class SwingUtil {
         if ((defaultDir != null) && defaultDir.exists()
                 && defaultDir.isDirectory()) {
             chooser.setCurrentDirectory(defaultDir);
-            System.out.println(defaultDir);
             //chooser.setSelectedFile(defaultDir);
         }
         chooser.setDialogTitle(title);

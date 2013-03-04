@@ -11,6 +11,7 @@ import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileSystemView;
+import lib.editor.mgr.ProjectMgr;
 import lib.editor.util.SwingUtil;
 
 /**
@@ -87,7 +88,7 @@ public class ProjectWindow extends javax.swing.JDialog {
         setMinimumSize(new java.awt.Dimension(350, 200));
         setModal(true);
         setPreferredSize(new java.awt.Dimension(350, 200));
-        getContentPane().setLayout(new java.awt.GridLayout());
+        getContentPane().setLayout(new java.awt.GridLayout(1, 0));
 
         jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 12, 12, 12));
         jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.PAGE_AXIS));
@@ -211,7 +212,7 @@ public class ProjectWindow extends javax.swing.JDialog {
     }
     
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-
+        ProjectMgr.createNewProject(completePath());
         setVisible(false);
         dispose();
     }//GEN-LAST:event_okButtonActionPerformed
