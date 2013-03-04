@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import lib.editor.mgr.WindowMgr;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 /**
@@ -35,7 +36,9 @@ public class MapEditorApp  implements ApplicationListener, InputProcessor {
     
     @Override
     public void create() {
-        grid = new IsoGrid(300, 300, 32, 16);
+        WindowMgr.init();
+        
+        grid = new IsoGrid(100, 100, 32, 16);
         camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
       // if (resources.openFile("/editor-bg.png") != null) bgImage = new Image(gl, "/editor-bg.png");
       Gdx.input.setInputProcessor(this);
@@ -46,6 +49,7 @@ public class MapEditorApp  implements ApplicationListener, InputProcessor {
       Gdx.gl.glViewport(0, 0, width, height);
       camera.setToOrtho(true, width, height);
       camera.position.set( camPos);
+      WindowMgr.resize(width, height);
       //spriteBatch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1);
 
       //effect.setPosition(width / 2, height / 2);
@@ -56,6 +60,8 @@ public class MapEditorApp  implements ApplicationListener, InputProcessor {
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         camera.update();
         grid.update(camera);
+        
+        WindowMgr.update();
     }
 
     @Override

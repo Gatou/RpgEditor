@@ -5,6 +5,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Arrays;
 import java.util.List;
+import lib.editor.mgr.WindowMgr;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
 import org.jdesktop.swingx.MultiSplitLayout.Divider;
 import org.jdesktop.swingx.MultiSplitLayout.Leaf;
@@ -27,7 +28,10 @@ public class MainWindow extends javax.swing.JFrame {
      * Creates new form NewJFrame
      */
     public MainWindow() {
+        
+        
         initComponents();
+        setLocationRelativeTo( null );
         /*
  List children = 
 Arrays.asList(new Leaf("left"),
@@ -117,6 +121,11 @@ jXMultiSplitPane1.add(jPanel3, "center");
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 toolBarNewProjectMouseExited(evt);
+            }
+        });
+        toolBarNewProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarNewProjectActionPerformed(evt);
             }
         });
         jToolBar1.add(toolBarNewProject);
@@ -213,7 +222,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-        jPanel2.setLayout(new java.awt.GridLayout());
+        jPanel2.setLayout(new java.awt.GridLayout(1, 0));
 
         jSplitPane3.setResizeWeight(1.0);
 
@@ -223,7 +232,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jPanel3.setMinimumSize(new java.awt.Dimension(300, 300));
         jPanel3.setPreferredSize(new java.awt.Dimension(300, 300));
-        jPanel3.setLayout(new java.awt.GridLayout());
+        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
         jSplitPane2.setRightComponent(jPanel3);
 
         jSplitPane3.setLeftComponent(jSplitPane2);
@@ -402,8 +411,14 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }//GEN-LAST:event_fileMenuExitActionPerformed
 
     private void fileMenuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuNewProjectActionPerformed
-        // TODO add your handling code here:
+        ProjectWindow win = new ProjectWindow(this, true);
+        win.setVisible(true);
     }//GEN-LAST:event_fileMenuNewProjectActionPerformed
+
+    private void toolBarNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarNewProjectActionPerformed
+        ProjectWindow win = new ProjectWindow(this, true);
+        win.setVisible(true);
+    }//GEN-LAST:event_toolBarNewProjectActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

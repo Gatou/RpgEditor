@@ -1,4 +1,5 @@
 
+import lib.editor.mgr.WindowMgr;
 import java.awt.EventQueue;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
@@ -19,6 +20,8 @@ public class Main {
      * @param args the command line arguments
      */
   public static void main (String[] args) {
+      
+      
     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
       if ("Nimbus".equals(info.getName())) {
         try {

@@ -4,17 +4,50 @@
  */
 package lib.editor.ui;
 
+import java.awt.Component;
+import java.io.File;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileSystemView;
+import lib.editor.util.SwingUtil;
+
 /**
  *
  * @author gaetan
  */
-public class ProjectWindow extends javax.swing.JFrame {
+public class ProjectWindow extends javax.swing.JDialog {
 
+    private String projectPath;
+    private boolean refreshing = false;
     /**
      * Creates new form ProjectWindow
      */
-    public ProjectWindow() {
+    public ProjectWindow(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
         initComponents();
+        setLocationRelativeTo( null );
+        projectPath = "";
+        refresh();
+        
+        folderNameTextField.getDocument().addDocumentListener(new DocumentListener(){  
+            public void insertUpdate(DocumentEvent e) {
+                if(!refreshing){
+                    checkOkEnabled();
+                    locationTextField.setText(completePath());
+                }
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                if(!refreshing){
+                    checkOkEnabled();
+                    locationTextField.setText(completePath());
+                }
+            }
+
+            public void changedUpdate(DocumentEvent e) {}
+      });  
     }
 
     /**
@@ -26,35 +59,213 @@ public class ProjectWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jDialog1 = new javax.swing.JDialog();
+        jPanel5 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        folderNameTextField = new javax.swing.JTextField();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jPanel3 = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel2 = new javax.swing.JPanel();
+        locationTextField = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        warningLabel = new javax.swing.JLabel();
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jPanel4 = new javax.swing.JPanel();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        okButton = new javax.swing.JButton();
+        cancelButton = new javax.swing.JButton();
 
-        javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
-        jDialog1.getContentPane().setLayout(jDialog1Layout);
-        jDialog1Layout.setHorizontalGroup(
-            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        jDialog1Layout.setVerticalGroup(
-            jDialog1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("New project");
+        setAlwaysOnTop(true);
+        setMinimumSize(new java.awt.Dimension(350, 200));
+        setModal(true);
+        setPreferredSize(new java.awt.Dimension(350, 200));
+        getContentPane().setLayout(new java.awt.GridLayout());
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        jPanel5.setBorder(javax.swing.BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.PAGE_AXIS));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
+
+        jLabel1.setText("Folder name:");
+        jPanel6.add(jLabel1);
+        jPanel6.add(filler3);
+
+        jPanel1.add(jPanel6);
+
+        folderNameTextField.setMaximumSize(new java.awt.Dimension(2147483647, 28));
+        folderNameTextField.setMinimumSize(new java.awt.Dimension(160, 28));
+        folderNameTextField.setPreferredSize(new java.awt.Dimension(160, 28));
+        jPanel1.add(folderNameTextField);
+
+        jPanel5.add(jPanel1);
+        jPanel5.add(filler2);
+
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
+
+        jLabel3.setText("Project location:");
+        jPanel7.add(jLabel3);
+        jPanel7.add(filler4);
+
+        jPanel3.add(jPanel7);
+
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
+
+        locationTextField.setEditable(false);
+        locationTextField.setMaximumSize(new java.awt.Dimension(2147483647, 28));
+        locationTextField.setMinimumSize(new java.awt.Dimension(160, 28));
+        locationTextField.setPreferredSize(new java.awt.Dimension(160, 28));
+        jPanel2.add(locationTextField);
+
+        jButton1.setText("...");
+        jButton1.setMaximumSize(null);
+        jButton1.setMinimumSize(null);
+        jButton1.setPreferredSize(new java.awt.Dimension(32, 28));
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton1);
+
+        jPanel3.add(jPanel2);
+
+        jPanel5.add(jPanel3);
+        jPanel5.add(filler1);
+
+        warningLabel.setForeground(new java.awt.Color(255, 0, 0));
+        warningLabel.setText("warning label");
+        jPanel5.add(warningLabel);
+        jPanel5.add(filler6);
+
+        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel4.add(filler5);
+
+        okButton.setText("OK");
+        okButton.setMaximumSize(new java.awt.Dimension(100, 100));
+        okButton.setMinimumSize(new java.awt.Dimension(100, 100));
+        okButton.setPreferredSize(new java.awt.Dimension(73, 24));
+        okButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                okButtonActionPerformed(evt);
+            }
+        });
+        jPanel4.add(okButton);
+
+        cancelButton.setText("Cancel");
+        cancelButton.setMaximumSize(new java.awt.Dimension(100, 100));
+        cancelButton.setMinimumSize(new java.awt.Dimension(100, 100));
+        cancelButton.setPreferredSize(new java.awt.Dimension(73, 24));
+        cancelButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cancelButtonActionPerformed(evt);
+            }
+        });
+        jPanel4.add(cancelButton);
+
+        jPanel5.add(jPanel4);
+
+        getContentPane().add(jPanel5);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        
+        
+        File result = SwingUtil.getDirectoryChoice(this, projectPath, "Open folder");
+        
+        if(result != null){
+            projectPath = result.getAbsolutePath();
+            locationTextField.setText(completePath());
+        }
+        checkOkEnabled();
+                
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void checkOkEnabled(){
+        if(folderNameTextField.getText().equals("")){
+            warningLabel.setText(" ");
+            okButton.setEnabled(false);
+        }
+        else if(new File(completePath()).exists()){
+            warningLabel.setText("A folder with that name already exists.");
+            okButton.setEnabled(false);
+        }
+        else{
+            warningLabel.setText(" ");
+            okButton.setEnabled(true);
+        }
+        
+    }
+    
+    private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
+
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_okButtonActionPerformed
+
+    private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
+
+        setVisible(false);
+        dispose();
+    }//GEN-LAST:event_cancelButtonActionPerformed
+
+    @Override
+    public void setVisible(boolean b){
+        refresh();
+        super.setVisible(b);
+    }
+    
+    
+    private String completePath(){
+        return (new File(projectPath, folderNameTextField.getText())).getAbsolutePath();
+    }
+        
+       /* 
+    def accept(self):
+        if exists(self.complete_path()):
+            QMessageBox.warning(self, "New Project", "A folder with that name already exists.")
+            return
+        #---
+        DialogBase.accept(self)
+        #---
+        ProjectMgr.create_new_project(self.complete_path())
+        */
+    
+    private void refresh(){
+        refreshing = true;
+        projectPath = defaultLocation();
+        folderNameTextField.setText("");
+        locationTextField.setText(projectPath);
+        checkOkEnabled();
+        refreshing = false;
+        /*
+        self.refreshing = True
+        self.__project_path = self.default_location()
+        self.ui.nameLineEdit.setText("")
+        self.ui.buttonBox.button(QDialogButtonBox.Ok).setEnabled(False)
+        self.ui.locationLineEdit.setText(self.__project_path)
+        self.refreshing = False*/
+    }
+        
+    private String defaultLocation(){
+             JFileChooser fr = new JFileChooser();
+            FileSystemView fw = fr.getFileSystemView();
+            return fw.getDefaultDirectory().getAbsolutePath();
+    }
+            
     /**
      * @param args the command line arguments
      */
@@ -82,14 +293,41 @@ public class ProjectWindow extends javax.swing.JFrame {
         }
         //</editor-fold>
 
-        /* Create and display the form */
+        /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new ProjectWindow().setVisible(true);
+                ProjectWindow dialog = new ProjectWindow(new javax.swing.JFrame(), true);
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
             }
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JDialog jDialog1;
+    private javax.swing.JButton cancelButton;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
+    private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
+    private javax.swing.Box.Filler filler6;
+    private javax.swing.JTextField folderNameTextField;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
+    private javax.swing.JTextField locationTextField;
+    private javax.swing.JButton okButton;
+    private javax.swing.JLabel warningLabel;
     // End of variables declaration//GEN-END:variables
 }
