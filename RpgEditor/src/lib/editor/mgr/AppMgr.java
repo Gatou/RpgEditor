@@ -20,7 +20,7 @@ public class AppMgr {
     final public static String VERSION = "0.1";
     
     public static void init(){
-        loadMainSettings();
+        
     }
     
     public static String getNameVersion(){
@@ -47,36 +47,36 @@ public class AppMgr {
         elif ext == "settings":
             return "agmset"*/
     }
+
     
-    public static void loadMainSettings(){
-        //Check if the settings folder exist, if not create it
+    public static void loadSettings(){
         File settingsFolder = new File("settings");
         if(!settingsFolder.exists()){
             settingsFolder.mkdir();
         }
-        else{ //Load settings
-            File iniFile = new File("settings", "settings." + getExtension("settings file"));
-            
-            if(iniFile.exists()){
-                 try {
-                    Properties prop = new Properties();
-                    prop.load(new FileInputStream(iniFile));
-                    
-                    if(!prop.getProperty("last project path").equals("")){
-                        System.out.println("lala");
-                        ProjectMgr.openProject(prop.getProperty("last project path"));
-                    }
-                    
-                 }
-                 
-                 catch(Exception ex) {
-                    System.out.println(ex.getMessage());
-                 }
-            }
+
+        File iniFile = new File("settings", "settings." + getExtension("settings file"));
+
+        if(iniFile.exists()){
+             try {
+                Properties prop = new Properties();
+                prop.load(new FileInputStream(iniFile));
+
+                if(!prop.getProperty("last project path").equals("")){
+                    ProjectMgr.openProject(prop.getProperty("last project path"));
+                }
+
+             }
+
+             catch(Exception ex) {
+                System.out.println(ex.getMessage());
+             }
         }
     }
     
-    public static void saveMainSettings(){
+
+    
+    public static void saveSettings(){
         //Check if the settings folder exist, if not create it
         File settingsFolder = new File("settings");
         if(!settingsFolder.exists()){
@@ -96,17 +96,15 @@ public class AppMgr {
             else{
                 prop.setProperty("last project path", ProjectMgr.getProjectPath());
             }
-            
+           
             prop.store(new FileOutputStream(iniFile), AppMgr.getNameVersion() + " main settings");
-            
        }
        catch(IOException ioe) {
             System.out.println(ioe.getMessage());
        }
     }
     
-    public static void saveProjectSettings(){
-        
-    }
+    
+
 
 }

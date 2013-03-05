@@ -7,6 +7,8 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
@@ -76,6 +78,29 @@ jXMultiSplitPane1.add(jPanel3, "center");
     public void init(){
         setProjectStateEnabled(false);
         AppMgr.init();
+    }
+    
+    public void saveSettings(Properties prop){
+        String prefix = "MainWindow_";
+        prop.put(prefix + "x", String.valueOf(this.getX()));
+        prop.put(prefix + "y", String.valueOf(this.getY()));
+        prop.put(prefix + "width", String.valueOf(this.getWidth()));
+        prop.put(prefix + "height", String.valueOf(this.getHeight()));
+        prop.put(prefix + "maximized", String.valueOf(this.getExtendedState() & JFrame.MAXIMIZED_BOTH));
+    }
+    
+    public void loadSettings(Properties prop){
+        String prefix = "MainWindow_";
+        setBounds(
+                Integer.parseInt(prop.getProperty(prefix + "x")), 
+                Integer.parseInt(prop.getProperty(prefix + "y")),
+                Integer.parseInt(prop.getProperty(prefix + "width")),
+                Integer.parseInt(prop.getProperty(prefix + "height")));
+        SwingUtil.adjustComponentBounds(this, null);
+        if(Integer.parseInt(prop.getProperty(prefix + "maximized")) != 0){
+            setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
+        }
+        
     }
     
     public void setProjectStateEnabled(boolean enabled){
@@ -278,6 +303,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jPanel1.setPreferredSize(new java.awt.Dimension(35, 24));
         jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
+
+        statusBarLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 4, 0, 0));
         jPanel1.add(statusBarLabel);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
@@ -509,8 +536,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }
     
     private void close(){
-        AppMgr.saveMainSettings();
-        AppMgr.saveProjectSettings();
+        ProjectMgr.closeProject();
+        AppMgr.saveSettings();
         dispose();
     }
 

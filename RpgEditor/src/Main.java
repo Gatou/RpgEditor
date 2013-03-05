@@ -3,6 +3,7 @@ import lib.editor.mgr.WindowMgr;
 import java.awt.EventQueue;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import lib.editor.mgr.AppMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.ui.MainWindow;
 
@@ -38,8 +39,10 @@ public class Main {
     EventQueue.invokeLater(new Runnable() {
       public void run () {
           WidgetMgr.MAIN_WINDOW = new MainWindow();
-          WidgetMgr.MAIN_WINDOW.setVisible(true);
           WidgetMgr.MAIN_WINDOW.init();
+          //WidgetMgr.MAIN_WINDOW.setVisible(true);
+          AppMgr.loadSettings();
+          WidgetMgr.MAIN_WINDOW.setVisible(true);
       }
     });
   }

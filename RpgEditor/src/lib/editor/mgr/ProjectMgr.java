@@ -6,8 +6,11 @@ package lib.editor.mgr;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -64,8 +67,21 @@ public class ProjectMgr {
                 }
     
     public static void openProject(String path){
+        closeProject();
         createPath(path);
         checkProjectValid();
+        
+        if(projectPath != null){
+            WidgetMgr.MAIN_WINDOW.setTitle((new File(projectPath)).getName() + " - " + AppMgr.getNameVersion());
+        }
+    }
+    
+    public static void closeProject(){
+        if(projectPath != null){
+            saveSettings();
+            WidgetMgr.MAIN_WINDOW.setTitle(AppMgr.getNameVersion());
+        }
+        projectPath = null;
     }
     
     private static void createPath(String path){
@@ -83,19 +99,73 @@ public class ProjectMgr {
         else if(!(new File(assetsPath).exists())){
             errorMessage = "This project is invalid.\nCan't find assets folder (" + assetsPath + ")";
         }
-        else if(!(new File(settingsPath).exists())){
-            errorMessage = "This project is invalid.\nCan't find settings folder (" + settingsPath + ")";
-        }
+        //else if(!(new File(settingsPath).exists())){
+        //    errorMessage = "This project is invalid.\nCan't find settings folder (" + settingsPath + ")";
+        //}
         
         
         if(errorMessage.equals("")){ //Valid project
             WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(true);
+            loadSettings();
+            WidgetMgr.MAIN_WINDOW.setVisible(true);
         }
         else{ //Invalid project
-            JOptionPane.showMessageDialog(WidgetMgr.MAIN_WINDOW, errorMessage, "Invalid project", JOptionPane.ERROR_MESSAGE);
+            projectPath = null;
+            WidgetMgr.MAIN_WINDOW.setVisible(true);
             WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(false);
+            JOptionPane.showMessageDialog(WidgetMgr.MAIN_WINDOW, errorMessage, "Invalid project", JOptionPane.ERROR_MESSAGE);
+            
             
         }
+    }
+    
+    public static void loadSettings(){
+        //Check if the settings folder exist, if not create it
+        //Check if the settings folder exist, if not create it
+        File settingsFolder = new File(ProjectMgr.getSettingsPath());
+        if(!settingsFolder.exists()){
+            settingsFolder.mkdir();
+        }
+        
+        File iniFile = new File(ProjectMgr.getSettingsPath(), "settings." + AppMgr.getExtension("settings file"));
+
+        if(iniFile.exists()){
+             try {
+                Properties prop = new Properties();
+                prop.load(new FileInputStream(iniFile));
+
+                //save main window settings
+                WidgetMgr.MAIN_WINDOW.loadSettings(prop);
+
+             }
+             catch(Exception ex) {
+                System.out.println(ex.getMessage());
+             }
+        }
+        
+    }
+    
+    public static void saveSettings(){
+        //Check if the settings folder exist, if not create it
+        File settingsFolder = new File(ProjectMgr.getSettingsPath());
+        if(!settingsFolder.exists()){
+            settingsFolder.mkdir();
+        }
+        
+        File iniFile = new File(ProjectMgr.getSettingsPath(), "settings." + AppMgr.getExtension("settings file"));
+        try {
+            iniFile.createNewFile();
+            Properties prop = new Properties();
+            
+            //save main window settings
+            WidgetMgr.MAIN_WINDOW.saveSettings(prop);
+
+            prop.store(new FileOutputStream(iniFile), AppMgr.getNameVersion() + " project settings");
+            
+       }
+       catch(IOException ioe) {
+            System.out.println(ioe.getMessage());
+       }
     }
 }
 

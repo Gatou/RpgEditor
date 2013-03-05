@@ -5,9 +5,12 @@
 package lib.editor.util;
 
 import java.awt.Component;
+import java.awt.Toolkit;
 import java.io.File;
+import java.util.Properties;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import lib.editor.mgr.WidgetMgr;
 
 /**
  *
@@ -107,6 +110,30 @@ public class SwingUtil {
         chooser = null;
         System.setSecurityManager(sm);
         return choice;
+    }
+    
+    public static void adjustComponentBounds(Component comp, Component parentComp){
+        if(parentComp == null){
+            
+            int x = Math.max(comp.getX(), 12);
+            int y = Math.max(comp.getY(), 12);
+            int width = Math.min(comp.getWidth(), Toolkit.getDefaultToolkit().getScreenSize().width-100);
+            int height = Math.min(comp.getHeight(), Toolkit.getDefaultToolkit().getScreenSize().height-100);
+            
+            if(x + width > Toolkit.getDefaultToolkit().getScreenSize().width - 12){
+                x = Toolkit.getDefaultToolkit().getScreenSize().width - width - 12;
+            }
+            if(x < 0){
+                x = 12;
+            }
+            if(y + height > Toolkit.getDefaultToolkit().getScreenSize().height - 64){
+                y = Toolkit.getDefaultToolkit().getScreenSize().height - height - 64;
+            }
+            if(y < 0){
+                y = 12;
+            }
+            comp.setBounds(x, y, width, height);
+        }
     }
     
 }
