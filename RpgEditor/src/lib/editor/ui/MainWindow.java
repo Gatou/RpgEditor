@@ -1,11 +1,19 @@
 package lib.editor.ui;
 
 import com.badlogic.gdx.Gdx;
+import java.awt.Component;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import lib.editor.mgr.AppMgr;
+import lib.editor.mgr.ProjectMgr;
+import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
 import lib.editor.util.SwingUtil;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
@@ -24,7 +32,7 @@ import org.jdesktop.swingx.multisplitpane.DefaultSplitPaneModel;
  * @author gaetan
  */
 public class MainWindow extends javax.swing.JFrame {
-
+    
     MapEditorGraphicsView mapEditor;
     /**
      * Creates new form NewJFrame
@@ -57,6 +65,39 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        setProjectStateEnabled(false);
+        AppMgr.init();
+        setTitle(AppMgr.getNameVersion());
+        WidgetMgr.MAIN_WINDOW = this;
+    }
+    
+    public void setProjectStateEnabled(boolean enabled){
+        //Enabled tool bar, except new and open project
+        for(int i=2; i<mainToolBar.getComponentCount(); i++){
+            if(!(mainToolBar.getComponent(i) instanceof JToolBar.Separator)){
+                mainToolBar.getComponent(i).setEnabled(enabled);
+            }
+        }
+        
+        //Enabled file menu, except new, open project and exit
+        for(int i=2; i<fileMenu.getMenuComponentCount()-1; i++){
+            if(!(fileMenu.getMenuComponent(i) instanceof JPopupMenu.Separator)){
+                fileMenu.getMenuComponent(i).setEnabled(enabled);
+            }
+        }
+        
+        //Enabled all the other menu in the mainMenuBar
+        for(int i=1; i<mainMenuBar.getComponentCount(); i++){
+            JMenu menu = (JMenu) mainMenuBar.getComponent(i);
+            for(Component comp : menu.getMenuComponents()){
+                if(!(comp instanceof JPopupMenu.Separator)){
+                    comp.setEnabled(enabled);
+                }
+            }
+        }
+        
+        //Show or not the middle panel (map editor, map tree, etc...)
+        middlePanel.setVisible(enabled);
     }
 
     /**
@@ -68,7 +109,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jToolBar1 = new javax.swing.JToolBar();
+        mainToolBar = new javax.swing.JToolBar();
         toolBarNewProject = new javax.swing.JButton();
         toolBarOpenProject = new javax.swing.JButton();
         toolBarSaveProject = new javax.swing.JButton();
@@ -83,14 +124,14 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jSeparator3 = new javax.swing.JToolBar.Separator();
         jPanel1 = new javax.swing.JPanel();
         statusBarLabel = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        middlePanel = new javax.swing.JPanel();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane2 = new javax.swing.JSplitPane();
         jButton1 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jButton2 = new javax.swing.JButton();
-        jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        mainMenuBar = new javax.swing.JMenuBar();
+        fileMenu = new javax.swing.JMenu();
         fileMenuNewProject = new javax.swing.JMenuItem();
         fileMenuOpenProject = new javax.swing.JMenuItem();
         fileMenuSaveProject = new javax.swing.JMenuItem();
@@ -108,8 +149,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 200));
 
-        jToolBar1.setFloatable(false);
-        jToolBar1.setRollover(true);
+        mainToolBar.setFloatable(false);
+        mainToolBar.setRollover(true);
 
         toolBarNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
         toolBarNewProject.setToolTipText("Create a new project.");
@@ -130,7 +171,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 toolBarNewProjectActionPerformed(evt);
             }
         });
-        jToolBar1.add(toolBarNewProject);
+        mainToolBar.add(toolBarNewProject);
 
         toolBarOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/open.png"))); // NOI18N
         toolBarOpenProject.setToolTipText("Open an existing project.");
@@ -151,7 +192,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 toolBarOpenProjectActionPerformed(evt);
             }
         });
-        jToolBar1.add(toolBarOpenProject);
+        mainToolBar.add(toolBarOpenProject);
 
         toolBarSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
         toolBarSaveProject.setToolTipText("Save the current project.");
@@ -167,8 +208,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 toolBarSaveProjectMouseExited(evt);
             }
         });
-        jToolBar1.add(toolBarSaveProject);
-        jToolBar1.add(jSeparator1);
+        mainToolBar.add(toolBarSaveProject);
+        mainToolBar.add(jSeparator1);
 
         jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
         jButton4.setToolTipText("Cut the selection and put it on the clipboard.");
@@ -176,7 +217,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton4.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton4);
+        mainToolBar.add(jButton4);
 
         jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
         jButton5.setToolTipText("Copy the selection and put it on the clipboard.");
@@ -184,7 +225,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton5.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton5);
+        mainToolBar.add(jButton5);
 
         jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
         jButton6.setToolTipText("Insert clipboard contents.");
@@ -192,7 +233,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton6.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton6);
+        mainToolBar.add(jButton6);
 
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
         jButton7.setToolTipText("Delete the selection.");
@@ -200,8 +241,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton7.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton7);
-        jToolBar1.add(jSeparator2);
+        mainToolBar.add(jButton7);
+        mainToolBar.add(jSeparator2);
 
         jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
         jButton8.setToolTipText("Undo the last action.");
@@ -209,7 +250,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton8.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton8);
+        mainToolBar.add(jButton8);
 
         jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
         jButton9.setToolTipText("Redo the last undo action.");
@@ -217,10 +258,10 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jButton9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton9.setPreferredSize(new java.awt.Dimension(28, 28));
         jButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton9);
-        jToolBar1.add(jSeparator3);
+        mainToolBar.add(jButton9);
+        mainToolBar.add(jSeparator3);
 
-        getContentPane().add(jToolBar1, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(mainToolBar, java.awt.BorderLayout.PAGE_START);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
         jPanel1.setPreferredSize(new java.awt.Dimension(35, 24));
@@ -229,7 +270,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
-        jPanel2.setLayout(new java.awt.GridLayout(1, 0));
+        middlePanel.setLayout(new java.awt.GridLayout(1, 0));
 
         jSplitPane3.setResizeWeight(1.0);
 
@@ -248,11 +289,11 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jButton2.setMaximumSize(new java.awt.Dimension(20, 20));
         jSplitPane3.setRightComponent(jButton2);
 
-        jPanel2.add(jSplitPane3);
+        middlePanel.add(jSplitPane3);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
+        getContentPane().add(middlePanel, java.awt.BorderLayout.CENTER);
 
-        jMenu1.setText("File");
+        fileMenu.setText("File");
 
         fileMenuNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         fileMenuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
@@ -270,7 +311,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 fileMenuNewProjectActionPerformed(evt);
             }
         });
-        jMenu1.add(fileMenuNewProject);
+        fileMenu.add(fileMenuNewProject);
 
         fileMenuOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         fileMenuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/open.png"))); // NOI18N
@@ -288,7 +329,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 fileMenuOpenProjectActionPerformed(evt);
             }
         });
-        jMenu1.add(fileMenuOpenProject);
+        fileMenu.add(fileMenuOpenProject);
 
         fileMenuSaveProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         fileMenuSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
@@ -301,8 +342,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 fileMenuSaveProjectMouseExited(evt);
             }
         });
-        jMenu1.add(fileMenuSaveProject);
-        jMenu1.add(jSeparator4);
+        fileMenu.add(fileMenuSaveProject);
+        fileMenu.add(jSeparator4);
 
         fileMenuExit.setText("Exit");
         fileMenuExit.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -318,9 +359,9 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 fileMenuExitActionPerformed(evt);
             }
         });
-        jMenu1.add(fileMenuExit);
+        fileMenu.add(fileMenuExit);
 
-        jMenuBar1.add(jMenu1);
+        mainMenuBar.add(fileMenu);
 
         jMenu2.setText("Edit");
 
@@ -355,9 +396,9 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jMenuItem10.setText("Delete");
         jMenu2.add(jMenuItem10);
 
-        jMenuBar1.add(jMenu2);
+        mainMenuBar.add(jMenu2);
 
-        setJMenuBar(jMenuBar1);
+        setJMenuBar(mainMenuBar);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -433,15 +474,26 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }//GEN-LAST:event_toolBarNewProjectActionPerformed
 
     private void fileMenuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuOpenProjectActionPerformed
-        File result = SwingUtil.getDirectoryChoice(this, "", "Open project");
+        performOpenProject();
     }//GEN-LAST:event_fileMenuOpenProjectActionPerformed
 
     private void toolBarOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarOpenProjectActionPerformed
-        File result = SwingUtil.getDirectoryChoice(this, "", "Open project");
+        performOpenProject();
     }//GEN-LAST:event_toolBarOpenProjectActionPerformed
 
+    private void performOpenProject(){
+        String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
+        File result = SwingUtil.getFileChoice(this, "", new FileNameExtensionFilter(filterText, AppMgr.getExtension("project file")), "Open project");
+        if(result != null){
+            String projectPath = result.getParent();
+            if(projectPath != null){
+                ProjectMgr.openProject(projectPath);
+            }
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem fileMenuExit;
     private javax.swing.JMenuItem fileMenuNewProject;
     private javax.swing.JMenuItem fileMenuOpenProject;
@@ -454,9 +506,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem5;
     private javax.swing.JMenuItem jMenuItem6;
@@ -464,7 +514,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
@@ -473,7 +522,9 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JToolBar jToolBar1;
+    private javax.swing.JMenuBar mainMenuBar;
+    private javax.swing.JToolBar mainToolBar;
+    private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
     private javax.swing.JButton toolBarNewProject;
     private javax.swing.JButton toolBarOpenProject;

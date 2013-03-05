@@ -4,10 +4,14 @@
  */
 package lib.editor.mgr;
 
+import lib.editor.ui.MainWindow;
+
 /**
  *
  * @author gaetan
  */
 public class WidgetMgr {
+    
+    public static MainWindow MAIN_WINDOW;
     
 }
