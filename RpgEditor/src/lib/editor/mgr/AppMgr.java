@@ -31,6 +31,9 @@ public class AppMgr {
         if(ext.equals("project file")){
             return "agmproj";
         }
+        else if(ext.equals("data file")){
+            return "agmdata";
+        }
         else if(ext.equals("settings file")){
             return "agmset";
         }

@@ -5,6 +5,7 @@
 package lib.editor.mgr;
 
 import lib.editor.ui.MainWindow;
+import lib.editor.widget.tree.tree.MapTree;
 
 /**
  *
@@ -13,5 +14,6 @@ import lib.editor.ui.MainWindow;
 public class WidgetMgr {
     
     public static MainWindow MAIN_WINDOW;
+    public static MapTree MAP_TREE;
     
 }

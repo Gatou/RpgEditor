@@ -24,6 +24,7 @@ public class ProjectMgr {
     private static String projectPath;
     private static String assetsPath;
     private static String settingsPath;
+    private static String dataPath;
     
     public static String getProjectPath(){
         return projectPath;
@@ -37,6 +38,10 @@ public class ProjectMgr {
         return settingsPath;
     }
     
+    public static String getDataPath(){
+        return dataPath;
+    }
+    
     public static void createNewProject(String path){
         //Create usefull path (project, assets, etc...)
         createPath(path);
@@ -44,6 +49,7 @@ public class ProjectMgr {
         (new File(projectPath)).mkdir();
         (new File(assetsPath)).mkdir();
         (new File(settingsPath)).mkdir();
+        (new File(dataPath)).mkdir();
         //Create the project file
         File file = new File(projectPath, "project." + AppMgr.getExtension("project file"));
         try {
@@ -73,6 +79,12 @@ public class ProjectMgr {
         
         if(projectPath != null){
             WidgetMgr.MAIN_WINDOW.setTitle((new File(projectPath)).getName() + " - " + AppMgr.getNameVersion());
+            DataMgr.init();
+            WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(true);
+            loadSettings();
+            WidgetMgr.MAIN_WINDOW.setVisible(true);
+            
+            
         }
     }
     
@@ -85,12 +97,14 @@ public class ProjectMgr {
         assetsPath = null;
         settingsPath = null;
         projectPath = null;
+        dataPath = null;
     }
     
     private static void createPath(String path){
         projectPath = (new File(path)).getAbsolutePath();
         assetsPath = (new File(projectPath, "Assets")).getAbsolutePath();
         settingsPath = (new File(projectPath, "ProjectSettings")).getAbsolutePath();
+        dataPath = (new File(projectPath, "Data")).getAbsolutePath();
     }
     
     private static void checkProjectValid(){
@@ -102,15 +116,16 @@ public class ProjectMgr {
         else if(!(new File(assetsPath).exists())){
             errorMessage = "This project is invalid.\nCan't find assets folder (" + assetsPath + ")";
         }
+        else if(!(new File(dataPath).exists())){
+            errorMessage = "This project is invalid.\nCan't find assets folder (" + dataPath + ")";
+        }
         //else if(!(new File(settingsPath).exists())){
         //    errorMessage = "This project is invalid.\nCan't find settings folder (" + settingsPath + ")";
         //}
         
         
         if(errorMessage.equals("")){ //Valid project
-            WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(true);
-            loadSettings();
-            WidgetMgr.MAIN_WINDOW.setVisible(true);
+
         }
         else{ //Invalid project
             closeProject();

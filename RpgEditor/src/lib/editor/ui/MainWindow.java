@@ -78,6 +78,9 @@ jXMultiSplitPane1.add(jPanel3, "center");
     public void init(){
         setProjectStateEnabled(false);
         AppMgr.init();
+        
+        WidgetMgr.MAP_TREE = mapTree;
+        WidgetMgr.MAP_TREE.setup();
     }
     
     public void saveSettings(Properties prop){
@@ -159,9 +162,11 @@ jXMultiSplitPane1.add(jPanel3, "center");
         middlePanel = new javax.swing.JPanel();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane2 = new javax.swing.JSplitPane();
-        jButton1 = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        mapTree = new lib.editor.widget.tree.tree.MapTree();
+        jPanel4 = new javax.swing.JPanel();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileMenuNewProject = new javax.swing.JMenuItem();
@@ -314,20 +319,22 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         jSplitPane3.setResizeWeight(1.0);
 
-        jButton1.setText("jButton1");
-        jSplitPane2.setLeftComponent(jButton1);
-
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jPanel3.setMinimumSize(new java.awt.Dimension(300, 300));
         jPanel3.setPreferredSize(new java.awt.Dimension(300, 300));
-        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
+        jPanel3.setLayout(new java.awt.GridLayout());
         jSplitPane2.setRightComponent(jPanel3);
 
-        jSplitPane3.setLeftComponent(jSplitPane2);
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
-        jButton2.setText("jButton1");
-        jButton2.setMaximumSize(new java.awt.Dimension(20, 20));
-        jSplitPane3.setRightComponent(jButton2);
+        jScrollPane1.setViewportView(mapTree);
+
+        jPanel2.add(jScrollPane1);
+
+        jSplitPane2.setLeftComponent(jPanel2);
+
+        jSplitPane3.setLeftComponent(jSplitPane2);
+        jSplitPane3.setRightComponent(jPanel4);
 
         middlePanel.add(jSplitPane3);
 
@@ -583,8 +590,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JMenuItem fileMenuNewProject;
     private javax.swing.JMenuItem fileMenuOpenProject;
     private javax.swing.JMenuItem fileMenuSaveProject;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
@@ -599,7 +604,10 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
@@ -609,6 +617,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JToolBar mainToolBar;
+    private lib.editor.widget.tree.tree.MapTree mapTree;
     private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
     private javax.swing.JButton toolBarNewProject;
