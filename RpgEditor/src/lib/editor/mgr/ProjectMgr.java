@@ -6,6 +6,8 @@ package lib.editor.mgr;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -25,14 +27,18 @@ public class ProjectMgr {
         return settingsPath;
     }
     
-    public static void createNewProject(String path) throws IOException{
+    public static void createNewProject(String path){
         createPath(path);
         (new File(projectPath)).mkdir();
         (new File(assetsPath)).mkdir();
         (new File(settingsPath)).mkdir();
         
         File file = new File(projectPath, ".project");
-        file.createNewFile();
+        try {
+            file.createNewFile();
+        } catch (IOException ex) {
+            Logger.getLogger(ProjectMgr.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         openProject(projectPath);
         /*

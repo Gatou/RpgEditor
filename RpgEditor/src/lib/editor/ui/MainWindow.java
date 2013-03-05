@@ -3,9 +3,11 @@ package lib.editor.ui;
 import com.badlogic.gdx.Gdx;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import lib.editor.mgr.WindowMgr;
+import lib.editor.util.SwingUtil;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
 import org.jdesktop.swingx.MultiSplitLayout.Divider;
 import org.jdesktop.swingx.MultiSplitLayout.Leaf;
@@ -144,6 +146,11 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 toolBarOpenProjectMouseExited(evt);
             }
         });
+        toolBarOpenProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarOpenProjectActionPerformed(evt);
+            }
+        });
         jToolBar1.add(toolBarOpenProject);
 
         toolBarSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
@@ -274,6 +281,11 @@ jXMultiSplitPane1.add(jPanel3, "center");
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 fileMenuOpenProjectMouseExited(evt);
+            }
+        });
+        fileMenuOpenProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileMenuOpenProjectActionPerformed(evt);
             }
         });
         jMenu1.add(fileMenuOpenProject);
@@ -419,6 +431,14 @@ jXMultiSplitPane1.add(jPanel3, "center");
         ProjectWindow win = new ProjectWindow(this, true);
         win.setVisible(true);
     }//GEN-LAST:event_toolBarNewProjectActionPerformed
+
+    private void fileMenuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuOpenProjectActionPerformed
+        File result = SwingUtil.getDirectoryChoice(this, "", "Open project");
+    }//GEN-LAST:event_fileMenuOpenProjectActionPerformed
+
+    private void toolBarOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarOpenProjectActionPerformed
+        File result = SwingUtil.getDirectoryChoice(this, "", "Open project");
+    }//GEN-LAST:event_toolBarOpenProjectActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
