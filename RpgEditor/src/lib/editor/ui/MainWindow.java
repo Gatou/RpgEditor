@@ -536,8 +536,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }
     
     private void close(){
-        ProjectMgr.closeProject();
         AppMgr.saveSettings();
+        ProjectMgr.closeProject();
         dispose();
     }
 
