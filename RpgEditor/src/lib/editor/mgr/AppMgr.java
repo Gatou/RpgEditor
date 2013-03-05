@@ -4,6 +4,12 @@
  */
 package lib.editor.mgr;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Properties;
+
 /**
  *
  * @author gaetan
@@ -14,7 +20,7 @@ public class AppMgr {
     final public static String VERSION = "0.1";
     
     public static void init(){
-        
+        loadMainSettings();
     }
     
     public static String getNameVersion(){
@@ -24,6 +30,9 @@ public class AppMgr {
     public static String getExtension(String ext){
         if(ext.equals("project file")){
             return "agmproj";
+        }
+        else if(ext.equals("settings file")){
+            return "agmset";
         }
         return "";
         /*
@@ -39,5 +48,65 @@ public class AppMgr {
             return "agmset"*/
     }
     
+    public static void loadMainSettings(){
+        //Check if the settings folder exist, if not create it
+        File settingsFolder = new File("settings");
+        if(!settingsFolder.exists()){
+            settingsFolder.mkdir();
+        }
+        else{ //Load settings
+            File iniFile = new File("settings", "settings." + getExtension("settings file"));
+            
+            if(iniFile.exists()){
+                 try {
+                    Properties prop = new Properties();
+                    prop.load(new FileInputStream(iniFile));
+                    
+                    if(!prop.getProperty("last project path").equals("")){
+                        System.out.println("lala");
+                        ProjectMgr.openProject(prop.getProperty("last project path"));
+                    }
+                    
+                 }
+                 
+                 catch(Exception ex) {
+                    System.out.println(ex.getMessage());
+                 }
+            }
+        }
+    }
     
+    public static void saveMainSettings(){
+        //Check if the settings folder exist, if not create it
+        File settingsFolder = new File("settings");
+        if(!settingsFolder.exists()){
+            settingsFolder.mkdir();
+        }
+        
+        //create and fill the ini file
+        File iniFile = new File("settings", "settings." + getExtension("settings file"));
+        try {
+            iniFile.createNewFile();
+            Properties prop = new Properties();
+            
+            //Memorize last opened project
+            if(ProjectMgr.getProjectPath() == null){
+                prop.setProperty("last project path", "");
+            }
+            else{
+                prop.setProperty("last project path", ProjectMgr.getProjectPath());
+            }
+            
+            prop.store(new FileOutputStream(iniFile), AppMgr.getNameVersion() + " main settings");
+            
+       }
+       catch(IOException ioe) {
+            System.out.println(ioe.getMessage());
+       }
+    }
+    
+    public static void saveProjectSettings(){
+        
+    }
+
 }

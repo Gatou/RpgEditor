@@ -22,6 +22,10 @@ public class ProjectMgr {
     private static String assetsPath;
     private static String settingsPath;
     
+    public static String getProjectPath(){
+        return projectPath;
+    }
+    
     public static String getAssetsPath(){
         return assetsPath;
     }
@@ -82,6 +86,7 @@ public class ProjectMgr {
         else if(!(new File(settingsPath).exists())){
             errorMessage = "This project is invalid.\nCan't find settings folder (" + settingsPath + ")";
         }
+        
         
         if(errorMessage.equals("")){ //Valid project
             WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(true);

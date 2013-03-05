@@ -65,10 +65,17 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
 
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        
+        
+        setTitle(AppMgr.getNameVersion());
+        //WidgetMgr.MAIN_WINDOW = this;
+        
+        
+    }
+    
+    public void init(){
         setProjectStateEnabled(false);
         AppMgr.init();
-        setTitle(AppMgr.getNameVersion());
-        WidgetMgr.MAIN_WINDOW = this;
     }
     
     public void setProjectStateEnabled(boolean enabled){
@@ -148,6 +155,11 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 200));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         mainToolBar.setFloatable(false);
         mainToolBar.setRollover(true);
@@ -460,7 +472,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }//GEN-LAST:event_toolBarSaveProjectMouseExited
 
     private void fileMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuExitActionPerformed
-        dispose();
+        close();
     }//GEN-LAST:event_fileMenuExitActionPerformed
 
     private void fileMenuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuNewProjectActionPerformed
@@ -481,6 +493,10 @@ jXMultiSplitPane1.add(jPanel3, "center");
         performOpenProject();
     }//GEN-LAST:event_toolBarOpenProjectActionPerformed
 
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+       close();
+    }//GEN-LAST:event_formWindowClosing
+
     private void performOpenProject(){
         String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
         File result = SwingUtil.getFileChoice(this, "", new FileNameExtensionFilter(filterText, AppMgr.getExtension("project file")), "Open project");
@@ -490,6 +506,12 @@ jXMultiSplitPane1.add(jPanel3, "center");
                 ProjectMgr.openProject(projectPath);
             }
         }
+    }
+    
+    private void close(){
+        AppMgr.saveMainSettings();
+        AppMgr.saveProjectSettings();
+        dispose();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

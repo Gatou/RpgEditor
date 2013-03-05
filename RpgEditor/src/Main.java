@@ -3,6 +3,7 @@ import lib.editor.mgr.WindowMgr;
 import java.awt.EventQueue;
 import javax.swing.UIManager;
 import javax.swing.UIManager.LookAndFeelInfo;
+import lib.editor.mgr.WidgetMgr;
 import lib.editor.ui.MainWindow;
 
 /*
@@ -21,7 +22,10 @@ public class Main {
      */
   public static void main (String[] args) {
       
-      
+    //for(String arg : args){
+    //    System.out.println(arg);
+    //}
+    
     for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
       if ("Nimbus".equals(info.getName())) {
         try {
@@ -33,7 +37,9 @@ public class Main {
     }
     EventQueue.invokeLater(new Runnable() {
       public void run () {
-        new MainWindow().setVisible(true);
+          WidgetMgr.MAIN_WINDOW = new MainWindow();
+          WidgetMgr.MAIN_WINDOW.setVisible(true);
+          WidgetMgr.MAIN_WINDOW.init();
       }
     });
   }
