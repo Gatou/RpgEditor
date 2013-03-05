@@ -81,6 +81,9 @@ public class ProjectMgr {
             saveSettings();
             WidgetMgr.MAIN_WINDOW.setTitle(AppMgr.getNameVersion());
         }
+        WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(false);
+        assetsPath = null;
+        settingsPath = null;
         projectPath = null;
     }
     
@@ -110,9 +113,9 @@ public class ProjectMgr {
             WidgetMgr.MAIN_WINDOW.setVisible(true);
         }
         else{ //Invalid project
-            projectPath = null;
+            closeProject();
             WidgetMgr.MAIN_WINDOW.setVisible(true);
-            WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(false);
+            
             JOptionPane.showMessageDialog(WidgetMgr.MAIN_WINDOW, errorMessage, "Invalid project", JOptionPane.ERROR_MESSAGE);
             
             

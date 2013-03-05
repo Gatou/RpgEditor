@@ -166,6 +166,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         fileMenu = new javax.swing.JMenu();
         fileMenuNewProject = new javax.swing.JMenuItem();
         fileMenuOpenProject = new javax.swing.JMenuItem();
+        fileMenuCloseProject = new javax.swing.JMenuItem();
         fileMenuSaveProject = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         fileMenuExit = new javax.swing.JMenuItem();
@@ -370,6 +371,22 @@ jXMultiSplitPane1.add(jPanel3, "center");
         });
         fileMenu.add(fileMenuOpenProject);
 
+        fileMenuCloseProject.setText("Close project");
+        fileMenuCloseProject.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                fileMenuCloseProjectMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                fileMenuCloseProjectMouseExited(evt);
+            }
+        });
+        fileMenuCloseProject.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileMenuCloseProjectActionPerformed(evt);
+            }
+        });
+        fileMenu.add(fileMenuCloseProject);
+
         fileMenuSaveProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         fileMenuSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
         fileMenuSaveProject.setText("Save project");
@@ -499,30 +516,48 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }//GEN-LAST:event_toolBarSaveProjectMouseExited
 
     private void fileMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuExitActionPerformed
+        statusBarLabel.setText("");
         close();
     }//GEN-LAST:event_fileMenuExitActionPerformed
 
     private void fileMenuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuNewProjectActionPerformed
+        statusBarLabel.setText("");
         ProjectWindow win = new ProjectWindow(this, true);
         win.setVisible(true);
     }//GEN-LAST:event_fileMenuNewProjectActionPerformed
 
     private void toolBarNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarNewProjectActionPerformed
+        statusBarLabel.setText("");
         ProjectWindow win = new ProjectWindow(this, true);
         win.setVisible(true);
     }//GEN-LAST:event_toolBarNewProjectActionPerformed
 
     private void fileMenuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuOpenProjectActionPerformed
+        statusBarLabel.setText("");
         performOpenProject();
     }//GEN-LAST:event_fileMenuOpenProjectActionPerformed
 
     private void toolBarOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarOpenProjectActionPerformed
+        statusBarLabel.setText("");
         performOpenProject();
     }//GEN-LAST:event_toolBarOpenProjectActionPerformed
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
        close();
     }//GEN-LAST:event_formWindowClosing
+
+    private void fileMenuCloseProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuCloseProjectMouseEntered
+        statusBarLabel.setText("Close the current project.");
+    }//GEN-LAST:event_fileMenuCloseProjectMouseEntered
+
+    private void fileMenuCloseProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuCloseProjectMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_fileMenuCloseProjectMouseExited
+
+    private void fileMenuCloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuCloseProjectActionPerformed
+        statusBarLabel.setText("");
+        ProjectMgr.closeProject();
+    }//GEN-LAST:event_fileMenuCloseProjectActionPerformed
 
     private void performOpenProject(){
         String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
@@ -543,6 +578,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu fileMenu;
+    private javax.swing.JMenuItem fileMenuCloseProject;
     private javax.swing.JMenuItem fileMenuExit;
     private javax.swing.JMenuItem fileMenuNewProject;
     private javax.swing.JMenuItem fileMenuOpenProject;
