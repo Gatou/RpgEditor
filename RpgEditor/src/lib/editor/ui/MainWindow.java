@@ -12,12 +12,15 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lib.editor.mgr.AppMgr;
+import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
 import lib.editor.util.SwingUtil;
+import lib.editor.widget.mainwindow.action.CopyAction;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
 import org.jdesktop.swingx.MultiSplitLayout.Divider;
 import org.jdesktop.swingx.MultiSplitLayout.Leaf;
@@ -36,13 +39,15 @@ import org.jdesktop.swingx.multisplitpane.DefaultSplitPaneModel;
 public class MainWindow extends javax.swing.JFrame {
     
     MapEditorGraphicsView mapEditor;
+    
+    public CopyAction copyAction;
     /**
      * Creates new form NewJFrame
      */
     public MainWindow() {
+        copyAction = new CopyAction();
         
         
-        initComponents();
         setLocationRelativeTo( null );
         /*
  List children = 
@@ -60,7 +65,16 @@ jXMultiSplitPane1.add(jButton2, "right");
 jXMultiSplitPane1.add(jPanel3, "center");
 
 */
-        mapEditor = new MapEditorGraphicsView();
+
+        
+        
+        
+    }
+    
+    public void init(){
+        initComponents();
+        
+                mapEditor = new MapEditorGraphicsView();
         jPanel3.add(mapEditor.getCanvas());
         
 
@@ -72,10 +86,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         setTitle(AppMgr.getNameVersion());
         //WidgetMgr.MAIN_WINDOW = this;
         
-        
-    }
-    
-    public void init(){
         setProjectStateEnabled(false);
         AppMgr.init();
         
@@ -149,13 +159,13 @@ jXMultiSplitPane1.add(jPanel3, "center");
         toolBarOpenProject = new javax.swing.JButton();
         toolBarSaveProject = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton7 = new javax.swing.JButton();
+        toolBarCut = new javax.swing.JButton();
+        toolBarCopy = new javax.swing.JButton();
+        toolBarPaste = new javax.swing.JButton();
+        toolBarDelete = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
+        toolBarUndo = new javax.swing.JButton();
+        toolBarRedo = new javax.swing.JButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         jPanel1 = new javax.swing.JPanel();
         statusBarLabel = new javax.swing.JLabel();
@@ -167,6 +177,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jScrollPane1 = new javax.swing.JScrollPane();
         mapTree = new lib.editor.widget.tree.tree.MapTree();
         jPanel4 = new javax.swing.JPanel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileMenuNewProject = new javax.swing.JMenuItem();
@@ -175,14 +187,14 @@ jXMultiSplitPane1.add(jPanel3, "center");
         fileMenuSaveProject = new javax.swing.JMenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         fileMenuExit = new javax.swing.JMenuItem();
-        jMenu2 = new javax.swing.JMenu();
-        jMenuItem5 = new javax.swing.JMenuItem();
-        jMenuItem6 = new javax.swing.JMenuItem();
+        editMenu = new javax.swing.JMenu();
+        menuEditUndo = new javax.swing.JMenuItem();
+        menuEditRedo = new javax.swing.JMenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
-        jMenuItem7 = new javax.swing.JMenuItem();
-        jMenuItem8 = new javax.swing.JMenuItem();
-        jMenuItem9 = new javax.swing.JMenuItem();
-        jMenuItem10 = new javax.swing.JMenuItem();
+        menuEditCut = new javax.swing.JMenuItem();
+        menuEditCopy = new javax.swing.JMenuItem();
+        menuEditPaste = new javax.swing.JMenuItem();
+        menuEditDelete = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 200));
@@ -254,54 +266,133 @@ jXMultiSplitPane1.add(jPanel3, "center");
         mainToolBar.add(toolBarSaveProject);
         mainToolBar.add(jSeparator1);
 
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
-        jButton4.setToolTipText("Cut the selection and put it on the clipboard.");
-        jButton4.setFocusable(false);
-        jButton4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton4.setPreferredSize(new java.awt.Dimension(28, 28));
-        jButton4.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        mainToolBar.add(jButton4);
+        toolBarCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
+        toolBarCut.setToolTipText("Cut the selection and put it on the clipboard.");
+        toolBarCut.setFocusable(false);
+        toolBarCut.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarCut.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarCut.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarCut.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                toolBarCutMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                toolBarCutMouseExited(evt);
+            }
+        });
+        toolBarCut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarCutActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(toolBarCut);
 
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
-        jButton5.setToolTipText("Copy the selection and put it on the clipboard.");
-        jButton5.setFocusable(false);
-        jButton5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton5.setPreferredSize(new java.awt.Dimension(28, 28));
-        jButton5.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        mainToolBar.add(jButton5);
+        toolBarCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
+        toolBarCopy.setText("");
+        toolBarCopy.setToolTipText("Copy the selection and put it on the clipboard.");
+        toolBarCopy.setFocusable(false);
+        toolBarCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarCopy.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarCopy.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                toolBarCopyMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                toolBarCopyMouseExited(evt);
+            }
+        });
+        toolBarCopy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarCopyActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(toolBarCopy);
 
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
-        jButton6.setToolTipText("Insert clipboard contents.");
-        jButton6.setFocusable(false);
-        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton6.setPreferredSize(new java.awt.Dimension(28, 28));
-        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        mainToolBar.add(jButton6);
+        toolBarPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
+        toolBarPaste.setToolTipText("Insert clipboard contents.");
+        toolBarPaste.setFocusable(false);
+        toolBarPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarPaste.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarPaste.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                toolBarPasteMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                toolBarPasteMouseExited(evt);
+            }
+        });
+        toolBarPaste.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarPasteActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(toolBarPaste);
 
-        jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
-        jButton7.setToolTipText("Delete the selection.");
-        jButton7.setFocusable(false);
-        jButton7.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton7.setPreferredSize(new java.awt.Dimension(28, 28));
-        jButton7.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        mainToolBar.add(jButton7);
+        toolBarDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
+        toolBarDelete.setToolTipText("Delete the selection.");
+        toolBarDelete.setFocusable(false);
+        toolBarDelete.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarDelete.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarDelete.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarDelete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                toolBarDeleteMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                toolBarDeleteMouseExited(evt);
+            }
+        });
+        toolBarDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarDeleteActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(toolBarDelete);
         mainToolBar.add(jSeparator2);
 
-        jButton8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
-        jButton8.setToolTipText("Undo the last action.");
-        jButton8.setFocusable(false);
-        jButton8.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton8.setPreferredSize(new java.awt.Dimension(28, 28));
-        jButton8.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        mainToolBar.add(jButton8);
+        toolBarUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
+        toolBarUndo.setToolTipText("Undo the last action.");
+        toolBarUndo.setFocusable(false);
+        toolBarUndo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarUndo.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarUndo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarUndo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                toolBarUndoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                toolBarUndoMouseExited(evt);
+            }
+        });
+        toolBarUndo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarUndoActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(toolBarUndo);
 
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
-        jButton9.setToolTipText("Redo the last undo action.");
-        jButton9.setFocusable(false);
-        jButton9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton9.setPreferredSize(new java.awt.Dimension(28, 28));
-        jButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        mainToolBar.add(jButton9);
+        toolBarRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
+        toolBarRedo.setToolTipText("Redo the last undo action.");
+        toolBarRedo.setFocusable(false);
+        toolBarRedo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarRedo.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarRedo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarRedo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                toolBarRedoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                toolBarRedoMouseExited(evt);
+            }
+        });
+        toolBarRedo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarRedoActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(toolBarRedo);
         mainToolBar.add(jSeparator3);
 
         getContentPane().add(mainToolBar, java.awt.BorderLayout.PAGE_START);
@@ -322,7 +413,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
         jPanel3.setMinimumSize(new java.awt.Dimension(300, 300));
         jPanel3.setPreferredSize(new java.awt.Dimension(300, 300));
-        jPanel3.setLayout(new java.awt.GridLayout());
+        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
         jSplitPane2.setRightComponent(jPanel3);
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
@@ -335,6 +426,10 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         jSplitPane3.setLeftComponent(jSplitPane2);
         jSplitPane3.setRightComponent(jPanel4);
+
+        jScrollPane2.setViewportView(jTree1);
+
+        jSplitPane3.setRightComponent(jScrollPane2);
 
         middlePanel.add(jSplitPane3);
 
@@ -426,40 +521,118 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         mainMenuBar.add(fileMenu);
 
-        jMenu2.setText("Edit");
+        editMenu.setText("Edit");
 
-        jMenuItem5.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
-        jMenuItem5.setText("Undo");
-        jMenu2.add(jMenuItem5);
+        menuEditUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+        menuEditUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
+        menuEditUndo.setText("Undo");
+        menuEditUndo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                menuEditUndoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                menuEditUndoMouseExited(evt);
+            }
+        });
+        menuEditUndo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditUndoActionPerformed(evt);
+            }
+        });
+        editMenu.add(menuEditUndo);
 
-        jMenuItem6.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
-        jMenuItem6.setText("Redo");
-        jMenu2.add(jMenuItem6);
-        jMenu2.add(jSeparator5);
+        menuEditRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
+        menuEditRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
+        menuEditRedo.setText("Redo");
+        menuEditRedo.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                menuEditRedoMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                menuEditRedoMouseExited(evt);
+            }
+        });
+        menuEditRedo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditRedoActionPerformed(evt);
+            }
+        });
+        editMenu.add(menuEditRedo);
+        editMenu.add(jSeparator5);
 
-        jMenuItem7.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
-        jMenuItem7.setText("Cut");
-        jMenu2.add(jMenuItem7);
+        menuEditCut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
+        menuEditCut.setText("Cut");
+        menuEditCut.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                menuEditCutMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                menuEditCutMouseExited(evt);
+            }
+        });
+        menuEditCut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditCutActionPerformed(evt);
+            }
+        });
+        editMenu.add(menuEditCut);
 
-        jMenuItem8.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
-        jMenuItem8.setText("Copy");
-        jMenu2.add(jMenuItem8);
+        menuEditCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
+        menuEditCopy.setText("Copy");
+        menuEditCopy.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                menuEditCopyMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                menuEditCopyMouseExited(evt);
+            }
+        });
+        menuEditCopy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditCopyActionPerformed(evt);
+            }
+        });
+        editMenu.add(menuEditCopy);
 
-        jMenuItem9.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
-        jMenuItem9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
-        jMenuItem9.setText("Paste");
-        jMenu2.add(jMenuItem9);
+        menuEditPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
+        menuEditPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
+        menuEditPaste.setText("Paste");
+        menuEditPaste.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                menuEditPasteMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                menuEditPasteMouseExited(evt);
+            }
+        });
+        menuEditPaste.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditPasteActionPerformed(evt);
+            }
+        });
+        editMenu.add(menuEditPaste);
 
-        jMenuItem10.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        jMenuItem10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
-        jMenuItem10.setText("Delete");
-        jMenu2.add(jMenuItem10);
+        menuEditDelete.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        menuEditDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
+        menuEditDelete.setText("Delete");
+        menuEditDelete.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                menuEditDeleteMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                menuEditDeleteMouseExited(evt);
+            }
+        });
+        menuEditDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuEditDeleteActionPerformed(evt);
+            }
+        });
+        editMenu.add(menuEditDelete);
 
-        mainMenuBar.add(jMenu2);
+        mainMenuBar.add(editMenu);
 
         setJMenuBar(mainMenuBar);
 
@@ -566,6 +739,151 @@ jXMultiSplitPane1.add(jPanel3, "center");
         ProjectMgr.closeProject();
     }//GEN-LAST:event_fileMenuCloseProjectActionPerformed
 
+    private void menuEditCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCopyActionPerformed
+        statusBarLabel.setText("");
+        copy();
+    }//GEN-LAST:event_menuEditCopyActionPerformed
+
+    private void menuEditUndoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditUndoMouseEntered
+        statusBarLabel.setText("Undo the last action.");
+    }//GEN-LAST:event_menuEditUndoMouseEntered
+
+    private void menuEditUndoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditUndoMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_menuEditUndoMouseExited
+
+    private void menuEditRedoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditRedoMouseEntered
+        statusBarLabel.setText("Redo the last undo action.");
+    }//GEN-LAST:event_menuEditRedoMouseEntered
+
+    private void menuEditRedoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditRedoMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_menuEditRedoMouseExited
+
+    private void menuEditCutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCutMouseEntered
+        statusBarLabel.setText("Cut the selection and put it on the clipboard.");
+    }//GEN-LAST:event_menuEditCutMouseEntered
+
+    private void menuEditCutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCutMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_menuEditCutMouseExited
+
+    private void menuEditCopyMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCopyMouseEntered
+        statusBarLabel.setText("Copy the selection and put it on the clipboard.");
+    }//GEN-LAST:event_menuEditCopyMouseEntered
+
+    private void menuEditCopyMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCopyMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_menuEditCopyMouseExited
+
+    private void menuEditPasteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditPasteMouseEntered
+        statusBarLabel.setText("Insert clipboard contents.");
+    }//GEN-LAST:event_menuEditPasteMouseEntered
+
+    private void menuEditPasteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditPasteMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_menuEditPasteMouseExited
+
+    private void menuEditDeleteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditDeleteMouseEntered
+        statusBarLabel.setText("Delete the selection.");
+    }//GEN-LAST:event_menuEditDeleteMouseEntered
+
+    private void menuEditDeleteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditDeleteMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_menuEditDeleteMouseExited
+
+    private void toolBarCutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCutMouseEntered
+        statusBarLabel.setText("Cut the selection and put it on the clipboard.");
+    }//GEN-LAST:event_toolBarCutMouseEntered
+
+    private void toolBarCutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCutMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_toolBarCutMouseExited
+
+    private void toolBarPasteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarPasteMouseEntered
+        statusBarLabel.setText("Insert clipboard contents.");
+    }//GEN-LAST:event_toolBarPasteMouseEntered
+
+    private void toolBarPasteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarPasteMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_toolBarPasteMouseExited
+
+    private void toolBarDeleteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarDeleteMouseEntered
+        statusBarLabel.setText("Delete the selection.");
+    }//GEN-LAST:event_toolBarDeleteMouseEntered
+
+    private void toolBarDeleteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarDeleteMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_toolBarDeleteMouseExited
+
+    private void toolBarUndoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarUndoMouseEntered
+        statusBarLabel.setText("Undo the last action.");
+    }//GEN-LAST:event_toolBarUndoMouseEntered
+
+    private void toolBarUndoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarUndoMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_toolBarUndoMouseExited
+
+    private void toolBarRedoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarRedoMouseEntered
+        statusBarLabel.setText("Redo the last undo action.");
+    }//GEN-LAST:event_toolBarRedoMouseEntered
+
+    private void toolBarRedoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarRedoMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_toolBarRedoMouseExited
+
+    private void toolBarCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarCutActionPerformed
+        cut();
+    }//GEN-LAST:event_toolBarCutActionPerformed
+
+    private void menuEditCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCutActionPerformed
+        cut();
+    }//GEN-LAST:event_menuEditCutActionPerformed
+
+    private void toolBarPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarPasteActionPerformed
+        paste();
+    }//GEN-LAST:event_toolBarPasteActionPerformed
+
+    private void menuEditPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditPasteActionPerformed
+        paste();
+    }//GEN-LAST:event_menuEditPasteActionPerformed
+
+    private void menuEditDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditDeleteActionPerformed
+        delete();
+    }//GEN-LAST:event_menuEditDeleteActionPerformed
+
+    private void toolBarDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarDeleteActionPerformed
+        delete();
+    }//GEN-LAST:event_toolBarDeleteActionPerformed
+
+    private void toolBarUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarUndoActionPerformed
+        undo();
+    }//GEN-LAST:event_toolBarUndoActionPerformed
+
+    private void menuEditUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditUndoActionPerformed
+        undo();
+    }//GEN-LAST:event_menuEditUndoActionPerformed
+
+    private void menuEditRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditRedoActionPerformed
+        redo();
+    }//GEN-LAST:event_menuEditRedoActionPerformed
+
+    private void toolBarRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarRedoActionPerformed
+        redo();
+    }//GEN-LAST:event_toolBarRedoActionPerformed
+
+    private void toolBarCopyMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCopyMouseExited
+        statusBarLabel.setText("");
+    }//GEN-LAST:event_toolBarCopyMouseExited
+
+    private void toolBarCopyMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCopyMouseEntered
+        statusBarLabel.setText("Copy the selection and put it on the clipboard.");
+    }//GEN-LAST:event_toolBarCopyMouseEntered
+
+    private void toolBarCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarCopyActionPerformed
+        copy();
+    }//GEN-LAST:event_toolBarCopyActionPerformed
+
     private void performOpenProject(){
         String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
         File result = SwingUtil.getFileChoice(this, "", new FileNameExtensionFilter(filterText, AppMgr.getExtension("project file")), "Open project");
@@ -583,31 +901,43 @@ jXMultiSplitPane1.add(jPanel3, "center");
         dispose();
     }
 
+    public void undo(){
+        System.out.println("undo");
+    }
+    
+    public void redo(){
+        System.out.println("redo");
+    }
+    
+    public void cut(){
+        System.out.println("cut");
+    }
+    
+    public void copy(){
+        System.out.println("copy");
+    }
+    
+    public void paste(){
+        System.out.println("paste");
+    }
+    
+    public void delete(){
+        System.out.println("delete");
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu editMenu;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenuItem fileMenuCloseProject;
     private javax.swing.JMenuItem fileMenuExit;
     private javax.swing.JMenuItem fileMenuNewProject;
     private javax.swing.JMenuItem fileMenuOpenProject;
     private javax.swing.JMenuItem fileMenuSaveProject;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
-    private javax.swing.JButton jButton7;
-    private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
-    private javax.swing.JMenu jMenu2;
-    private javax.swing.JMenuItem jMenuItem10;
-    private javax.swing.JMenuItem jMenuItem5;
-    private javax.swing.JMenuItem jMenuItem6;
-    private javax.swing.JMenuItem jMenuItem7;
-    private javax.swing.JMenuItem jMenuItem8;
-    private javax.swing.JMenuItem jMenuItem9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
@@ -615,13 +945,26 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
+    private javax.swing.JTree jTree1;
     private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JToolBar mainToolBar;
     private lib.editor.widget.tree.tree.MapTree mapTree;
+    private javax.swing.JMenuItem menuEditCopy;
+    private javax.swing.JMenuItem menuEditCut;
+    private javax.swing.JMenuItem menuEditDelete;
+    private javax.swing.JMenuItem menuEditPaste;
+    private javax.swing.JMenuItem menuEditRedo;
+    private javax.swing.JMenuItem menuEditUndo;
     private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
+    private javax.swing.JButton toolBarCopy;
+    private javax.swing.JButton toolBarCut;
+    private javax.swing.JButton toolBarDelete;
     private javax.swing.JButton toolBarNewProject;
     private javax.swing.JButton toolBarOpenProject;
+    private javax.swing.JButton toolBarPaste;
+    private javax.swing.JButton toolBarRedo;
     private javax.swing.JButton toolBarSaveProject;
+    private javax.swing.JButton toolBarUndo;
     // End of variables declaration//GEN-END:variables
 }

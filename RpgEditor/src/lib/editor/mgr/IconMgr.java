@@ -22,8 +22,8 @@ public class IconMgr {
     
     private final static String ICON_PATH = "/assets/icons/";
     
-    public Icon getIcon (String filename) {
-        Icon icon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
+    public ImageIcon getIcon (String filename) {
+        ImageIcon icon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
         return icon;
         /*
         System.out.println(new File(ICON_PATH, filename).getAbsolutePath());
