@@ -16,7 +16,9 @@ import javax.swing.JPopupMenu.Separator;
 import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import lib.editor.data.editor.DataEditorBase;
 import lib.editor.data.editor.DataEditorMap;
+import lib.editor.data.game.DataBase;
 import lib.editor.data.game.DataMap;
 import lib.editor.mgr.IconMgr;
 import lib.editor.mgr.Mgr;
@@ -119,27 +121,26 @@ public class MapTree extends DatabaseTree{
     public void refresh(){
         clear();
         
-        TreeItem root = new TreeItem("Project", Mgr.icon.getIcon("project_root.png"));
+        TreeItem root = new DatabaseTreeItem("Project", Mgr.icon.getIcon("project_root.png"), new DataMap(0, "", 0,0), new DataEditorBase());
         addTopLevelItem(root);
         
         for(int i=0; i<gameDatabase.size(); i++){
             DataMap data = (DataMap) gameDatabase.get(i);
             
-            TreeItem item = new TreeItem(data.name, null);
-            root().add(item);
+            //DatabaseTreeItem item = new DatabaseTreeItem(data.name, null);
+            //item.gameData = data; FAIRE DEEPCOPY ICI
+                    
+            //root().add(item);
         }
     }
     
     private void newMap(){
         
-        DataMap gameData = new DataMap(1, "map01", 20, 20);
+        DataMap gameData = new DataMap(generateId(), "" , 20, 20);
+        gameData.name = "Map" + gameData.id;
         DataEditorMap editorData = new DataEditorMap();
         
-        DatabaseTreeItem item = new DatabaseTreeItem(gameData.name, null);
-        
-        item.gameData = gameData;
-        item.editorData = editorData;
-        
+        DatabaseTreeItem item = new DatabaseTreeItem(gameData.name, null, gameData, editorData);
         
         TreeItem parentItem = getCurrentItem();
         

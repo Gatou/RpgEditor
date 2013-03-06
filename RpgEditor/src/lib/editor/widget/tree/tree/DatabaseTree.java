@@ -4,10 +4,13 @@
  */
 package lib.editor.widget.tree.tree;
 
+import java.util.ArrayList;
 import java.util.List;
 import lib.editor.data.editor.DataEditorBase;
 import lib.editor.data.game.DataBase;
 import lib.editor.widget.tree.interfaces.TreeWithDatabase;
+import lib.editor.widget.tree.item.DatabaseTreeItem;
+import lib.editor.widget.tree.item.TreeItem;
 
 /**
  *
@@ -22,4 +25,25 @@ public abstract class DatabaseTree extends TreeContextMenu implements TreeWithDa
         this.gameDatabase = gameDatabase;
         this.editorDatabase = editorDatabase;
     }
+    
+    public int generateId(){
+        int id = 1;
+        List<Integer> allId = new ArrayList<Integer>();
+        
+
+        for(TreeItem item : getAllItems()){
+            System.out.println(item.text);
+            System.out.println(item instanceof DatabaseTreeItem);
+            
+            DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
+            allId.add(dataItem.gameData.id);
+        }
+        while(allId.contains(id)){
+            id += 1;
+        }
+        return id;
+    }
+    
+
+    
 }

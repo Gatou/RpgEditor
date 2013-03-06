@@ -4,18 +4,21 @@
  */
 package lib.editor.widget.tree.tree;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import lib.editor.widget.tree.item.TreeItem;
+import org.jdesktop.swingx.JXTree;
 
 
 /**
  *
  * @author gaetan
  */
-public abstract class Tree extends JTree{
+public abstract class Tree extends JXTree{
     
     public Tree(){
         
@@ -39,13 +42,13 @@ public abstract class Tree extends JTree{
     public void clear(){
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         getRoot().removeAllChildren();
-        model.reload(getRoot());
+        //model.reload(getRoot());
     }
     
     public void addTopLevelItem(TreeItem item){
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         model.insertNodeInto(item, getRoot(), getRoot().getChildCount());
-        model.reload(getRoot());
+        //model.reload(getRoot());
     }
     
     public TreeItem getTopLevelItem(int index){
@@ -55,7 +58,7 @@ public abstract class Tree extends JTree{
     public void insertTopLevelitem(int index, TreeItem item){
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         model.insertNodeInto(item, getRoot(), index);
-        model.reload(getRoot());
+        //model.reload(getRoot());
     }
     
     public TreeItem getCurrentItem(){
@@ -69,7 +72,23 @@ public abstract class Tree extends JTree{
     public void addItem(TreeItem item, TreeItem parentItem){
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         model.insertNodeInto(item, parentItem, parentItem.getChildCount());
-        model.reload(getRoot());
+        //model.reload(getRoot());
     }
     
+    public List<TreeItem> getAllItems(){
+        List<TreeItem> result = new ArrayList<TreeItem>();
+        getAllItemsRec(getRoot(), result);
+        return result;
+    }
+    
+    private void getAllItemsRec(TreeItem parentItem, List<TreeItem> result){
+        for(int i=0; i<parentItem.getChildCount(); i++){
+            TreeItem item = (TreeItem) parentItem.getChildAt(i);
+            result.add(item);
+            getAllItemsRec(item, result);
+        }
+    }
+    
+    
+  
 }

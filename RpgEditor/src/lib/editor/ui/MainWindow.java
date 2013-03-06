@@ -186,8 +186,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jScrollPane1 = new javax.swing.JScrollPane();
         mapTree = new lib.editor.widget.tree.tree.MapTree();
         jPanel4 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTree1 = new javax.swing.JTree();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jXTree1 = new org.jdesktop.swingx.JXTree();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileNew = new lib.editor.widget.menu.MenuItem();
@@ -368,9 +368,9 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jSplitPane3.setLeftComponent(jSplitPane2);
         jSplitPane3.setRightComponent(jPanel4);
 
-        jScrollPane2.setViewportView(jTree1);
+        jScrollPane3.setViewportView(jXTree1);
 
-        jSplitPane3.setRightComponent(jScrollPane2);
+        jSplitPane3.setRightComponent(jScrollPane3);
 
         middlePanel.add(jSplitPane3);
 
@@ -381,7 +381,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         fileNew.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         fileNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
         fileNew.setText("New project...");
-        fileNew.setPreferredSize(null);
         fileNew.setStatusText("Create a new project.");
         fileNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -659,7 +658,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
@@ -667,7 +666,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JTree jTree1;
+    private org.jdesktop.swingx.JXTree jXTree1;
     private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JToolBar mainToolBar;
     private lib.editor.widget.tree.tree.MapTree mapTree;
