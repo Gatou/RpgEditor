@@ -2,16 +2,23 @@ package lib.editor.ui;
 
 import com.badlogic.gdx.Gdx;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import javax.swing.AbstractAction;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
+import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lib.editor.mgr.AppMgr;
@@ -20,7 +27,6 @@ import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
 import lib.editor.util.SwingUtil;
-import lib.editor.widget.mainwindow.action.CopyAction;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
 import org.jdesktop.swingx.MultiSplitLayout.Divider;
 import org.jdesktop.swingx.MultiSplitLayout.Leaf;
@@ -40,12 +46,10 @@ public class MainWindow extends javax.swing.JFrame {
     
     MapEditorGraphicsView mapEditor;
     
-    public CopyAction copyAction;
     /**
      * Creates new form NewJFrame
      */
     public MainWindow() {
-        copyAction = new CopyAction();
         
         
         setLocationRelativeTo( null );
@@ -92,6 +96,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         WidgetMgr.MAP_TREE = mapTree;
         WidgetMgr.MAP_TREE.setup();
     }
+    
     
     public void saveSettings(Properties prop){
         String prefix = "MainWindow_";
@@ -145,6 +150,9 @@ jXMultiSplitPane1.add(jPanel3, "center");
         middlePanel.setVisible(enabled);
     }
 
+    public JLabel getStatusLabel(){
+        return statusBarLabel;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -155,17 +163,17 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private void initComponents() {
 
         mainToolBar = new javax.swing.JToolBar();
-        toolBarNewProject = new javax.swing.JButton();
-        toolBarOpenProject = new javax.swing.JButton();
-        toolBarSaveProject = new javax.swing.JButton();
+        toolBarNew = new lib.editor.widget.button.ToolBarButton();
+        toolBarOpen = new lib.editor.widget.button.ToolBarButton();
+        toolBarSave = new lib.editor.widget.button.ToolBarButton();
         jSeparator1 = new javax.swing.JToolBar.Separator();
-        toolBarCut = new javax.swing.JButton();
-        toolBarCopy = new javax.swing.JButton();
-        toolBarPaste = new javax.swing.JButton();
-        toolBarDelete = new javax.swing.JButton();
+        toolBarCut = new lib.editor.widget.button.ToolBarButton();
+        toolBarCopy = new lib.editor.widget.button.ToolBarButton();
+        toolBarPaste = new lib.editor.widget.button.ToolBarButton();
+        toolBarDelete = new lib.editor.widget.button.ToolBarButton();
         jSeparator2 = new javax.swing.JToolBar.Separator();
-        toolBarUndo = new javax.swing.JButton();
-        toolBarRedo = new javax.swing.JButton();
+        toolBarUndo = new lib.editor.widget.button.ToolBarButton();
+        toolBarRedo = new lib.editor.widget.button.ToolBarButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         jPanel1 = new javax.swing.JPanel();
         statusBarLabel = new javax.swing.JLabel();
@@ -181,12 +189,12 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jTree1 = new javax.swing.JTree();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
-        fileMenuNewProject = new javax.swing.JMenuItem();
-        fileMenuOpenProject = new javax.swing.JMenuItem();
-        fileMenuCloseProject = new javax.swing.JMenuItem();
-        fileMenuSaveProject = new javax.swing.JMenuItem();
+        fileNew = new lib.editor.widget.menu.MenuItem();
+        fileOpen = new lib.editor.widget.menu.MenuItem();
+        fileClose = new lib.editor.widget.menu.MenuItem();
+        fileSave = new lib.editor.widget.menu.MenuItem();
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
-        fileMenuExit = new javax.swing.JMenuItem();
+        fileExit = new lib.editor.widget.menu.MenuItem();
         editMenu = new javax.swing.JMenu();
         menuEditUndo = new javax.swing.JMenuItem();
         menuEditRedo = new javax.swing.JMenuItem();
@@ -207,79 +215,52 @@ jXMultiSplitPane1.add(jPanel3, "center");
         mainToolBar.setFloatable(false);
         mainToolBar.setRollover(true);
 
-        toolBarNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
-        toolBarNewProject.setToolTipText("Create a new project.");
-        toolBarNewProject.setFocusable(false);
-        toolBarNewProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarNewProject.setPreferredSize(new java.awt.Dimension(28, 28));
-        toolBarNewProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarNewProject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarNewProjectMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarNewProjectMouseExited(evt);
-            }
-        });
-        toolBarNewProject.addActionListener(new java.awt.event.ActionListener() {
+        toolBarNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
+        toolBarNew.setToolTipText("Create a new project.");
+        toolBarNew.setFocusable(false);
+        toolBarNew.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarNew.setStatusText("Create a new project.");
+        toolBarNew.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                toolBarNewProjectActionPerformed(evt);
+                toolBarNewActionPerformed(evt);
             }
         });
-        mainToolBar.add(toolBarNewProject);
+        mainToolBar.add(toolBarNew);
 
-        toolBarOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/open.png"))); // NOI18N
-        toolBarOpenProject.setToolTipText("Open an existing project.");
-        toolBarOpenProject.setFocusable(false);
-        toolBarOpenProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarOpenProject.setPreferredSize(new java.awt.Dimension(28, 28));
-        toolBarOpenProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarOpenProject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarOpenProjectMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarOpenProjectMouseExited(evt);
-            }
-        });
-        toolBarOpenProject.addActionListener(new java.awt.event.ActionListener() {
+        toolBarOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/open.png"))); // NOI18N
+        toolBarOpen.setToolTipText("Open an existing project.");
+        toolBarOpen.setFocusable(false);
+        toolBarOpen.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarOpen.setStatusText("Open an existing project.");
+        toolBarOpen.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                toolBarOpenProjectActionPerformed(evt);
+                toolBarOpenActionPerformed(evt);
             }
         });
-        mainToolBar.add(toolBarOpenProject);
+        mainToolBar.add(toolBarOpen);
 
-        toolBarSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
-        toolBarSaveProject.setToolTipText("Save the current project.");
-        toolBarSaveProject.setFocusable(false);
-        toolBarSaveProject.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarSaveProject.setPreferredSize(new java.awt.Dimension(28, 28));
-        toolBarSaveProject.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarSaveProject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarSaveProjectMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarSaveProjectMouseExited(evt);
+        toolBarSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
+        toolBarSave.setToolTipText("Save the current project.");
+        toolBarSave.setFocusable(false);
+        toolBarSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarSave.setStatusText("Save the current project.");
+        toolBarSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarSaveActionPerformed(evt);
             }
         });
-        mainToolBar.add(toolBarSaveProject);
+        mainToolBar.add(toolBarSave);
         mainToolBar.add(jSeparator1);
 
         toolBarCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
         toolBarCut.setToolTipText("Cut the selection and put it on the clipboard.");
         toolBarCut.setFocusable(false);
         toolBarCut.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarCut.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarCut.setStatusText("Cut the selection and put it on the clipboard.");
         toolBarCut.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarCut.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarCutMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarCutMouseExited(evt);
-            }
-        });
         toolBarCut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toolBarCutActionPerformed(evt);
@@ -288,20 +269,11 @@ jXMultiSplitPane1.add(jPanel3, "center");
         mainToolBar.add(toolBarCut);
 
         toolBarCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
-        toolBarCopy.setText("");
         toolBarCopy.setToolTipText("Copy the selection and put it on the clipboard.");
         toolBarCopy.setFocusable(false);
         toolBarCopy.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarCopy.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarCopy.setStatusText("Copy the selection and put it on the clipboard.");
         toolBarCopy.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarCopy.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarCopyMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarCopyMouseExited(evt);
-            }
-        });
         toolBarCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toolBarCopyActionPerformed(evt);
@@ -313,16 +285,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         toolBarPaste.setToolTipText("Insert clipboard contents.");
         toolBarPaste.setFocusable(false);
         toolBarPaste.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarPaste.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarPaste.setStatusText("Insert clipboard contents.");
         toolBarPaste.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarPaste.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarPasteMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarPasteMouseExited(evt);
-            }
-        });
         toolBarPaste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toolBarPasteActionPerformed(evt);
@@ -334,16 +298,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         toolBarDelete.setToolTipText("Delete the selection.");
         toolBarDelete.setFocusable(false);
         toolBarDelete.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarDelete.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarDelete.setStatusText("Delete the selection.");
         toolBarDelete.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarDelete.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarDeleteMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarDeleteMouseExited(evt);
-            }
-        });
         toolBarDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toolBarDeleteActionPerformed(evt);
@@ -356,16 +312,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         toolBarUndo.setToolTipText("Undo the last action.");
         toolBarUndo.setFocusable(false);
         toolBarUndo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarUndo.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarUndo.setStatusText("Undo the last action.");
         toolBarUndo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarUndo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarUndoMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarUndoMouseExited(evt);
-            }
-        });
         toolBarUndo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toolBarUndoActionPerformed(evt);
@@ -377,16 +325,8 @@ jXMultiSplitPane1.add(jPanel3, "center");
         toolBarRedo.setToolTipText("Redo the last undo action.");
         toolBarRedo.setFocusable(false);
         toolBarRedo.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarRedo.setPreferredSize(new java.awt.Dimension(28, 28));
+        toolBarRedo.setStatusText("Redo the last undo action.");
         toolBarRedo.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarRedo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                toolBarRedoMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                toolBarRedoMouseExited(evt);
-            }
-        });
         toolBarRedo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 toolBarRedoActionPerformed(evt);
@@ -437,87 +377,59 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         fileMenu.setText("File");
 
-        fileMenuNewProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
-        fileMenuNewProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
-        fileMenuNewProject.setText("New Project...");
-        fileMenuNewProject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                fileMenuNewProjectMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                fileMenuNewProjectMouseExited(evt);
-            }
-        });
-        fileMenuNewProject.addActionListener(new java.awt.event.ActionListener() {
+        fileNew.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
+        fileNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
+        fileNew.setText("New project...");
+        fileNew.setPreferredSize(null);
+        fileNew.setStatusText("Create a new project.");
+        fileNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileMenuNewProjectActionPerformed(evt);
+                fileNewActionPerformed(evt);
             }
         });
-        fileMenu.add(fileMenuNewProject);
+        fileMenu.add(fileNew);
 
-        fileMenuOpenProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
-        fileMenuOpenProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/open.png"))); // NOI18N
-        fileMenuOpenProject.setText("Open project...");
-        fileMenuOpenProject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                fileMenuOpenProjectMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                fileMenuOpenProjectMouseExited(evt);
-            }
-        });
-        fileMenuOpenProject.addActionListener(new java.awt.event.ActionListener() {
+        fileOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
+        fileOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/open.png"))); // NOI18N
+        fileOpen.setText("Open project...");
+        fileOpen.setPreferredSize(null);
+        fileOpen.setStatusText("Open an existing project.");
+        fileOpen.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileMenuOpenProjectActionPerformed(evt);
+                fileOpenActionPerformed(evt);
             }
         });
-        fileMenu.add(fileMenuOpenProject);
+        fileMenu.add(fileOpen);
 
-        fileMenuCloseProject.setText("Close project");
-        fileMenuCloseProject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                fileMenuCloseProjectMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                fileMenuCloseProjectMouseExited(evt);
-            }
-        });
-        fileMenuCloseProject.addActionListener(new java.awt.event.ActionListener() {
+        fileClose.setText("Close project");
+        fileClose.setStatusText("Close the current project.");
+        fileClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileMenuCloseProjectActionPerformed(evt);
+                fileCloseActionPerformed(evt);
             }
         });
-        fileMenu.add(fileMenuCloseProject);
+        fileMenu.add(fileClose);
 
-        fileMenuSaveProject.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
-        fileMenuSaveProject.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
-        fileMenuSaveProject.setText("Save project");
-        fileMenuSaveProject.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                fileMenuSaveProjectMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                fileMenuSaveProjectMouseExited(evt);
+        fileSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
+        fileSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
+        fileSave.setText("Save project");
+        fileSave.setStatusText("Save the current project.");
+        fileSave.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                fileSaveActionPerformed(evt);
             }
         });
-        fileMenu.add(fileMenuSaveProject);
+        fileMenu.add(fileSave);
         fileMenu.add(jSeparator4);
 
-        fileMenuExit.setText("Exit");
-        fileMenuExit.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                fileMenuExitMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                fileMenuExitMouseExited(evt);
-            }
-        });
-        fileMenuExit.addActionListener(new java.awt.event.ActionListener() {
+        fileExit.setText("Exit");
+        fileExit.setStatusText("Exit the application.");
+        fileExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileMenuExitActionPerformed(evt);
+                fileExitActionPerformed(evt);
             }
         });
-        fileMenu.add(fileMenuExit);
+        fileMenu.add(fileExit);
 
         mainMenuBar.add(fileMenu);
 
@@ -526,14 +438,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         menuEditUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
         menuEditUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
         menuEditUndo.setText("Undo");
-        menuEditUndo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                menuEditUndoMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                menuEditUndoMouseExited(evt);
-            }
-        });
         menuEditUndo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditUndoActionPerformed(evt);
@@ -544,14 +448,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         menuEditRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
         menuEditRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
         menuEditRedo.setText("Redo");
-        menuEditRedo.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                menuEditRedoMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                menuEditRedoMouseExited(evt);
-            }
-        });
         menuEditRedo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditRedoActionPerformed(evt);
@@ -563,14 +459,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         menuEditCut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
         menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
         menuEditCut.setText("Cut");
-        menuEditCut.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                menuEditCutMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                menuEditCutMouseExited(evt);
-            }
-        });
         menuEditCut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditCutActionPerformed(evt);
@@ -581,14 +469,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         menuEditCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
         menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
         menuEditCopy.setText("Copy");
-        menuEditCopy.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                menuEditCopyMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                menuEditCopyMouseExited(evt);
-            }
-        });
         menuEditCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditCopyActionPerformed(evt);
@@ -599,14 +479,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         menuEditPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
         menuEditPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
         menuEditPaste.setText("Paste");
-        menuEditPaste.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                menuEditPasteMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                menuEditPasteMouseExited(evt);
-            }
-        });
         menuEditPaste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditPasteActionPerformed(evt);
@@ -617,14 +489,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         menuEditDelete.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
         menuEditDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
         menuEditDelete.setText("Delete");
-        menuEditDelete.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                menuEditDeleteMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                menuEditDeleteMouseExited(evt);
-            }
-        });
         menuEditDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuEditDeleteActionPerformed(evt);
@@ -639,210 +503,18 @@ jXMultiSplitPane1.add(jPanel3, "center");
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void fileMenuNewProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuNewProjectMouseEntered
-        statusBarLabel.setText("Create a new project.");
-    }//GEN-LAST:event_fileMenuNewProjectMouseEntered
-
-    private void fileMenuNewProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuNewProjectMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_fileMenuNewProjectMouseExited
-
-    private void fileMenuOpenProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuOpenProjectMouseEntered
-        statusBarLabel.setText("Open an existing project.");
-    }//GEN-LAST:event_fileMenuOpenProjectMouseEntered
-
-    private void fileMenuOpenProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuOpenProjectMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_fileMenuOpenProjectMouseExited
-
-    private void fileMenuSaveProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuSaveProjectMouseEntered
-        statusBarLabel.setText("Save the current project.");
-    }//GEN-LAST:event_fileMenuSaveProjectMouseEntered
-
-    private void fileMenuSaveProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuSaveProjectMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_fileMenuSaveProjectMouseExited
-
-    private void fileMenuExitMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuExitMouseEntered
-        statusBarLabel.setText("Exit the application.");
-    }//GEN-LAST:event_fileMenuExitMouseEntered
-
-    private void fileMenuExitMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuExitMouseExited
-        
-    }//GEN-LAST:event_fileMenuExitMouseExited
-
-    private void toolBarNewProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarNewProjectMouseEntered
-        statusBarLabel.setText("Create a new project.");
-    }//GEN-LAST:event_toolBarNewProjectMouseEntered
-
-    private void toolBarNewProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarNewProjectMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarNewProjectMouseExited
-
-    private void toolBarOpenProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarOpenProjectMouseEntered
-        statusBarLabel.setText("Open an existing project.");
-    }//GEN-LAST:event_toolBarOpenProjectMouseEntered
-
-    private void toolBarOpenProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarOpenProjectMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarOpenProjectMouseExited
-
-    private void toolBarSaveProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarSaveProjectMouseEntered
-        statusBarLabel.setText("Save the current project.");
-    }//GEN-LAST:event_toolBarSaveProjectMouseEntered
-
-    private void toolBarSaveProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarSaveProjectMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarSaveProjectMouseExited
-
-    private void fileMenuExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuExitActionPerformed
-        statusBarLabel.setText("");
-        close();
-    }//GEN-LAST:event_fileMenuExitActionPerformed
-
-    private void fileMenuNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuNewProjectActionPerformed
-        statusBarLabel.setText("");
-        ProjectWindow win = new ProjectWindow(this, true);
-        win.setVisible(true);
-    }//GEN-LAST:event_fileMenuNewProjectActionPerformed
-
-    private void toolBarNewProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarNewProjectActionPerformed
-        statusBarLabel.setText("");
-        ProjectWindow win = new ProjectWindow(this, true);
-        win.setVisible(true);
-    }//GEN-LAST:event_toolBarNewProjectActionPerformed
-
-    private void fileMenuOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuOpenProjectActionPerformed
-        statusBarLabel.setText("");
-        performOpenProject();
-    }//GEN-LAST:event_fileMenuOpenProjectActionPerformed
-
-    private void toolBarOpenProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarOpenProjectActionPerformed
-        statusBarLabel.setText("");
-        performOpenProject();
-    }//GEN-LAST:event_toolBarOpenProjectActionPerformed
-
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-       close();
+       exit();
     }//GEN-LAST:event_formWindowClosing
-
-    private void fileMenuCloseProjectMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuCloseProjectMouseEntered
-        statusBarLabel.setText("Close the current project.");
-    }//GEN-LAST:event_fileMenuCloseProjectMouseEntered
-
-    private void fileMenuCloseProjectMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fileMenuCloseProjectMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_fileMenuCloseProjectMouseExited
-
-    private void fileMenuCloseProjectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileMenuCloseProjectActionPerformed
-        statusBarLabel.setText("");
-        ProjectMgr.closeProject();
-    }//GEN-LAST:event_fileMenuCloseProjectActionPerformed
 
     private void menuEditCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCopyActionPerformed
         statusBarLabel.setText("");
         copy();
     }//GEN-LAST:event_menuEditCopyActionPerformed
 
-    private void menuEditUndoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditUndoMouseEntered
-        statusBarLabel.setText("Undo the last action.");
-    }//GEN-LAST:event_menuEditUndoMouseEntered
-
-    private void menuEditUndoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditUndoMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_menuEditUndoMouseExited
-
-    private void menuEditRedoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditRedoMouseEntered
-        statusBarLabel.setText("Redo the last undo action.");
-    }//GEN-LAST:event_menuEditRedoMouseEntered
-
-    private void menuEditRedoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditRedoMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_menuEditRedoMouseExited
-
-    private void menuEditCutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCutMouseEntered
-        statusBarLabel.setText("Cut the selection and put it on the clipboard.");
-    }//GEN-LAST:event_menuEditCutMouseEntered
-
-    private void menuEditCutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCutMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_menuEditCutMouseExited
-
-    private void menuEditCopyMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCopyMouseEntered
-        statusBarLabel.setText("Copy the selection and put it on the clipboard.");
-    }//GEN-LAST:event_menuEditCopyMouseEntered
-
-    private void menuEditCopyMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditCopyMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_menuEditCopyMouseExited
-
-    private void menuEditPasteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditPasteMouseEntered
-        statusBarLabel.setText("Insert clipboard contents.");
-    }//GEN-LAST:event_menuEditPasteMouseEntered
-
-    private void menuEditPasteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditPasteMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_menuEditPasteMouseExited
-
-    private void menuEditDeleteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditDeleteMouseEntered
-        statusBarLabel.setText("Delete the selection.");
-    }//GEN-LAST:event_menuEditDeleteMouseEntered
-
-    private void menuEditDeleteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuEditDeleteMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_menuEditDeleteMouseExited
-
-    private void toolBarCutMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCutMouseEntered
-        statusBarLabel.setText("Cut the selection and put it on the clipboard.");
-    }//GEN-LAST:event_toolBarCutMouseEntered
-
-    private void toolBarCutMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCutMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarCutMouseExited
-
-    private void toolBarPasteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarPasteMouseEntered
-        statusBarLabel.setText("Insert clipboard contents.");
-    }//GEN-LAST:event_toolBarPasteMouseEntered
-
-    private void toolBarPasteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarPasteMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarPasteMouseExited
-
-    private void toolBarDeleteMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarDeleteMouseEntered
-        statusBarLabel.setText("Delete the selection.");
-    }//GEN-LAST:event_toolBarDeleteMouseEntered
-
-    private void toolBarDeleteMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarDeleteMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarDeleteMouseExited
-
-    private void toolBarUndoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarUndoMouseEntered
-        statusBarLabel.setText("Undo the last action.");
-    }//GEN-LAST:event_toolBarUndoMouseEntered
-
-    private void toolBarUndoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarUndoMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarUndoMouseExited
-
-    private void toolBarRedoMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarRedoMouseEntered
-        statusBarLabel.setText("Redo the last undo action.");
-    }//GEN-LAST:event_toolBarRedoMouseEntered
-
-    private void toolBarRedoMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarRedoMouseExited
-        statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarRedoMouseExited
-
-    private void toolBarCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarCutActionPerformed
-        cut();
-    }//GEN-LAST:event_toolBarCutActionPerformed
-
     private void menuEditCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCutActionPerformed
         cut();
     }//GEN-LAST:event_menuEditCutActionPerformed
-
-    private void toolBarPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarPasteActionPerformed
-        paste();
-    }//GEN-LAST:event_toolBarPasteActionPerformed
 
     private void menuEditPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditPasteActionPerformed
         paste();
@@ -852,14 +524,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
         delete();
     }//GEN-LAST:event_menuEditDeleteActionPerformed
 
-    private void toolBarDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarDeleteActionPerformed
-        delete();
-    }//GEN-LAST:event_toolBarDeleteActionPerformed
-
-    private void toolBarUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarUndoActionPerformed
-        undo();
-    }//GEN-LAST:event_toolBarUndoActionPerformed
-
     private void menuEditUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditUndoActionPerformed
         undo();
     }//GEN-LAST:event_menuEditUndoActionPerformed
@@ -868,23 +532,70 @@ jXMultiSplitPane1.add(jPanel3, "center");
         redo();
     }//GEN-LAST:event_menuEditRedoActionPerformed
 
-    private void toolBarRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarRedoActionPerformed
-        redo();
-    }//GEN-LAST:event_toolBarRedoActionPerformed
-
-    private void toolBarCopyMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCopyMouseExited
+    private void toolBarNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarNewActionPerformed
         statusBarLabel.setText("");
-    }//GEN-LAST:event_toolBarCopyMouseExited
+        new ProjectWindow(this, true).setVisible(true);
+    }//GEN-LAST:event_toolBarNewActionPerformed
 
-    private void toolBarCopyMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_toolBarCopyMouseEntered
-        statusBarLabel.setText("Copy the selection and put it on the clipboard.");
-    }//GEN-LAST:event_toolBarCopyMouseEntered
+    private void toolBarOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarOpenActionPerformed
+        statusBarLabel.setText("");
+        openProject();
+    }//GEN-LAST:event_toolBarOpenActionPerformed
+
+    private void toolBarSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarSaveActionPerformed
+        save();
+    }//GEN-LAST:event_toolBarSaveActionPerformed
+
+    private void toolBarCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarCutActionPerformed
+        cut();
+    }//GEN-LAST:event_toolBarCutActionPerformed
 
     private void toolBarCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarCopyActionPerformed
         copy();
     }//GEN-LAST:event_toolBarCopyActionPerformed
 
-    private void performOpenProject(){
+    private void toolBarPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarPasteActionPerformed
+        paste();
+    }//GEN-LAST:event_toolBarPasteActionPerformed
+
+    private void toolBarDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarDeleteActionPerformed
+        delete();
+    }//GEN-LAST:event_toolBarDeleteActionPerformed
+
+    private void toolBarUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarUndoActionPerformed
+        undo();
+    }//GEN-LAST:event_toolBarUndoActionPerformed
+
+    private void toolBarRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarRedoActionPerformed
+        redo();
+    }//GEN-LAST:event_toolBarRedoActionPerformed
+
+    private void fileNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileNewActionPerformed
+        statusBarLabel.setText("");
+        new ProjectWindow(this, true).setVisible(true);
+    }//GEN-LAST:event_fileNewActionPerformed
+
+    private void fileOpenActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileOpenActionPerformed
+        statusBarLabel.setText("");
+        openProject();
+    }//GEN-LAST:event_fileOpenActionPerformed
+
+    private void fileCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileCloseActionPerformed
+        statusBarLabel.setText("");
+        ProjectMgr.closeProject();
+    }//GEN-LAST:event_fileCloseActionPerformed
+
+    private void fileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileSaveActionPerformed
+        statusBarLabel.setText("");
+        save();
+    }//GEN-LAST:event_fileSaveActionPerformed
+
+    private void fileExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileExitActionPerformed
+        statusBarLabel.setText("");
+        exit();
+    }//GEN-LAST:event_fileExitActionPerformed
+
+    private void openProject(){
         String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
         File result = SwingUtil.getFileChoice(this, "", new FileNameExtensionFilter(filterText, AppMgr.getExtension("project file")), "Open project");
         if(result != null){
@@ -895,12 +606,16 @@ jXMultiSplitPane1.add(jPanel3, "center");
         }
     }
     
-    private void close(){
+    private void exit(){
         AppMgr.saveSettings();
         ProjectMgr.closeProject();
         dispose();
     }
 
+    public void save(){
+        
+    }
+    
     public void undo(){
         System.out.println("undo");
     }
@@ -926,12 +641,12 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu editMenu;
+    private lib.editor.widget.menu.MenuItem fileClose;
+    private lib.editor.widget.menu.MenuItem fileExit;
     private javax.swing.JMenu fileMenu;
-    private javax.swing.JMenuItem fileMenuCloseProject;
-    private javax.swing.JMenuItem fileMenuExit;
-    private javax.swing.JMenuItem fileMenuNewProject;
-    private javax.swing.JMenuItem fileMenuOpenProject;
-    private javax.swing.JMenuItem fileMenuSaveProject;
+    private lib.editor.widget.menu.MenuItem fileNew;
+    private lib.editor.widget.menu.MenuItem fileOpen;
+    private lib.editor.widget.menu.MenuItem fileSave;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -957,14 +672,14 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JMenuItem menuEditUndo;
     private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
-    private javax.swing.JButton toolBarCopy;
-    private javax.swing.JButton toolBarCut;
-    private javax.swing.JButton toolBarDelete;
-    private javax.swing.JButton toolBarNewProject;
-    private javax.swing.JButton toolBarOpenProject;
-    private javax.swing.JButton toolBarPaste;
-    private javax.swing.JButton toolBarRedo;
-    private javax.swing.JButton toolBarSaveProject;
-    private javax.swing.JButton toolBarUndo;
+    private lib.editor.widget.button.ToolBarButton toolBarCopy;
+    private lib.editor.widget.button.ToolBarButton toolBarCut;
+    private lib.editor.widget.button.ToolBarButton toolBarDelete;
+    private lib.editor.widget.button.ToolBarButton toolBarNew;
+    private lib.editor.widget.button.ToolBarButton toolBarOpen;
+    private lib.editor.widget.button.ToolBarButton toolBarPaste;
+    private lib.editor.widget.button.ToolBarButton toolBarRedo;
+    private lib.editor.widget.button.ToolBarButton toolBarSave;
+    private lib.editor.widget.button.ToolBarButton toolBarUndo;
     // End of variables declaration//GEN-END:variables
 }

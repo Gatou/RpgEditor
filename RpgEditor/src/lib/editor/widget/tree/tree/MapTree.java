@@ -31,7 +31,6 @@ public class MapTree extends TreeContextMenu{
             public void actionPerformed(ActionEvent e) {
                 WidgetMgr.MAIN_WINDOW.copy();
             }
-            
         });
         getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK), "paste");
         getActionMap().put("paste", new AbstractAction(){
