@@ -4,7 +4,9 @@
  */
 package lib.editor.widget.menu;
 
+import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
+import javax.swing.KeyStroke;
 import lib.editor.mgr.WidgetMgr;
 
 /**
@@ -14,11 +16,21 @@ import lib.editor.mgr.WidgetMgr;
 public class MenuItem extends JMenuItem{
     
     
-        private String statusText;
+    private String statusText;
+    
+    public MenuItem(String text, ImageIcon icon, String statusText, KeyStroke shortcut){
+        super(text, icon);
+        this.statusText = statusText;
+        setAccelerator(shortcut);
+        init();
+    }
     
     public MenuItem(){
         statusText = "";
-        
+        init();
+    }
+    
+    private void init(){
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
                 WidgetMgr.MAIN_WINDOW.getStatusLabel().setText(statusText);
@@ -27,7 +39,6 @@ public class MenuItem extends JMenuItem{
                 WidgetMgr.MAIN_WINDOW.getStatusLabel().setText("");
             }
         });
-        
     }
     
     public String getStatusText(){

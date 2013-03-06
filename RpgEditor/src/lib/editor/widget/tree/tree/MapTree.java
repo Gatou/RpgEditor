@@ -5,6 +5,7 @@
 package lib.editor.widget.tree.tree;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
@@ -15,6 +16,7 @@ import javax.swing.tree.DefaultTreeModel;
 import lib.editor.mgr.IconMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.WidgetMgr;
+import lib.editor.widget.menu.MenuItem;
 import lib.editor.widget.tree.item.TreeItem;
 
 /**
@@ -26,36 +28,16 @@ public class MapTree extends TreeContextMenu{
     public MapTree(){
         super();
         
-        getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK), "copy");
-        getActionMap().put("copy", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                WidgetMgr.MAIN_WINDOW.copy();
-            }
-        });
-        getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK), "paste");
-        getActionMap().put("paste", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                WidgetMgr.MAIN_WINDOW.paste();
-            }
-            
-        });
-         getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0), "delete");
-        getActionMap().put("delete", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                WidgetMgr.MAIN_WINDOW.delete();
-            }
-            
-        });
+
     }
     
     public void setup(){
 
     }
 
-    @Override
-    public void createContextMenu() {
+    public void createMenu() {
         JMenuItem item;
-        item = new JMenuItem("New map");
+        item = new MenuItem("New map", null, "Add kaka", KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0));
         menu.add(item);
         
         menu.add(new Separator());
@@ -87,6 +69,45 @@ public class MapTree extends TreeContextMenu{
             }
         });
         menu.add(item);
+    }
+    
+    public void createMenuShortcut() {
+        //new map
+        getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_INSERT, 0), "newMap");
+        getActionMap().put("newMap", new AbstractAction(){
+            public void actionPerformed(ActionEvent e) {
+                newMap();
+            }
+        });
+        //copy
+        getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK), "copy");
+        getActionMap().put("copy", new AbstractAction(){
+            public void actionPerformed(ActionEvent e) {
+                WidgetMgr.MAIN_WINDOW.copy();
+            }
+        });
+        //paste
+        getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK), "paste");
+        getActionMap().put("paste", new AbstractAction(){
+            public void actionPerformed(ActionEvent e) {
+                WidgetMgr.MAIN_WINDOW.paste();
+            }
+        });
+        //delete
+        getInputMap().put(KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0), "delete");
+        getActionMap().put("delete", new AbstractAction(){
+            public void actionPerformed(ActionEvent e) {
+                WidgetMgr.MAIN_WINDOW.delete();
+            }
+        });
+    }
+
+    public void checkEnabledMenuAction() {
+        
+    }
+    
+    private void newMap(){
+        
     }
     
 }

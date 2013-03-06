@@ -16,7 +16,7 @@ import lib.editor.widget.tree.interfaces.TreeWithContextMenu;
  *
  * @author gaetan
  */
-public abstract class TreeContextMenu extends TreeBase implements TreeWithContextMenu{
+public abstract class TreeContextMenu extends Tree implements TreeWithContextMenu{
     
     public JPopupMenu menu;
     
@@ -52,6 +52,7 @@ public abstract class TreeContextMenu extends TreeBase implements TreeWithContex
 
 	addMouseListener(ma);
         
-        createContextMenu();
+        createMenu();
+        createMenuShortcut();
     }
 }
