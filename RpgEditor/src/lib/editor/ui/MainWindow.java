@@ -359,6 +359,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
+        mapTree.setRowHeight(18);
         jScrollPane1.setViewportView(mapTree);
 
         jPanel2.add(jScrollPane1);

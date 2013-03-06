@@ -10,6 +10,7 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import lib.editor.widget.tree.item.TreeItem;
 import org.jdesktop.swingx.JXTree;
 
@@ -33,6 +34,8 @@ public abstract class Tree extends JXTree{
         
         setRootVisible(false);
         setCellRenderer(new TreeItemRenderer());
+        
+        getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     }
     
     public TreeItem getRoot(){

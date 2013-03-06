@@ -460,6 +460,9 @@
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
                         <Component class="lib.editor.widget.tree.tree.MapTree" name="mapTree">
+                          <Properties>
+                            <Property name="rowHeight" type="int" value="18"/>
+                          </Properties>
                         </Component>
                       </SubComponents>
                     </Container>

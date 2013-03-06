@@ -32,8 +32,6 @@ public abstract class DatabaseTree extends TreeContextMenu implements TreeWithDa
         
 
         for(TreeItem item : getAllItems()){
-            System.out.println(item.text);
-            System.out.println(item instanceof DatabaseTreeItem);
             
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
             allId.add(dataItem.gameData.id);
