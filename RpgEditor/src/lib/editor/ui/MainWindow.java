@@ -22,6 +22,7 @@ import javax.swing.KeyStroke;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lib.editor.mgr.AppMgr;
+import lib.editor.mgr.DataMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
@@ -94,7 +95,7 @@ jXMultiSplitPane1.add(jPanel3, "center");
         AppMgr.init();
         
         WidgetMgr.MAP_TREE = mapTree;
-        WidgetMgr.MAP_TREE.setup();
+        //WidgetMgr.MAP_TREE.setup();
     }
     
     
@@ -639,6 +640,12 @@ jXMultiSplitPane1.add(jPanel3, "center");
     public void delete(){
         System.out.println("delete");
     }
+    
+    public void refresh(){
+        mapTree.setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
+        mapTree.refresh();
+    }
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu editMenu;
     private lib.editor.widget.menu.MenuItem fileClose;
@@ -682,4 +689,5 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private lib.editor.widget.button.ToolBarButton toolBarSave;
     private lib.editor.widget.button.ToolBarButton toolBarUndo;
     // End of variables declaration//GEN-END:variables
+
 }

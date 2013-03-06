@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import lib.editor.data.DataBase;
+import lib.editor.data.game.DataBase;
 
 /**
  *
@@ -20,16 +20,19 @@ import lib.editor.data.DataBase;
  */
 public class DataMgr {
     
-    private final static String[] dataNames = {"Enemies", "Tilesets", "MapInfos"};
-    public static Map<String, List> data = new Hashtable<String, List>();
+    private final static String[] dataEditorNames = {"MapInfos"};
+    public static Map<String, List> dataEditor = new Hashtable<String, List>();
+    
+    private final static String[] dataGameNames = {"Enemies", "Tilesets", "MapInfos"};
+    public static Map<String, List> dataGame = new Hashtable<String, List>();
     
     public static void init(){
         loadDatabase();
     }
 
     public static void loadDatabase(){
-        for(String dataName : dataNames){
-            File file = new File(ProjectMgr.getDataPath(), dataName + "." + AppMgr.getExtension("data file"));
+        for(String dataName : dataGameNames){
+            File file = new File(ProjectMgr.getDataGamePath(), dataName + "." + AppMgr.getExtension("data file"));
             List<DataBase> database;
             
             if(file.exists()){
@@ -45,9 +48,29 @@ public class DataMgr {
                 }
             }
             
-            data.put(dataName, database);
-                    
+            dataGame.put(dataName, database);
         }
+        
+         for(String dataName : dataEditorNames){
+            File file = new File(ProjectMgr.getDataEditorPath(), dataName + "." + AppMgr.getExtension("data file"));
+            List<DataBase> database;
+            
+            if(file.exists()){
+                database = new ArrayList<DataBase>();
+            }
+            else{
+                database = new ArrayList<DataBase>();
+                try {
+                    file.createNewFile();
+                    
+                } catch (IOException ex) {
+                    Logger.getLogger(DataMgr.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            
+            dataEditor.put(dataName, database);
+        }
+         
     }
     
 }

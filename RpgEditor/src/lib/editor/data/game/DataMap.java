@@ -1,4 +1,4 @@
-package lib.editor.data;
+package lib.editor.data.game;
 
 
 

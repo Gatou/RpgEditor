@@ -24,7 +24,8 @@ public class ProjectMgr {
     private static String projectPath;
     private static String assetsPath;
     private static String settingsPath;
-    private static String dataPath;
+    private static String dataGamePath;
+    private static String dataEditorPath;
     
     public static String getProjectPath(){
         return projectPath;
@@ -38,8 +39,12 @@ public class ProjectMgr {
         return settingsPath;
     }
     
-    public static String getDataPath(){
-        return dataPath;
+    public static String getDataGamePath(){
+        return dataGamePath;
+    }
+    
+    public static String getDataEditorPath(){
+        return dataEditorPath;
     }
     
     public static void createNewProject(String path){
@@ -49,7 +54,9 @@ public class ProjectMgr {
         (new File(projectPath)).mkdir();
         (new File(assetsPath)).mkdir();
         (new File(settingsPath)).mkdir();
-        (new File(dataPath)).mkdir();
+        (new File(projectPath, "Data")).mkdir();
+        (new File(dataGamePath)).mkdir();
+        (new File(dataEditorPath)).mkdir();
         //Create the project file
         File file = new File(projectPath, "project." + AppMgr.getExtension("project file"));
         try {
@@ -82,10 +89,12 @@ public class ProjectMgr {
             DataMgr.init();
             WidgetMgr.MAIN_WINDOW.setProjectStateEnabled(true);
             loadSettings();
+            WidgetMgr.MAIN_WINDOW.refresh();
             WidgetMgr.MAIN_WINDOW.setVisible(true);
             
             
         }
+        
     }
     
     public static void closeProject(){
@@ -97,14 +106,16 @@ public class ProjectMgr {
         assetsPath = null;
         settingsPath = null;
         projectPath = null;
-        dataPath = null;
+        dataGamePath = null;
+        dataEditorPath = null;
     }
     
     private static void createPath(String path){
         projectPath = (new File(path)).getAbsolutePath();
         assetsPath = (new File(projectPath, "Assets")).getAbsolutePath();
         settingsPath = (new File(projectPath, "ProjectSettings")).getAbsolutePath();
-        dataPath = (new File(projectPath, "Data")).getAbsolutePath();
+        dataGamePath = (new File(projectPath, "Data/Game")).getAbsolutePath();
+        dataEditorPath = (new File(projectPath, "Data/Editor")).getAbsolutePath();
     }
     
     private static void checkProjectValid(){
@@ -116,8 +127,11 @@ public class ProjectMgr {
         else if(!(new File(assetsPath).exists())){
             errorMessage = "This project is invalid.\nCan't find assets folder (" + assetsPath + ")";
         }
-        else if(!(new File(dataPath).exists())){
-            errorMessage = "This project is invalid.\nCan't find assets folder (" + dataPath + ")";
+        else if(!(new File(dataGamePath).exists())){
+            errorMessage = "This project is invalid.\nCan't find assets folder (" + dataGamePath + ")";
+        }
+        else if(!(new File(dataEditorPath).exists())){
+            errorMessage = "This project is invalid.\nCan't find assets folder (" + dataEditorPath + ")";
         }
         //else if(!(new File(settingsPath).exists())){
         //    errorMessage = "This project is invalid.\nCan't find settings folder (" + settingsPath + ")";

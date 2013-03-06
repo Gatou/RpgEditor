@@ -1,11 +1,11 @@
-package lib.editor.data;
+package lib.editor.data.game;
 
 
 
 public abstract class DataBase {
 
-	int id;
-	String name;
+	public int id;
+	public String name;
 	
 	public DataBase(int id, String name){
 		this.id = id;
