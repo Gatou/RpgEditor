@@ -151,42 +151,47 @@ public class MapTree extends DatabaseTree{
         return (DatabaseTreeItem) getTopLevelItem(0);
     }
     
+    public List<TreeItem> getAllItems(){
+        List<TreeItem> result = super.getAllItems();
+        result.remove(0);
+        return result;
+    }
+    
     public void refresh(){
         clear();
         
 
         
         
-        Map<Integer, DataMap> mapGameDatabase = (Map<Integer, DataMap>) DataMgr.load(new File(ProjectMgr.getDataGamePath(), "MapInfos" + "." + AppMgr.getExtension("data file")).getAbsolutePath());
+        //Map<Integer, DataMap> mapGameDatabase = (Map<Integer, DataMap>) DataMgr.load(new File(ProjectMgr.getDataGamePath(), "MapInfos" + "." + AppMgr.getExtension("data file")).getAbsolutePath());
         DataEditorMap rootMapEditorData = (DataEditorMap) DataMgr.load(new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file")).getAbsolutePath());
         //System.out.println(mapEditorDatabase.get(0));
         
         //DatabaseTreeItem root = new DatabaseTreeItem("Project", Mgr.icon.getIcon("project_root.png"), new DataMap(0, "", 0,0), new DataEditorMap(0));
-        DatabaseTreeItem root = generateItem(new DataMap(0, "", 0,0), rootMapEditorData);
-        root.text = "Project";
-        root.icon = Mgr.icon.getIcon("project_root.png");
+        DatabaseTreeItem root = new DatabaseTreeItem("Project", Mgr.icon.getIcon("project_root.png"), null, rootMapEditorData);
         addTopLevelItem(root);
         
         //for(DataEditorMap dataMap : mapEditorDatabase){
-            refreshRec(rootMapEditorData, (DatabaseTreeItem) root(), mapGameDatabase);
+            refreshRec(rootMapEditorData, (DatabaseTreeItem) root());
         //}
         
     }
         
-    private void refreshRec(DataEditorMap dataEditorMap, DatabaseTreeItem parentItem, Map<Integer, DataMap> gameDatabase){
-        System.out.println(dataEditorMap.children.size());
+    private void refreshRec(DataEditorMap dataEditorMap, DatabaseTreeItem parentItem){
         for(DataEditorBase data : dataEditorMap.children){
-            DatabaseTreeItem item = generateItem(gameDatabase.get(data.id), data);
+            DatabaseTreeItem item = new DatabaseTreeItem(data.name, null, null, data);
+            //DatabaseTreeItem item = generateItem(null, data);
             addItem(item, parentItem);
-            refreshRec((DataEditorMap) data, item, gameDatabase);
+            refreshRec((DataEditorMap) data, item);
         }
         
     }
     
+    /*
     private DatabaseTreeItem generateItem(DataBase gameData, DataEditorBase editorData){
-        DatabaseTreeItem item = new DatabaseTreeItem(gameData.name, null, gameData, editorData);
+        DatabaseTreeItem item = new DatabaseTreeItem(editorData.name, null, gameData, editorData);
         return item;
-    }
+    }*/
     
     private void newMap(){
         if(!newMapItem.isEnabled()){
@@ -197,15 +202,17 @@ public class MapTree extends DatabaseTree{
         
         
         int id = generateId();
-        DataMap gameData = new DataMap(id, "" , 20, 20);
-        gameData.name = "Map" + gameData.id;
+        DataMap gameData = new DataMap(id, "" , 32, 24);
+        gameData.name = "Map" + gameData.getIdName();
         
-        DataEditorMap editorData = new DataEditorMap(id);
+        DataEditorMap editorData = new DataEditorMap(id, gameData.name);
                 
         DatabaseTreeItem item = new DatabaseTreeItem(gameData.name, null, gameData, editorData);
         
         addItem(item, parentItem, true);
         expandPath(getSelectionPath());
+        
+        //item.gameData = null;
     }
     
     public void paste(){
@@ -213,24 +220,24 @@ public class MapTree extends DatabaseTree{
     }
     
     public void save(){
-        Map<Integer, DataMap> mapGameDatabase = new Hashtable<Integer, DataMap>();
         
         for(TreeItem item : getAllItems()){
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
             
-            mapGameDatabase.put(dataItem.gameData.id, (DataMap) dataItem.gameData);
-            
+            if(dataItem.gameData != null){
+                File file = new File(ProjectMgr.getDataGamePath(), "Map" + dataItem.gameData.getIdName() + "." + AppMgr.getExtension("data file"));
+                DataMgr.dump(dataItem.gameData, file.getAbsolutePath());
+                dataItem.gameData = null;
+            }
         }
         
         DataEditorMap rootMapEditorData = (DataEditorMap) root().editorData;
         
-        File file1 = new File(ProjectMgr.getDataGamePath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
-        File file2 = new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
-
-        DataMgr.dump(mapGameDatabase, file1.getAbsolutePath());
-        DataMgr.dump(rootMapEditorData, file2.getAbsolutePath());
+        File file = new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
+        DataMgr.dump(rootMapEditorData, file.getAbsolutePath());
         
-        System.out.println("fini");
+ 
+        
     }
     
 }

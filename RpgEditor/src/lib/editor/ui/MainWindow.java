@@ -338,10 +338,16 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel3.setLayout(new java.awt.GridLayout(1, 0));
         jSplitPane2.setRightComponent(jPanel3);
 
+        jPanel2.setMinimumSize(new java.awt.Dimension(160, 50));
+        jPanel2.setPreferredSize(new java.awt.Dimension(160, 362));
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
+        jScrollPane1.setAutoscrolls(true);
+
+        mapTree.setAutoscrolls(true);
+        mapTree.setMaximumSize(null);
         mapTree.setMinimumSize(null);
-        mapTree.setPreferredSize(new java.awt.Dimension(160, 90));
+        mapTree.setPreferredSize(null);
         mapTree.setRowHeight(18);
         mapTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
             public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
@@ -618,6 +624,9 @@ public class MainWindow extends javax.swing.JFrame {
 
     public void save(){
         DataMgr.save();
+       for(int i=0; i<2; i++){
+            System.gc();
+        }
     }
     
     public void undo(){

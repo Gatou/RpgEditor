@@ -16,9 +16,11 @@ public class DataEditorBase implements Serializable{
     private static final long serialVersionUID = 42L;
 
     public int id;
+    public String name;
     
-    public DataEditorBase(int id){
+    public DataEditorBase(int id, String name){
         this.id = id;
+        this.name = name;
     }
     
 }

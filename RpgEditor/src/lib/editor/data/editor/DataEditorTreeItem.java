@@ -11,13 +11,15 @@ import java.util.List;
  *
  * @author gaetan
  */
-public class DataEditorMap extends DataEditorTreeItem{
+public class DataEditorTreeItem extends DataEditorBase{
     
-
+    public boolean expanded;
+    public List<DataEditorBase> children;
     
-    public DataEditorMap(int id, String name){
+    public DataEditorTreeItem(int id, String name){
         super(id, name);
+        expanded = false;
+        children = new ArrayList<DataEditorBase>();
     }
-    
     
 }

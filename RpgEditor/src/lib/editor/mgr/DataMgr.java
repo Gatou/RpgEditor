@@ -39,64 +39,17 @@ public class DataMgr {
     }
 
     public static void loadDatabase(){
-        File file1 = new File(ProjectMgr.getDataGamePath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
-        File file2 = new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
+        File file = new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
         
-        if(!file1.exists()){
-            Map<Integer, DataMap> mapGameDatabase = new Hashtable<Integer, DataMap>();
-            mapGameDatabase.put(0, new DataMap(0, "", 0,0));
-            //file1.createNewFile();
-            dump(mapGameDatabase, file1.getAbsolutePath());
-        }
-        if(!file2.exists()){
-            DataEditorMap rootMapEditorData = new DataEditorMap(0);
+
+        if(!file.exists()){
+            DataEditorMap rootMapEditorData = new DataEditorMap(0, "");
             //List<DataEditorMap> mapEditorDatabase = new ArrayList<DataEditorMap>();
             //mapEditorDatabase.add();
             //file2.createNewFile();
-            dump(rootMapEditorData, file2.getAbsolutePath());
+            dump(rootMapEditorData, file.getAbsolutePath());
         }
         
-        /*
-        for(String dataName : dataGameNames){
-            File file = new File(ProjectMgr.getDataGamePath(), dataName + "." + AppMgr.getExtension("data file"));
-            List<DataBase> database;
-            
-            if(file.exists()){
-                database = new ArrayList<DataBase>();
-            }
-            else{
-                database = new ArrayList<DataBase>();
-                try {
-                    file.createNewFile();
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(DataMgr.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            
-            dataGame.put(dataName, database);
-        }
-        
-         for(String dataName : dataEditorNames){
-            File file = new File(ProjectMgr.getDataEditorPath(), dataName + "." + AppMgr.getExtension("data file"));
-            List<DataBase> database;
-            
-            if(file.exists()){
-                database = new ArrayList<DataBase>();
-            }
-            else{
-                database = new ArrayList<DataBase>();
-                try {
-                    file.createNewFile();
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(DataMgr.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-            
-            dataEditor.put(dataName, database);
-        }
-         */
     }
     
     

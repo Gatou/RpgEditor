@@ -38,7 +38,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         for(TreeItem item : getAllItems()){
             
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
-            allId.add(dataItem.gameData.id);
+            allId.add(dataItem.editorData.id);
         }
         while(allId.contains(id)){
             id += 1;
@@ -68,7 +68,6 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         if(addToDatabase){
             parentEditorMap.children.add(item.editorData);
         }
-        
     }
     
 }
