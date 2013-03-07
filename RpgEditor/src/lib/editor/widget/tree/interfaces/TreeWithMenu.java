@@ -8,7 +8,7 @@ package lib.editor.widget.tree.interfaces;
  *
  * @author gaetan
  */
-public interface TreeWithContextMenu {
+public interface TreeWithMenu {
     
     public void createMenu();
     public void createMenuShortcut();

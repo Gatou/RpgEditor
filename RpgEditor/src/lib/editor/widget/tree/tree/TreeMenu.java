@@ -10,20 +10,28 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import lib.editor.widget.tree.interfaces.TreeWithContextMenu;
+import lib.editor.mgr.CopyPasteMgr;
+import lib.editor.widget.tree.interfaces.TreeWithMenu;
 
 /**
  *
  * @author gaetan
  */
-public abstract class TreeContextMenu extends Tree implements TreeWithContextMenu{
+public abstract class TreeMenu extends Tree implements TreeWithMenu{
     
     public JPopupMenu menu;
     
-    public TreeContextMenu(){
+    public TreeMenu(){
         super();
         menu = new JPopupMenu();
         menu.setLightWeightPopupEnabled(false);
+        
+        addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                grabFocus();
+                
+            }
+        });
         
 	MouseAdapter ma = new MouseAdapter() {
 		private void myPopupEvent(MouseEvent e) {
@@ -31,15 +39,15 @@ public abstract class TreeContextMenu extends Tree implements TreeWithContextMen
 			int y = e.getY();
 			JTree tree = (JTree)e.getSource();
 			TreePath path = tree.getPathForLocation(x, y);
-			if (path == null)
-				return;	
+			//if (path == null)
+			//	return;	
 
 			tree.setSelectionPath(path);
 
 			//Object obj = path.getLastPathComponent();
 
 			//String label = "popup: " + obj.getTreeLabel();
-			
+			checkEnabledMenuAction();
 			menu.show(tree, x, y);
 		}
 		public void mousePressed(MouseEvent e) {
@@ -54,5 +62,14 @@ public abstract class TreeContextMenu extends Tree implements TreeWithContextMen
         
         createMenu();
         createMenuShortcut();
+    }
+    
+    public void grabFocus(){
+        CopyPasteMgr.lastFocused = this;
+    }
+    
+    public void currentItemChanged(){
+        super.currentItemChanged();
+        checkEnabledMenuAction();
     }
 }

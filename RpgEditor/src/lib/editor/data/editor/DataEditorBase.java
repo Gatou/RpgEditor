@@ -4,10 +4,12 @@
  */
 package lib.editor.data.editor;
 
+import java.io.Serializable;
+
 /**
  *
  * @author gaetan
  */
-public class DataEditorBase {
+public class DataEditorBase  implements Serializable{
     
 }

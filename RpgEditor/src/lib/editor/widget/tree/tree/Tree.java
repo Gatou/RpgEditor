@@ -7,6 +7,8 @@ package lib.editor.widget.tree.tree;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JTree;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -36,6 +38,16 @@ public abstract class Tree extends JXTree{
         setCellRenderer(new TreeItemRenderer());
         
         getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+        
+        addTreeSelectionListener(new TreeSelectionListener() {
+            public void valueChanged(TreeSelectionEvent e) {
+                currentItemChanged();
+            }
+        });
+    }
+    
+    public void currentItemChanged(){
+        
     }
     
     public TreeItem getRoot(){
@@ -69,7 +81,7 @@ public abstract class Tree extends JXTree{
             return null;
         }
         
-        return (TreeItem) getSelectionPath().getLastPathComponent();
+        return (TreeItem) getLastSelectedPathComponent();
     }
     
     public void addItem(TreeItem item, TreeItem parentItem){

@@ -16,7 +16,7 @@ import lib.editor.widget.tree.item.TreeItem;
  *
  * @author gaetan
  */
-public abstract class DatabaseTree extends TreeContextMenu implements TreeWithDatabase{
+public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
     
     List<DataBase> gameDatabase;
     List<DataEditorBase> editorDatabase;
@@ -24,6 +24,8 @@ public abstract class DatabaseTree extends TreeContextMenu implements TreeWithDa
     public void setDatabase(List<DataBase> gameDatabase, List<DataEditorBase> editorDatabase){
         this.gameDatabase = gameDatabase;
         this.editorDatabase = editorDatabase;
+        refresh();
+        checkEnabledMenuAction();
     }
     
     public int generateId(){
@@ -42,6 +44,20 @@ public abstract class DatabaseTree extends TreeContextMenu implements TreeWithDa
         return id;
     }
     
-
+    public DataBase getCurrentGameData(){
+        DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();
+        if(item == null){
+            return null;
+        }
+        return item.gameData;
+    }
+    
+    public DataEditorBase getCurrentEditorData(){
+        DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();
+        if(item == null){
+            return null;
+        }
+        return item.editorData;
+    }
     
 }

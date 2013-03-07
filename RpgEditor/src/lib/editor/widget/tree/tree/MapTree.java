@@ -20,6 +20,7 @@ import lib.editor.data.editor.DataEditorBase;
 import lib.editor.data.editor.DataEditorMap;
 import lib.editor.data.game.DataBase;
 import lib.editor.data.game.DataMap;
+import lib.editor.mgr.CopyPasteMgr;
 import lib.editor.mgr.IconMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.WidgetMgr;
@@ -32,6 +33,9 @@ import lib.editor.widget.tree.item.DatabaseTreeItem;
  */
 public class MapTree extends DatabaseTree{
     
+    MenuItem newMapItem, copyItem, pasteItem, deleteItem;
+       
+    
     public MapTree(){
         super();
         
@@ -39,44 +43,42 @@ public class MapTree extends DatabaseTree{
     }
 
     public void createMenu() {
-        JMenuItem item;
-        item = new MenuItem("New map", null, "Add kaka", KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0));
-        item.addActionListener(new ActionListener() {
+        
+        newMapItem = new MenuItem("New map", null, "Add kaka", KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0));
+        newMapItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 newMap();
             }
         });
-        menu.add(item);
+        menu.add(newMapItem);
         
         menu.add(new Separator());
         
 
-        item = new JMenuItem("Copy", Mgr.icon.getIcon("copy.png"));
-        item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
-        item.addActionListener(new ActionListener() {
+        copyItem = new MenuItem("Copy", Mgr.icon.getIcon("copy.png"), "Copy blabla", KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        //item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        copyItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.MAIN_WINDOW.copy();
             }
         });
-        menu.add(item);
+        menu.add(copyItem);
         
-        item = new JMenuItem("Paste", Mgr.icon.getIcon("paste.png"));
-        item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
-        item.addActionListener(new ActionListener() {
+        pasteItem = new MenuItem("Paste", Mgr.icon.getIcon("paste.png"), "blabla", KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+        pasteItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.MAIN_WINDOW.paste();
             }
         });
-        menu.add(item);
+        menu.add(pasteItem);
         
-        item = new JMenuItem("Delete", Mgr.icon.getIcon("delete.png"));
-        item.setAccelerator(javax.swing.KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
-        item.addActionListener(new ActionListener() {
+        deleteItem = new MenuItem("Delete", Mgr.icon.getIcon("delete.png"), "sdfsdf", KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+        deleteItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.MAIN_WINDOW.delete();
             }
         });
-        menu.add(item);
+        menu.add(deleteItem);
     }
     
     public void createMenuShortcut() {
@@ -111,7 +113,23 @@ public class MapTree extends DatabaseTree{
     }
 
     public void checkEnabledMenuAction() {
+        TreeItem item = getCurrentItem();
+        boolean enabled = item != null;
         
+        newMapItem.setEnabled(enabled);
+        copyItem.setEnabled(enabled);
+        pasteItem.setEnabled(CopyPasteMgr.isDataPastable(DataMap.class));
+        deleteItem.setEnabled(enabled);
+        
+        if(item == root()){
+            copyItem.setEnabled(false);
+            deleteItem.setEnabled(false);
+        }
+        
+        WidgetMgr.MAIN_WINDOW.setActionEnabled("cut", false);
+        WidgetMgr.MAIN_WINDOW.setActionEnabled("copy", copyItem.isEnabled());
+        WidgetMgr.MAIN_WINDOW.setActionEnabled("paste", pasteItem.isEnabled());
+        WidgetMgr.MAIN_WINDOW.setActionEnabled("delete", deleteItem.isEnabled());
     }
     
     public TreeItem root(){
@@ -135,7 +153,10 @@ public class MapTree extends DatabaseTree{
     }
     
     private void newMap(){
-        
+        if(!newMapItem.isEnabled()){
+            return;
+        }
+                
         DataMap gameData = new DataMap(generateId(), "" , 20, 20);
         gameData.name = "Map" + gameData.id;
         DataEditorMap editorData = new DataEditorMap();

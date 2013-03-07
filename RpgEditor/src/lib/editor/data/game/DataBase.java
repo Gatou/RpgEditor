@@ -1,8 +1,10 @@
 package lib.editor.data.game;
 
+import java.io.Serializable;
 
 
-public abstract class DataBase {
+
+public abstract class DataBase implements Serializable{
 
 	public int id;
 	public String name;

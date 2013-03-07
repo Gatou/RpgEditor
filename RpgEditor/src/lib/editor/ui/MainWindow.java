@@ -21,7 +21,9 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import lib.editor.data.game.DataMap;
 import lib.editor.mgr.AppMgr;
+import lib.editor.mgr.CopyPasteMgr;
 import lib.editor.mgr.DataMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
@@ -29,6 +31,8 @@ import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
 import lib.editor.util.SwingUtil;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
+import lib.editor.widget.menu.MenuItem;
+import lib.editor.widget.tree.tree.DatabaseTree;
 import org.jdesktop.swingx.MultiSplitLayout.Divider;
 import org.jdesktop.swingx.MultiSplitLayout.Leaf;
 import org.jdesktop.swingx.MultiSplitLayout.Split;
@@ -54,24 +58,6 @@ public class MainWindow extends javax.swing.JFrame {
         
         
         setLocationRelativeTo( null );
-        /*
- List children = 
-Arrays.asList(new Leaf("left"),
-        new Divider(), 
-new Leaf("center"),
-new Divider(), 
-new Leaf("right"));
-Split modelRoot = new Split();
-modelRoot.setChildren(children);
-
-jXMultiSplitPane1.getMultiSplitLayout().setModel(modelRoot);
-jXMultiSplitPane1.add(jButton1, "left");
-jXMultiSplitPane1.add(jButton2, "right");
-jXMultiSplitPane1.add(jPanel3, "center");
-
-*/
-
-        
         
         
     }
@@ -79,12 +65,9 @@ jXMultiSplitPane1.add(jPanel3, "center");
     public void init(){
         initComponents();
         
-                mapEditor = new MapEditorGraphicsView();
+        mapEditor = new MapEditorGraphicsView();
         jPanel3.add(mapEditor.getCanvas());
         
-
-
-
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         
         
@@ -197,13 +180,13 @@ jXMultiSplitPane1.add(jPanel3, "center");
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         fileExit = new lib.editor.widget.menu.MenuItem();
         editMenu = new javax.swing.JMenu();
-        menuEditUndo = new javax.swing.JMenuItem();
-        menuEditRedo = new javax.swing.JMenuItem();
+        editUndo = new lib.editor.widget.menu.MenuItem();
+        editRedo = new lib.editor.widget.menu.MenuItem();
         jSeparator5 = new javax.swing.JPopupMenu.Separator();
-        menuEditCut = new javax.swing.JMenuItem();
-        menuEditCopy = new javax.swing.JMenuItem();
-        menuEditPaste = new javax.swing.JMenuItem();
-        menuEditDelete = new javax.swing.JMenuItem();
+        editCut = new lib.editor.widget.menu.MenuItem();
+        editCopy = new lib.editor.widget.menu.MenuItem();
+        editPaste = new lib.editor.widget.menu.MenuItem();
+        editDelete = new lib.editor.widget.menu.MenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 200));
@@ -359,7 +342,14 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
+        mapTree.setMinimumSize(null);
+        mapTree.setPreferredSize(new java.awt.Dimension(160, 90));
         mapTree.setRowHeight(18);
+        mapTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                mapTreeValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(mapTree);
 
         jPanel2.add(jScrollPane1);
@@ -436,66 +426,72 @@ jXMultiSplitPane1.add(jPanel3, "center");
 
         editMenu.setText("Edit");
 
-        menuEditUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
-        menuEditUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
-        menuEditUndo.setText("Undo");
-        menuEditUndo.addActionListener(new java.awt.event.ActionListener() {
+        editUndo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.CTRL_MASK));
+        editUndo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/undo.png"))); // NOI18N
+        editUndo.setText("Undo");
+        editUndo.setStatusText("Undo the last action.");
+        editUndo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuEditUndoActionPerformed(evt);
+                editUndoActionPerformed(evt);
             }
         });
-        editMenu.add(menuEditUndo);
+        editMenu.add(editUndo);
 
-        menuEditRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
-        menuEditRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
-        menuEditRedo.setText("Redo");
-        menuEditRedo.addActionListener(new java.awt.event.ActionListener() {
+        editRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Y, java.awt.event.InputEvent.CTRL_MASK));
+        editRedo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/redo.png"))); // NOI18N
+        editRedo.setText("Redo");
+        editRedo.setStatusText("Redo the last undo action.");
+        editRedo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuEditRedoActionPerformed(evt);
+                editRedoActionPerformed(evt);
             }
         });
-        editMenu.add(menuEditRedo);
+        editMenu.add(editRedo);
         editMenu.add(jSeparator5);
 
-        menuEditCut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
-        menuEditCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
-        menuEditCut.setText("Cut");
-        menuEditCut.addActionListener(new java.awt.event.ActionListener() {
+        editCut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        editCut.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cut.png"))); // NOI18N
+        editCut.setText("Cut");
+        editCut.setStatusText("Cut the selection and put it on the clipboard.");
+        editCut.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuEditCutActionPerformed(evt);
+                editCutActionPerformed(evt);
             }
         });
-        editMenu.add(menuEditCut);
+        editMenu.add(editCut);
 
-        menuEditCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
-        menuEditCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
-        menuEditCopy.setText("Copy");
-        menuEditCopy.addActionListener(new java.awt.event.ActionListener() {
+        editCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        editCopy.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/copy.png"))); // NOI18N
+        editCopy.setText("Copy");
+        editCopy.setStatusText("Copy the selection and put it on the clipboard.");
+        editCopy.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuEditCopyActionPerformed(evt);
+                editCopyActionPerformed(evt);
             }
         });
-        editMenu.add(menuEditCopy);
+        editMenu.add(editCopy);
 
-        menuEditPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
-        menuEditPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
-        menuEditPaste.setText("Paste");
-        menuEditPaste.addActionListener(new java.awt.event.ActionListener() {
+        editPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
+        editPaste.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/paste.png"))); // NOI18N
+        editPaste.setText("Paste");
+        editPaste.setStatusText("Insert clipboard contents.");
+        editPaste.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuEditPasteActionPerformed(evt);
+                editPasteActionPerformed(evt);
             }
         });
-        editMenu.add(menuEditPaste);
+        editMenu.add(editPaste);
 
-        menuEditDelete.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
-        menuEditDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
-        menuEditDelete.setText("Delete");
-        menuEditDelete.addActionListener(new java.awt.event.ActionListener() {
+        editDelete.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_DELETE, 0));
+        editDelete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/delete.png"))); // NOI18N
+        editDelete.setText("Delete");
+        editDelete.setStatusText("Delete the selection.");
+        editDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuEditDeleteActionPerformed(evt);
+                editDeleteActionPerformed(evt);
             }
         });
-        editMenu.add(menuEditDelete);
+        editMenu.add(editDelete);
 
         mainMenuBar.add(editMenu);
 
@@ -507,31 +503,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
        exit();
     }//GEN-LAST:event_formWindowClosing
-
-    private void menuEditCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCopyActionPerformed
-        statusBarLabel.setText("");
-        copy();
-    }//GEN-LAST:event_menuEditCopyActionPerformed
-
-    private void menuEditCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditCutActionPerformed
-        cut();
-    }//GEN-LAST:event_menuEditCutActionPerformed
-
-    private void menuEditPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditPasteActionPerformed
-        paste();
-    }//GEN-LAST:event_menuEditPasteActionPerformed
-
-    private void menuEditDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditDeleteActionPerformed
-        delete();
-    }//GEN-LAST:event_menuEditDeleteActionPerformed
-
-    private void menuEditUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditUndoActionPerformed
-        undo();
-    }//GEN-LAST:event_menuEditUndoActionPerformed
-
-    private void menuEditRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuEditRedoActionPerformed
-        redo();
-    }//GEN-LAST:event_menuEditRedoActionPerformed
 
     private void toolBarNewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarNewActionPerformed
         statusBarLabel.setText("");
@@ -596,6 +567,40 @@ jXMultiSplitPane1.add(jPanel3, "center");
         exit();
     }//GEN-LAST:event_fileExitActionPerformed
 
+    private void editUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editUndoActionPerformed
+        statusBarLabel.setText("");
+        undo();
+    }//GEN-LAST:event_editUndoActionPerformed
+
+    private void editRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editRedoActionPerformed
+        statusBarLabel.setText("");
+        redo();
+    }//GEN-LAST:event_editRedoActionPerformed
+
+    private void editCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCutActionPerformed
+        statusBarLabel.setText("");
+        cut();
+    }//GEN-LAST:event_editCutActionPerformed
+
+    private void editCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editCopyActionPerformed
+        statusBarLabel.setText("");
+        copy();
+    }//GEN-LAST:event_editCopyActionPerformed
+
+    private void editPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editPasteActionPerformed
+        statusBarLabel.setText("");
+        paste();
+    }//GEN-LAST:event_editPasteActionPerformed
+
+    private void editDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editDeleteActionPerformed
+        statusBarLabel.setText("");
+        delete();
+    }//GEN-LAST:event_editDeleteActionPerformed
+
+    private void mapTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_mapTreeValueChanged
+        // TODO add your handling code here:
+    }//GEN-LAST:event_mapTreeValueChanged
+
     private void openProject(){
         String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
         File result = SwingUtil.getFileChoice(this, "", new FileNameExtensionFilter(filterText, AppMgr.getExtension("project file")), "Open project");
@@ -630,7 +635,10 @@ jXMultiSplitPane1.add(jPanel3, "center");
     }
     
     public void copy(){
-        System.out.println("copy");
+        if(CopyPasteMgr.lastFocused == mapTree){
+            CopyPasteMgr.copyGameData(mapTree.getCurrentGameData());
+            ((DatabaseTree)CopyPasteMgr.lastFocused).checkEnabledMenuAction();
+        }
     }
     
     public void paste(){
@@ -641,13 +649,47 @@ jXMultiSplitPane1.add(jPanel3, "center");
         System.out.println("delete");
     }
     
-    public void refresh(){
-        mapTree.setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
-        mapTree.refresh();
+    public void setActionEnabled(String type, boolean enabled){
+        if(type.equals("undo")){
+            toolBarUndo.setEnabled(enabled);
+            editUndo.setEnabled(enabled);
+        }
+        else if(type.equals("redo")){
+            toolBarRedo.setEnabled(enabled);
+            editRedo.setEnabled(enabled);
+        }
+        else if(type.equals("cut")){
+            toolBarCut.setEnabled(enabled);
+            editCut.setEnabled(enabled);
+        }
+        else if(type.equals("copy")){
+            toolBarCopy.setEnabled(enabled);
+            editCopy.setEnabled(enabled);
+        }
+        else if(type.equals("paste")){
+            toolBarPaste.setEnabled(enabled);
+            editPaste.setEnabled(enabled);
+        }
+        else if(type.equals("delete")){
+            toolBarDelete.setEnabled(enabled);
+            editDelete.setEnabled(enabled);
+        }
     }
     
+    public void refresh(){
+        mapTree.setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
+    }
+    
+
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private lib.editor.widget.menu.MenuItem editCopy;
+    private lib.editor.widget.menu.MenuItem editCut;
+    private lib.editor.widget.menu.MenuItem editDelete;
     private javax.swing.JMenu editMenu;
+    private lib.editor.widget.menu.MenuItem editPaste;
+    private lib.editor.widget.menu.MenuItem editRedo;
+    private lib.editor.widget.menu.MenuItem editUndo;
     private lib.editor.widget.menu.MenuItem fileClose;
     private lib.editor.widget.menu.MenuItem fileExit;
     private javax.swing.JMenu fileMenu;
@@ -671,12 +713,6 @@ jXMultiSplitPane1.add(jPanel3, "center");
     private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JToolBar mainToolBar;
     private lib.editor.widget.tree.tree.MapTree mapTree;
-    private javax.swing.JMenuItem menuEditCopy;
-    private javax.swing.JMenuItem menuEditCut;
-    private javax.swing.JMenuItem menuEditDelete;
-    private javax.swing.JMenuItem menuEditPaste;
-    private javax.swing.JMenuItem menuEditRedo;
-    private javax.swing.JMenuItem menuEditUndo;
     private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
     private lib.editor.widget.button.ToolBarButton toolBarCopy;
