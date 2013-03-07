@@ -6,7 +6,9 @@ package lib.editor.widget.tree.tree;
 
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.tree.DefaultTreeModel;
 import lib.editor.data.editor.DataEditorBase;
+import lib.editor.data.editor.DataEditorMap;
 import lib.editor.data.game.DataBase;
 import lib.editor.widget.tree.interfaces.TreeWithDatabase;
 import lib.editor.widget.tree.item.DatabaseTreeItem;
@@ -18,12 +20,12 @@ import lib.editor.widget.tree.item.TreeItem;
  */
 public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
     
-    List<DataBase> gameDatabase;
-    List<DataEditorBase> editorDatabase;
+    //List<DataBase> gameDatabase;
+    //List<DataEditorBase> editorDatabase;
     
-    public void setDatabase(List<DataBase> gameDatabase, List<DataEditorBase> editorDatabase){
-        this.gameDatabase = gameDatabase;
-        this.editorDatabase = editorDatabase;
+    public void setup(){//List<DataBase> gameDatabase, List<DataEditorBase> editorDatabase){
+        //this.gameDatabase = gameDatabase;
+        //this.editorDatabase = editorDatabase;
         refresh();
         checkEnabledMenuAction();
     }
@@ -58,6 +60,15 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
             return null;
         }
         return item.editorData;
+    }
+    
+    public void addItem(DatabaseTreeItem item, DatabaseTreeItem parentItem, boolean addToDatabase){
+        super.addItem(item, parentItem);
+        DataEditorMap parentEditorMap = (DataEditorMap) parentItem.editorData;
+        if(addToDatabase){
+            parentEditorMap.children.add(item.editorData);
+        }
+        
     }
     
 }

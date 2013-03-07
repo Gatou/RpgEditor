@@ -617,7 +617,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     public void save(){
-        
+        DataMgr.save();
     }
     
     public void undo(){
@@ -679,7 +679,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     public void refresh(){
-        mapTree.setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
+        mapTree.setup();//setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
     }
     
 

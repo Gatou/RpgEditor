@@ -10,6 +10,15 @@ import java.io.Serializable;
  *
  * @author gaetan
  */
-public class DataEditorBase  implements Serializable{
+public class DataEditorBase implements Serializable{
+    
+    
+    private static final long serialVersionUID = 42L;
+
+    public int id;
+    
+    public DataEditorBase(int id){
+        this.id = id;
+    }
     
 }
