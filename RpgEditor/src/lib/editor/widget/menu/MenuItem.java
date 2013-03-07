@@ -33,10 +33,10 @@ public class MenuItem extends JMenuItem{
     private void init(){
         addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseEntered(java.awt.event.MouseEvent evt) {
-                WidgetMgr.MAIN_WINDOW.getStatusLabel().setText(statusText);
+                WidgetMgr.STATUS_LABEL.setText(statusText);
             }
             public void mouseExited(java.awt.event.MouseEvent evt) {
-                WidgetMgr.MAIN_WINDOW.getStatusLabel().setText("");
+                WidgetMgr.STATUS_LABEL.setText("");
             }
         });
     }

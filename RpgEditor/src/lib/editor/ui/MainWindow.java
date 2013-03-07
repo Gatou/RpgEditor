@@ -78,6 +78,7 @@ public class MainWindow extends javax.swing.JFrame {
         AppMgr.init();
         
         WidgetMgr.MAP_TREE = mapTree;
+        WidgetMgr.STATUS_LABEL = statusBarLabel;
         //WidgetMgr.MAP_TREE.setup();
     }
     
@@ -134,9 +135,6 @@ public class MainWindow extends javax.swing.JFrame {
         middlePanel.setVisible(enabled);
     }
 
-    public JLabel getStatusLabel(){
-        return statusBarLabel;
-    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -635,6 +633,10 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     public void copy(){
+        if(!toolBarCopy.isEnabled()){
+            return;
+        }
+        
         if(CopyPasteMgr.lastFocused == mapTree){
             CopyPasteMgr.copyGameData(mapTree.getCurrentGameData());
             ((DatabaseTree)CopyPasteMgr.lastFocused).checkEnabledMenuAction();
