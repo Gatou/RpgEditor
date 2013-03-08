@@ -667,7 +667,13 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     public void cut(){
-        System.out.println("cut");
+        if(!toolBarCut.isEnabled()){
+            return;
+        }
+        
+        if(CopyPasteMgr.lastFocused == mapTree){
+            mapTree.cut();
+        }
     }
     
     public void copy(){
@@ -676,20 +682,29 @@ public class MainWindow extends javax.swing.JFrame {
         }
         
         if(CopyPasteMgr.lastFocused == mapTree){
-            CopyPasteMgr.copyEditorData(mapTree.getCurrentEditorData());
-            //CopyPasteMgr.copyGameData(mapTree.getCurrentGameData());
-            ((DatabaseTree)CopyPasteMgr.lastFocused).checkEnabledMenuAction();
+            mapTree.copy();
         }
     }
     
     public void paste(){
+        if(!toolBarPaste.isEnabled()){
+            return;
+        }
+        
         if(CopyPasteMgr.lastFocused == mapTree){
             mapTree.paste();
         }
     }
     
     public void delete(){
-        System.out.println("delete");
+        if(!toolBarDelete.isEnabled()){
+            return;
+        }
+        
+        if(CopyPasteMgr.lastFocused == mapTree){
+            mapTree.delete();
+        }
+        
     }
     
     public void setActionEnabled(String type, boolean enabled){

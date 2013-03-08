@@ -37,18 +37,22 @@ public class MapTreeFilter extends TreeFilter{
         
         
         if(filterText.equals("")){
-            DatabaseTreeItem item = (DatabaseTreeItem) tree.itemsByExt.get("Project");
-            tree.refresh(item.editorData);
+            tree.itemCacheEnabled = true;
+            //DatabaseTreeItem item = (DatabaseTreeItem) tree.itemsByText.get("Project");
+            tree.refresh(tree.root().editorData);
         }
         else{
-        
             tree.visualClear();
 
-            for(String text : tree.itemsByExt.keySet()){
-                if(text.contains(filterText)){
-                    tree.addTopLevelItem(tree.itemsByExt.get(text));
+            tree.itemCacheEnabled = false;
+            
+            for(TreeItem item : tree.getAllItems()){
+                if(item.text.contains(filterText)){
+                    tree.addTopLevelItem(item);
                 }
             }
+            
+            tree.itemCacheEnabled = true;
         }
         
         tree.checkEnabledMenuAction();

@@ -5,6 +5,7 @@
 package lib.editor.widget.tree.tree;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +29,15 @@ import org.jdesktop.swingx.JXTree;
  */
 public abstract class Tree extends JXTree{
     
-    public Map<String, TreeItem> itemsByExt;
-            
+    public boolean itemCacheEnabled;
+    public List<TreeItem> itemCache;
+    int topLevelItemCount;
+    
+    
+    
     public Tree(){
+        topLevelItemCount = 0;
+        itemCacheEnabled = true;
         
         TreeItem root = new TreeItem("", null);
         DefaultTreeModel model = (DefaultTreeModel)getModel();
@@ -40,7 +47,7 @@ public abstract class Tree extends JXTree{
         //root.add(new TreeItem("another_child"));
         //expandRow(0);
         
-        itemsByExt = new Hashtable<String, TreeItem>();
+        itemCache = new ArrayList<TreeItem>();
         
         setRootVisible(false);
         setCellRenderer(new TreeItemRenderer());
@@ -99,19 +106,26 @@ public abstract class Tree extends JXTree{
     }
     
     public void clear(){
-        itemsByExt.clear();
+        topLevelItemCount = 0;
+        itemCache.clear();
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         getRoot().removeAllChildren();
         model.reload(getRoot());
     }
     
     public void visualClear(){
+        topLevelItemCount = 0;
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         getRoot().removeAllChildren();
         model.reload(getRoot());
     }
     
+    public int getTopLevelItemCount(){
+        return topLevelItemCount;
+    }
+    
     public void addTopLevelItem(TreeItem item){
+        topLevelItemCount += 1;
         addItem(item, getRoot());
         //DefaultTreeModel model = (DefaultTreeModel)getModel();
         //model.insertNodeInto(item, getRoot(), getRoot().getChildCount());
@@ -119,6 +133,9 @@ public abstract class Tree extends JXTree{
     }
     
     public TreeItem getTopLevelItem(int index){
+        //if(index >= topLevelItemCount){
+        //    return null;
+        //}
         return (TreeItem) getRoot().getChildAt(index);
     }
     
@@ -140,9 +157,25 @@ public abstract class Tree extends JXTree{
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         model.insertNodeInto(item, parentItem, parentItem.getChildCount());
         //model.reload(getRoot());
-        itemsByExt.put(item.text, item);
+        if(itemCacheEnabled){
+            itemCache.add(item);
+        }
+        
     }
     
+    public void removeItem(TreeItem item){
+        DefaultTreeModel model = (DefaultTreeModel)getModel();
+        model.removeNodeFromParent(item);
+        //model.reload(getRoot());
+        if(itemCacheEnabled){
+            itemCache.remove(item);
+        }
+    }
+    
+    public List<TreeItem> getAllItems(){
+        return itemCache;
+    }
+    /*
     public List<TreeItem> getAllItems(){
         List<TreeItem> result = new ArrayList<TreeItem>();
         getAllItemsRec(getRoot(), result);
@@ -155,7 +188,7 @@ public abstract class Tree extends JXTree{
             result.add(item);
             getAllItemsRec(item, result);
         }
-    }
+    }*/
     
     public void setItemExpanded(TreeItem item){
         expandPath(new TreePath(item.getPath()));

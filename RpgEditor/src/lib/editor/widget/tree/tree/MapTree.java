@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +49,14 @@ import lib.editor.widget.tree.tree.option.MapTreeFilter;
  */
 public class MapTree extends DatabaseTree {
     
+    public final static String ROOT_NAME = "Project";
+    DatabaseTreeItem rootItem;
+            
     MenuItem newMapItem, cutItem, copyItem, copyHierarchyItem, pasteItem, deleteItem;
     public boolean copyHierarchy;
     MapTreeFilter filter;
             
+    
     public MapTree(){
         super();
         copyHierarchy = false;
@@ -185,9 +190,10 @@ public class MapTree extends DatabaseTree {
         deleteItem.setEnabled(enabled);
         
         if(filter.isFiltering){
-            newMapItem.setEnabled(false);
+            //newMapItem.setEnabled(false);
             cutItem.setEnabled(false);
-            pasteItem.setEnabled(false);
+            copyHierarchyItem.setEnabled(false);
+            //pasteItem.setEnabled(false);
             deleteItem.setEnabled(false);
         }      
         else if(item == root()){
@@ -206,7 +212,7 @@ public class MapTree extends DatabaseTree {
     }
     
     public DatabaseTreeItem root(){
-        return (DatabaseTreeItem) getTopLevelItem(0);
+        return rootItem;
     }
     
     public List<TreeItem> getAllItems(){
@@ -217,6 +223,7 @@ public class MapTree extends DatabaseTree {
     
     public void setup(){
         DataEditorBase rootMapEditorData = (DataEditorBase) DataMgr.load(new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file")).getAbsolutePath());
+        rootItem = new DatabaseTreeItem(ROOT_NAME, Mgr.icon.getIcon("project_root.png"), null, null);
         
         refresh(rootMapEditorData);
         
@@ -226,8 +233,8 @@ public class MapTree extends DatabaseTree {
     public void refresh(DataEditorBase dataEditor){
         clear();
         
-        DatabaseTreeItem root = new DatabaseTreeItem("Project", Mgr.icon.getIcon("project_root.png"), null, dataEditor);
-        addTopLevelItem(root);
+        rootItem.editorData = dataEditor;
+        addTopLevelItem(rootItem);
         
         refreshRec((DataEditorMap) dataEditor, (DatabaseTreeItem) root());
         setItemExpanded(root());
@@ -249,12 +256,9 @@ public class MapTree extends DatabaseTree {
     }
     
     public void newMap(){
-        if(!newMapItem.isEnabled()){
-            return;
-        }
+        if(!newMapItem.isEnabled()){ return; }
         
         DatabaseTreeItem parentItem = (DatabaseTreeItem) getCurrentItem();
-        
         
         int id = generateId();
         DataMap gameData = new DataMap(id, "" , 32, 24);
@@ -271,8 +275,36 @@ public class MapTree extends DatabaseTree {
         //item.gameData = null;
     }
     
-    public void paste(){
+    public void cut(){
+        if(!cutItem.isEnabled()){ return; }
         
+        //Attention si on utilise 'delete' il faut faire gaffe car les map sont ajouter a 'deletedItems'
+        //et seront supprimer a la sauvegarde.
+    }
+    
+    public void copy(){
+        if(!copyItem.isEnabled()){ return; }
+        
+        CopyPasteMgr.copyEditorData(getCurrentEditorData());
+        //CopyPasteMgr.copyGameData(mapTree.getCurrentGameData());
+        ((DatabaseTree)CopyPasteMgr.lastFocused).checkEnabledMenuAction();
+    }
+    
+    public void copyHierarchy(){
+        if(!copyHierarchyItem.isEnabled()){ return; }
+    }
+    
+    public void paste(){
+        if(!pasteItem.isEnabled()){ return; }
+        
+        //
+    }
+    
+    public void delete(){
+        if(!deleteItem.isEnabled()){ return; }
+        
+        DatabaseTreeItem parentItem = (DatabaseTreeItem) getCurrentItem();
+        removeItem(parentItem);
     }
     
     public void save(){
@@ -292,8 +324,11 @@ public class MapTree extends DatabaseTree {
         File file = new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
         DataMgr.dump(rootMapEditorData, file.getAbsolutePath());
         
- 
-        
+        for(DatabaseTreeItem item : deletedItems){
+            file = new File(ProjectMgr.getDataGamePath(), "Map" + item.editorData.getIdName() + "." + AppMgr.getExtension("data file"));
+            file.delete();
+        }
+        deletedItems.clear();
     }
         
     public boolean itemCollapsed(TreeItem item){
