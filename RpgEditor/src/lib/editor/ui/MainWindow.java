@@ -631,7 +631,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_editDeleteActionPerformed
 
     private void mapTreeCreateMapButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mapTreeCreateMapButtonActionPerformed
-        mapTree.newMap();
+        mapTree.newMap(false);
     }//GEN-LAST:event_mapTreeCreateMapButtonActionPerformed
 
     private void openProject(){

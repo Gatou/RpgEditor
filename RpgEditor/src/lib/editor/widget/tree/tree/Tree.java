@@ -197,6 +197,10 @@ public abstract class Tree extends JXTree{
         if(itemCacheEnabled){
             itemCache.remove(item);
         }
+        
+        for(int i=0; i<item.getChildCount(); i++){
+            removeItem((TreeItem) item.getChildAt(i));
+        }
     }
     
     public List<TreeItem> getAllItems(){

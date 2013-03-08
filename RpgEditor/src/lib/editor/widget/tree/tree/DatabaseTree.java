@@ -42,12 +42,12 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
             id += 1;
         }
         
-        System.out.println(allId);
         return id;
     }
     
     public DataBase getCurrentGameData(){
         DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();
+        
         if(item == null){
             return null;
         }

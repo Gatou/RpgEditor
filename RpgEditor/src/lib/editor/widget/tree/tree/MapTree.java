@@ -75,7 +75,7 @@ public class MapTree extends DatabaseTree {
         newMapItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.STATUS_LABEL.setText("");
-                newMap();
+                newMap(false);
             }
         });
         menu.add(newMapItem);
@@ -116,7 +116,7 @@ public class MapTree extends DatabaseTree {
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), "newMap");
         getActionMap().put("newMap", new AbstractAction(){
             public void actionPerformed(ActionEvent e) {
-                newMap();
+                newMap(false);
             }
         });
         //copy
@@ -203,6 +203,7 @@ public class MapTree extends DatabaseTree {
         
     private void refreshRec(DataEditorMap dataEditorMap, DatabaseTreeItem parentItem){
         for(DataEditorBase data : dataEditorMap.children){
+            System.out.println(data.name);
             DatabaseTreeItem item = new DatabaseTreeItem(data.name, null, null, data);
             //DatabaseTreeItem item = generateItem(null, data);
             addItem(item, parentItem);
@@ -215,7 +216,8 @@ public class MapTree extends DatabaseTree {
         
     }
     
-    public void newMap(){
+    public void newMap(boolean pastedData){
+        
         checkEnabledMenuAction();
         
         if(!newMapItem.isEnabled()){ return; }
@@ -223,18 +225,34 @@ public class MapTree extends DatabaseTree {
         DatabaseTreeItem parentItem = (DatabaseTreeItem) getCurrentItem();
         
         int id = generateId();
-        DataMap gameData = new DataMap(id, "" , 32, 24);
-        gameData.name = "Map" + gameData.getIdName();
         
-        DataEditorMap editorData = new DataEditorMap(id, gameData.name);
-                
+        DataMap gameData = null;
+        DataEditorMap editorData = null;
+        
+        if(pastedData){
+            gameData = (DataMap) TransferMgr.pasteGameData();
+            //editorData = (DataEditorMap) TransferMgr.pasteEditorData();
+        }
+        else{
+            gameData = new DataMap(0, "" , 32, 24);
+            
+        }
+        
+        gameData.id = id;
+        gameData.name = "Map" + gameData.getIdName();
+        editorData = new DataEditorMap(gameData.id, gameData.name);
+        //editorData.id = gameData.id;
+        //editorData.name = gameData.name;
+        
         DatabaseTreeItem item = new DatabaseTreeItem(gameData.name, null, gameData, editorData);
         
         addItem(item, parentItem, true);
         setItemExpanded(parentItem);
+        setCurrentItem(item);
         //expandPath(getSelectionPath());
         
         //item.gameData = null;
+        
         checkEnabledMenuAction();
     }
     
@@ -253,8 +271,8 @@ public class MapTree extends DatabaseTree {
         checkEnabledMenuAction();
         if(!pasteItem.isEnabled()){ return; }
         
-        
-        
+        newMap(true);
+                
         checkEnabledMenuAction();
     }
     
@@ -315,6 +333,19 @@ public class MapTree extends DatabaseTree {
             return false;
         }
         return super.itemCollapsed(item);
+    }
+    
+    public DataBase getCurrentGameData(){
+        DataBase data = super.getCurrentGameData();
+        
+        if(data == null){
+            DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();
+            File file = new File(ProjectMgr.getDataGamePath(), "Map" + item.editorData.getIdName() + "." + AppMgr.getExtension("data file"));
+            return (DataBase) DataMgr.load(file.getAbsolutePath());
+        }
+        
+        return data;
+        
     }
     
 }

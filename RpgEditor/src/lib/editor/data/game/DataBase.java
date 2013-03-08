@@ -18,6 +18,10 @@ public abstract class DataBase implements Serializable{
     }
     
     public String getIdName(){
+        return getIdNameById(id);
+    }
+    
+    public static String getIdNameById(int id){
         if(id < 10){
             return "000" + id;
         }
@@ -31,5 +35,6 @@ public abstract class DataBase implements Serializable{
             return "" + id;
         }
     }
+    
 	
 }
