@@ -4,6 +4,10 @@
  */
 package lib.editor.widget.tree.tree;
 
+import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -87,6 +91,29 @@ public abstract class Tree extends JXTree{
                 }
             }
         });
+        
+        
+        MouseListener ml = new MouseAdapter() {
+            public void mousePressed(MouseEvent e) {
+                int selRow = getClosestRowForLocation( e.getX(), e.getY());
+                if( selRow != -1) {
+                    Rectangle bounds = getRowBounds( selRow);
+                    boolean outside = e.getX() < bounds.x || e.getX() > bounds.x + bounds.width || e.getY() < bounds.y || e.getY() >= bounds.y + bounds.height;
+                    if( outside) {
+                        setSelectionRow(selRow);
+
+                        if( e.getClickCount() == 2) {
+                                if( isCollapsed(selRow)){
+                                        expandRow( selRow);}
+                                else if( isExpanded( selRow)){
+                                        collapseRow( selRow);}
+                        }
+                    }
+                }
+            }
+        };
+        addMouseListener(ml);
+        
     }
     
     public void currentItemChanged(){
