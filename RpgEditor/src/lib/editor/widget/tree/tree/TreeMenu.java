@@ -39,10 +39,12 @@ public abstract class TreeMenu extends Tree implements TreeWithMenu{
 			int y = e.getY();
 			JTree tree = (JTree)e.getSource();
 			TreePath path = tree.getPathForLocation(x, y);
-			//if (path == null)
+			if (path != null){
+                            tree.setSelectionPath(path);
+                        }
 			//	return;	
 
-			tree.setSelectionPath(path);
+			
 
 			//Object obj = path.getLastPathComponent();
 

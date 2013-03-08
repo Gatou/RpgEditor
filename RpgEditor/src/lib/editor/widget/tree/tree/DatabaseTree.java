@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 import lib.editor.data.editor.DataEditorBase;
 import lib.editor.data.editor.DataEditorMap;
+import lib.editor.data.editor.DataEditorTreeItem;
 import lib.editor.data.game.DataBase;
 import lib.editor.widget.tree.interfaces.TreeWithDatabase;
 import lib.editor.widget.tree.item.DatabaseTreeItem;
@@ -23,12 +24,12 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
     //List<DataBase> gameDatabase;
     //List<DataEditorBase> editorDatabase;
     
-    public void setup(){//List<DataBase> gameDatabase, List<DataEditorBase> editorDatabase){
+    //public void setup(){//List<DataBase> gameDatabase, List<DataEditorBase> editorDatabase){
         //this.gameDatabase = gameDatabase;
         //this.editorDatabase = editorDatabase;
-        refresh();
-        checkEnabledMenuAction();
-    }
+    //    refresh();
+    //    checkEnabledMenuAction();
+    //}
     
     public int generateId(){
         int id = 1;
@@ -68,6 +69,24 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         if(addToDatabase){
             parentEditorMap.children.add(item.editorData);
         }
+    }
+    
+    public boolean itemExpanded(TreeItem item){
+        if(item instanceof DatabaseTreeItem){
+            DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
+            DataEditorTreeItem data = (DataEditorTreeItem) dataItem.editorData;
+            data.expanded = true;
+        }
+        return true;
+    }
+        
+    public boolean itemCollapsed(TreeItem item){
+        if(item instanceof DatabaseTreeItem){
+            DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
+            DataEditorTreeItem data = (DataEditorTreeItem) dataItem.editorData;
+            data.expanded = false;
+        }
+        return true;
     }
     
 }

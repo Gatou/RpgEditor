@@ -80,6 +80,9 @@ public class MainWindow extends javax.swing.JFrame {
         WidgetMgr.MAP_TREE = mapTree;
         WidgetMgr.STATUS_LABEL = statusBarLabel;
         //WidgetMgr.MAP_TREE.setup();
+        
+        
+        mapTree.setFilter(mapTreeFilterTextField);
     }
     
     
@@ -166,9 +169,12 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel2 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         mapTree = new lib.editor.widget.tree.tree.MapTree();
+        jPanel5 = new javax.swing.JPanel();
+        mapTreeCreateMapButton = new lib.editor.widget.button.ToolBarButton();
+        mapTreeFilterTextField = new lib.editor.widget.textfield.IconTextField();
         jPanel4 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jXTree1 = new org.jdesktop.swingx.JXTree();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTree1 = new javax.swing.JTree();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileNew = new lib.editor.widget.menu.MenuItem();
@@ -338,34 +344,57 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel3.setLayout(new java.awt.GridLayout(1, 0));
         jSplitPane2.setRightComponent(jPanel3);
 
+        jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
         jPanel2.setMinimumSize(new java.awt.Dimension(160, 50));
         jPanel2.setPreferredSize(new java.awt.Dimension(160, 362));
-        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel2.setLayout(new java.awt.BorderLayout());
 
         jScrollPane1.setAutoscrolls(true);
 
         mapTree.setAutoscrolls(true);
+        mapTree.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
         mapTree.setMaximumSize(null);
         mapTree.setMinimumSize(null);
         mapTree.setPreferredSize(null);
         mapTree.setRowHeight(18);
-        mapTree.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
-            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
-                mapTreeValueChanged(evt);
-            }
-        });
         jScrollPane1.setViewportView(mapTree);
 
-        jPanel2.add(jScrollPane1);
+        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
+
+        mapTreeCreateMapButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
+        mapTreeCreateMapButton.setToolTipText("Create a new map.");
+        mapTreeCreateMapButton.setFocusable(false);
+        mapTreeCreateMapButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        mapTreeCreateMapButton.setStatusText("Create a new map.");
+        mapTreeCreateMapButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        mapTreeCreateMapButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mapTreeCreateMapButtonActionPerformed(evt);
+            }
+        });
+        jPanel5.add(mapTreeCreateMapButton);
+
+        mapTreeFilterTextField.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/find.png"))); // NOI18N
+        mapTreeFilterTextField.setMaximumSize(new java.awt.Dimension(2147483647, 28));
+        mapTreeFilterTextField.setMinimumSize(new java.awt.Dimension(20, 28));
+        mapTreeFilterTextField.setPreferredSize(new java.awt.Dimension(24, 28));
+        mapTreeFilterTextField.setStatusText("Live search filtering maps name.");
+        jPanel5.add(mapTreeFilterTextField);
+
+        jPanel2.add(jPanel5, java.awt.BorderLayout.PAGE_END);
 
         jSplitPane2.setLeftComponent(jPanel2);
 
         jSplitPane3.setLeftComponent(jSplitPane2);
         jSplitPane3.setRightComponent(jPanel4);
 
-        jScrollPane3.setViewportView(jXTree1);
+        jTree1.setDragEnabled(true);
+        jTree1.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
+        jScrollPane2.setViewportView(jTree1);
 
-        jSplitPane3.setRightComponent(jScrollPane3);
+        jSplitPane3.setRightComponent(jScrollPane2);
 
         middlePanel.add(jSplitPane3);
 
@@ -601,9 +630,9 @@ public class MainWindow extends javax.swing.JFrame {
         delete();
     }//GEN-LAST:event_editDeleteActionPerformed
 
-    private void mapTreeValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_mapTreeValueChanged
-        // TODO add your handling code here:
-    }//GEN-LAST:event_mapTreeValueChanged
+    private void mapTreeCreateMapButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mapTreeCreateMapButtonActionPerformed
+        mapTree.newMap();
+    }//GEN-LAST:event_mapTreeCreateMapButtonActionPerformed
 
     private void openProject(){
         String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
@@ -647,13 +676,16 @@ public class MainWindow extends javax.swing.JFrame {
         }
         
         if(CopyPasteMgr.lastFocused == mapTree){
-            CopyPasteMgr.copyGameData(mapTree.getCurrentGameData());
+            CopyPasteMgr.copyEditorData(mapTree.getCurrentEditorData());
+            //CopyPasteMgr.copyGameData(mapTree.getCurrentGameData());
             ((DatabaseTree)CopyPasteMgr.lastFocused).checkEnabledMenuAction();
         }
     }
     
     public void paste(){
-        System.out.println("paste");
+        if(CopyPasteMgr.lastFocused == mapTree){
+            mapTree.paste();
+        }
     }
     
     public void delete(){
@@ -685,6 +717,9 @@ public class MainWindow extends javax.swing.JFrame {
             toolBarDelete.setEnabled(enabled);
             editDelete.setEnabled(enabled);
         }
+        else if(type.equals("new map")){
+            mapTreeCreateMapButton.setEnabled(enabled);
+        }
     }
     
     public void refresh(){
@@ -711,8 +746,9 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
     private javax.swing.JToolBar.Separator jSeparator2;
     private javax.swing.JToolBar.Separator jSeparator3;
@@ -720,10 +756,12 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
-    private org.jdesktop.swingx.JXTree jXTree1;
+    private javax.swing.JTree jTree1;
     private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JToolBar mainToolBar;
     private lib.editor.widget.tree.tree.MapTree mapTree;
+    private lib.editor.widget.button.ToolBarButton mapTreeCreateMapButton;
+    private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
     private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
     private lib.editor.widget.button.ToolBarButton toolBarCopy;

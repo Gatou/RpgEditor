@@ -15,6 +15,6 @@ import lib.editor.data.game.DataBase;
 public interface TreeWithDatabase {
     
     public void setup();
-    public void refresh();
+    //public void refresh();
     
 }

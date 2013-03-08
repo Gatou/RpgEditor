@@ -21,11 +21,8 @@ import javax.swing.JOptionPane;
  */
 public class ProjectMgr {
     
-    private static String projectPath;
-    private static String assetsPath;
-    private static String settingsPath;
-    private static String dataGamePath;
-    private static String dataEditorPath;
+    private static String projectPath, assetsPath, settingsPath, dataGamePath, dataEditorPath;
+    //private static String ;
     
     public static String getProjectPath(){
         return projectPath;

@@ -4,6 +4,7 @@
  */
 package lib.editor.widget.button;
 
+import java.awt.Dimension;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import lib.editor.mgr.WidgetMgr;
@@ -29,7 +30,9 @@ public class ToolBarButton extends JButton{
             }
         });
         
-        setPreferredSize(new java.awt.Dimension(28, 28));
+        setMinimumSize(new Dimension(28, 28));
+        setMaximumSize(new Dimension(28, 28));
+        setPreferredSize(new Dimension(28, 28));
     }
     
     public String getStatusText(){
