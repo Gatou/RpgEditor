@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.event.TreeWillExpandListener;
@@ -23,6 +24,8 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import lib.editor.data.editor.DataEditorTreeItem;
+import lib.editor.widget.tree.item.DatabaseTreeItem;
 import lib.editor.widget.tree.item.TreeItem;
 import org.jdesktop.swingx.JXTree;
 
@@ -36,7 +39,6 @@ public abstract class Tree extends JXTree{
     public boolean itemCacheEnabled;
     public List<TreeItem> itemCache;
     int topLevelItemCount;
-    
     
     
     public Tree(){
@@ -64,11 +66,23 @@ public abstract class Tree extends JXTree{
             }
         });
         
+        addTreeExpansionListener(new TreeExpansionListener () {
+
+            @Override
+            public void treeExpanded(TreeExpansionEvent evt) {
+                itemExpanded((TreeItem)evt.getPath().getLastPathComponent());
+            }
+
+            @Override
+            public void treeCollapsed(TreeExpansionEvent event) {
+            }
+        });
+                        
         addTreeWillExpandListener(new TreeWillExpandListener () {
 
             @Override
             public void treeWillExpand(TreeExpansionEvent evt) throws ExpandVetoException {
-                boolean expand = itemExpanded((TreeItem)evt.getPath().getLastPathComponent());
+                boolean expand = itemWillExpanded((TreeItem)evt.getPath().getLastPathComponent());
                 if(!expand){
                     throw new ExpandVetoException(evt);
                 }
@@ -76,7 +90,7 @@ public abstract class Tree extends JXTree{
 
             @Override
             public void treeWillCollapse(TreeExpansionEvent evt) throws ExpandVetoException {
-                boolean collapse = itemCollapsed((TreeItem)evt.getPath().getLastPathComponent());
+                boolean collapse = itemWillCollapsed((TreeItem)evt.getPath().getLastPathComponent());
                 if(!collapse){
                     throw new ExpandVetoException(evt);
                 }
@@ -116,11 +130,14 @@ public abstract class Tree extends JXTree{
         
     }
     
-    public boolean itemExpanded(TreeItem item){
-        return true;
+    public void itemExpanded(TreeItem item){
     }
         
-    public boolean itemCollapsed(TreeItem item){
+    public boolean itemWillExpanded(TreeItem item){
+        return true;
+    }
+    
+    public boolean itemWillCollapsed(TreeItem item){
         return true;
     }
     
@@ -221,14 +238,15 @@ public abstract class Tree extends JXTree{
         }
     }*/
     
-    public void setItemExpanded(TreeItem item){
-        expandPath(new TreePath(item.getPath()));
+    public void setItemExpanded(TreeItem item, boolean expanded){
+        if(expanded){
+            expandPath(new TreePath(item.getPath()));
+        }
+        else{
+            collapsePath(new TreePath(item.getPath()));
+        }
+        
     }
-    
-    public void setItemCollapsed(TreeItem item){
-        collapsePath(new TreePath(item.getPath()));
-    }
-    
     
   
 }

@@ -7,6 +7,7 @@ package lib.editor.widget.tree.tree;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import lib.editor.data.editor.DataEditorBase;
 import lib.editor.data.editor.DataEditorTreeItem;
 import lib.editor.data.editor.DataEditorTreeItem;
@@ -83,22 +84,53 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         super.removeItem(item);
     }
     
-    public boolean itemExpanded(TreeItem item){
+    public void itemExpanded(TreeItem item){
+        for(int i=0; i<item.getChildCount(); i++){
+            DatabaseTreeItem childItem = (DatabaseTreeItem) item.getChildAt(i);
+            if(((DataEditorTreeItem)childItem.editorData).expanded){
+                setItemExpanded(childItem, true);
+            }
+        }
+    }
+    
+    public boolean itemWillExpanded(TreeItem item){
         if(item instanceof DatabaseTreeItem){
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
             DataEditorTreeItem data = (DataEditorTreeItem) dataItem.editorData;
             data.expanded = true;
         }
+
         return true;
     }
         
-    public boolean itemCollapsed(TreeItem item){
+    public boolean itemWillCollapsed(TreeItem item){
         if(item instanceof DatabaseTreeItem){
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
             DataEditorTreeItem data = (DataEditorTreeItem) dataItem.editorData;
             data.expanded = false;
         }
         return true;
+    }
+    
+    public void setItemExpanded(TreeItem item, boolean expanded){
+        
+        if(!(item.getParent() == getRoot()) && expanded){
+            DatabaseTreeItem dataItem = (DatabaseTreeItem) item.getParent();
+            
+            while(true){
+                if( !((DataEditorTreeItem)dataItem.editorData).expanded){
+                    return;
+                }
+                
+                if(dataItem.getParent() == getRoot()){
+                    break;
+                }
+                dataItem = (DatabaseTreeItem) dataItem.getParent();
+            }
+        }
+        super.setItemExpanded(item, expanded);
+        
+
     }
     
 }

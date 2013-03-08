@@ -47,7 +47,7 @@ public class MapTreeFilter extends TreeFilter{
             tree.itemCacheEnabled = false;
             
             for(TreeItem item : tree.getAllItems()){
-                if(item.text.contains(filterText)){
+                if(item.text.toLowerCase().contains(filterText.toLowerCase())){
                     tree.addTopLevelItem(item);
                 }
             }

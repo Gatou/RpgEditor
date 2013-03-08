@@ -197,21 +197,23 @@ public class MapTree extends DatabaseTree {
         addTopLevelItem(rootItem);
         
         refreshRec((DataEditorMap) dataEditor, (DatabaseTreeItem) root());
-        setItemExpanded(root());
+        setItemExpanded(root(), true);
         
     }
         
     private void refreshRec(DataEditorMap dataEditorMap, DatabaseTreeItem parentItem){
         for(DataEditorBase data : dataEditorMap.children){
-            System.out.println(data.name);
+            //System.out.println(data.name);
             DatabaseTreeItem item = new DatabaseTreeItem(data.name, null, null, data);
             //DatabaseTreeItem item = generateItem(null, data);
             addItem(item, parentItem);
             refreshRec((DataEditorMap) data, item);
             DataEditorTreeItem dataTree = (DataEditorTreeItem) item.editorData;
+            
             if(dataTree.expanded){
-                setItemExpanded(item);
+                setItemExpanded(item, true);
             }
+            
         }
         
     }
@@ -247,7 +249,7 @@ public class MapTree extends DatabaseTree {
         DatabaseTreeItem item = new DatabaseTreeItem(gameData.name, null, gameData, editorData);
         
         addItem(item, parentItem, true);
-        setItemExpanded(parentItem);
+        setItemExpanded(parentItem, true);
         setCurrentItem(item);
         //expandPath(getSelectionPath());
         
@@ -328,11 +330,11 @@ public class MapTree extends DatabaseTree {
         deletedItems.clear();
     }
         
-    public boolean itemCollapsed(TreeItem item){
+    public boolean itemWillCollapsed(TreeItem item){
         if(item == root()){
             return false;
         }
-        return super.itemCollapsed(item);
+        return super.itemWillCollapsed(item);
     }
     
     public DataBase getCurrentGameData(){
