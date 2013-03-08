@@ -63,22 +63,13 @@ public abstract class Tree extends JXTree{
                 currentItemChanged();
             }
         });
-        /*
-        addTreeExpansionListener(new javax.swing.event.TreeExpansionListener() {
-            public void treeCollapsed(javax.swing.event.TreeExpansionEvent evt) {
-                itemCollapsed((TreeItem)evt.getPath().getLastPathComponent());
-            }
-            public void treeExpanded(javax.swing.event.TreeExpansionEvent evt) {
-                itemExpanded((TreeItem)evt.getPath().getLastPathComponent());
-            }
-        });*/
         
         addTreeWillExpandListener(new TreeWillExpandListener () {
 
             @Override
             public void treeWillExpand(TreeExpansionEvent evt) throws ExpandVetoException {
-                boolean Expand = itemExpanded((TreeItem)evt.getPath().getLastPathComponent());
-                if(!Expand){
+                boolean expand = itemExpanded((TreeItem)evt.getPath().getLastPathComponent());
+                if(!expand){
                     throw new ExpandVetoException(evt);
                 }
             }
@@ -92,10 +83,15 @@ public abstract class Tree extends JXTree{
             }
         });
         
-        
+        //improve item selection (click is detected on all the row of the iem)
         MouseListener ml = new MouseAdapter() {
             public void mousePressed(MouseEvent e) {
+                if(e.getY() > getRowHeight()*getRowCount()){
+                    return;
+                }
+                
                 int selRow = getClosestRowForLocation( e.getX(), e.getY());
+                
                 if( selRow != -1) {
                     Rectangle bounds = getRowBounds( selRow);
                     boolean outside = e.getX() < bounds.x || e.getX() > bounds.x + bounds.width || e.getY() < bounds.y || e.getY() >= bounds.y + bounds.height;
@@ -180,6 +176,10 @@ public abstract class Tree extends JXTree{
         return (TreeItem) getLastSelectedPathComponent();
     }
     
+    public void setCurrentItem(TreeItem item){
+        setSelectionPath(new TreePath(item.getPath()));
+    }
+    
     public void addItem(TreeItem item, TreeItem parentItem){
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         model.insertNodeInto(item, parentItem, parentItem.getChildCount());
@@ -200,7 +200,7 @@ public abstract class Tree extends JXTree{
     }
     
     public List<TreeItem> getAllItems(){
-        return itemCache;
+        return new ArrayList<TreeItem>(itemCache);
     }
     /*
     public List<TreeItem> getAllItems(){

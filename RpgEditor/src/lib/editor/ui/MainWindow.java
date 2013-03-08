@@ -23,7 +23,7 @@ import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lib.editor.data.game.DataMap;
 import lib.editor.mgr.AppMgr;
-import lib.editor.mgr.CopyPasteMgr;
+import lib.editor.mgr.TransferMgr;
 import lib.editor.mgr.DataMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
@@ -671,9 +671,6 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         
-        if(CopyPasteMgr.lastFocused == mapTree){
-            mapTree.cut();
-        }
     }
     
     public void copy(){
@@ -681,7 +678,7 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         
-        if(CopyPasteMgr.lastFocused == mapTree){
+        if(TransferMgr.lastFocused == mapTree){
             mapTree.copy();
         }
     }
@@ -691,7 +688,7 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         
-        if(CopyPasteMgr.lastFocused == mapTree){
+        if(TransferMgr.lastFocused == mapTree){
             mapTree.paste();
         }
     }
@@ -701,7 +698,7 @@ public class MainWindow extends javax.swing.JFrame {
             return;
         }
         
-        if(CopyPasteMgr.lastFocused == mapTree){
+        if(TransferMgr.lastFocused == mapTree){
             mapTree.delete();
         }
         

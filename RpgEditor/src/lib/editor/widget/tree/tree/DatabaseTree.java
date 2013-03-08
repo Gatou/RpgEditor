@@ -33,7 +33,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         List<Integer> allId = new ArrayList<Integer>();
         
 
-        for(TreeItem item : itemCache){
+        for(TreeItem item : getAllItems()){
             
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
             allId.add(dataItem.editorData.id);
@@ -41,6 +41,8 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         while(allId.contains(id)){
             id += 1;
         }
+        
+        System.out.println(allId);
         return id;
     }
     

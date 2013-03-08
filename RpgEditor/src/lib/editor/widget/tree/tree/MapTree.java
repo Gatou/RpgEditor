@@ -37,7 +37,7 @@ import lib.editor.data.editor.DataEditorTreeItem;
 import lib.editor.data.game.DataBase;
 import lib.editor.data.game.DataMap;
 import lib.editor.mgr.AppMgr;
-import lib.editor.mgr.CopyPasteMgr;
+import lib.editor.mgr.TransferMgr;
 import lib.editor.mgr.DataMgr;
 import lib.editor.mgr.IconMgr;
 import lib.editor.mgr.Mgr;
@@ -56,16 +56,12 @@ public class MapTree extends DatabaseTree {
     public final static String ROOT_NAME = "Project";
     DatabaseTreeItem rootItem;
             
-    MenuItem newMapItem, cutItem, copyItem, copyHierarchyItem, pasteItem, deleteItem;
-    public boolean copyHierarchy;
+    MenuItem newMapItem, copyItem, pasteItem, deleteItem;
     MapTreeFilter filter;
             
     
     public MapTree(){
         super();
-        copyHierarchy = false;
-        
-        
 
     }
     
@@ -86,36 +82,15 @@ public class MapTree extends DatabaseTree {
         
         menu.add(new Separator());
         
-        cutItem = new MenuItem("Cut", Mgr.icon.getIcon("cut.png"), "Cut the selection and put it on the clipboard.", KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK));
-        cutItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                WidgetMgr.STATUS_LABEL.setText("");
-                WidgetMgr.MAIN_WINDOW.cut();
-            }
-        });
-        menu.add(cutItem);
         
         copyItem = new MenuItem("Copy", Mgr.icon.getIcon("copy.png"), "Copy the selection and put it on the clipboard.", KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
         copyItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.STATUS_LABEL.setText("");
-                copyHierarchy = false;
                 WidgetMgr.MAIN_WINDOW.copy();
             }
         });
         menu.add(copyItem);
-        
-        copyHierarchyItem = new MenuItem("Copy hierarchy", Mgr.icon.getIcon("copy.png"), "Copy the selection and it hierarchy and put it on the clipboard.", KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK));
-        copyHierarchyItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                WidgetMgr.STATUS_LABEL.setText("");
-                copyHierarchy = true;
-                WidgetMgr.MAIN_WINDOW.copy();
-            }
-        });
-        menu.add(copyHierarchyItem);
-        
-
         
         pasteItem = new MenuItem("Paste", Mgr.icon.getIcon("paste.png"), "Insert clipboard contents.", KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
         pasteItem.addActionListener(new ActionListener() {
@@ -144,26 +119,10 @@ public class MapTree extends DatabaseTree {
                 newMap();
             }
         });
-        //cut
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK), "cut");
-        getActionMap().put("cut", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                WidgetMgr.MAIN_WINDOW.cut();
-            }
-        });
         //copy
         getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK), "copy");
         getActionMap().put("copy", new AbstractAction(){
             public void actionPerformed(ActionEvent e) {
-                copyHierarchy = false;
-                WidgetMgr.MAIN_WINDOW.copy();
-            }
-        });
-        //copy hierarchy
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.SHIFT_MASK | InputEvent.CTRL_MASK), "copyHierarchy");
-        getActionMap().put("copyHierarchy", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                copyHierarchy = true;
                 WidgetMgr.MAIN_WINDOW.copy();
             }
         });
@@ -190,29 +149,23 @@ public class MapTree extends DatabaseTree {
         boolean enabled = item != null;
         
         newMapItem.setEnabled(enabled);
-        cutItem.setEnabled(enabled);
         copyItem.setEnabled(enabled);
-        copyHierarchyItem.setEnabled(enabled);
-        pasteItem.setEnabled(CopyPasteMgr.isEditorDataPastable(DataEditorMap.class));
+        pasteItem.setEnabled(TransferMgr.isEditorDataPastable(DataEditorMap.class));
         deleteItem.setEnabled(enabled);
         
         if(filter.isFiltering){
             //newMapItem.setEnabled(false);
-            cutItem.setEnabled(false);
-            copyHierarchyItem.setEnabled(false);
             //pasteItem.setEnabled(false);
             deleteItem.setEnabled(false);
         }      
         else if(item == root()){
-            cutItem.setEnabled(false);
             copyItem.setEnabled(false);
-            copyHierarchyItem.setEnabled(false);
             deleteItem.setEnabled(false);
         }
         
 
         WidgetMgr.MAIN_WINDOW.setActionEnabled("new map", newMapItem.isEnabled());
-        WidgetMgr.MAIN_WINDOW.setActionEnabled("cut", cutItem.isEnabled());
+        WidgetMgr.MAIN_WINDOW.setActionEnabled("cut", false);
         WidgetMgr.MAIN_WINDOW.setActionEnabled("copy", copyItem.isEnabled());
         WidgetMgr.MAIN_WINDOW.setActionEnabled("paste", pasteItem.isEnabled());
         WidgetMgr.MAIN_WINDOW.setActionEnabled("delete", deleteItem.isEnabled());
@@ -263,6 +216,8 @@ public class MapTree extends DatabaseTree {
     }
     
     public void newMap(){
+        checkEnabledMenuAction();
+        
         if(!newMapItem.isEnabled()){ return; }
         
         DatabaseTreeItem parentItem = (DatabaseTreeItem) getCurrentItem();
@@ -280,38 +235,55 @@ public class MapTree extends DatabaseTree {
         //expandPath(getSelectionPath());
         
         //item.gameData = null;
+        checkEnabledMenuAction();
     }
     
-    public void cut(){
-        if(!cutItem.isEnabled()){ return; }
-        
-        //Attention si on utilise 'delete' il faut faire gaffe car les map sont ajouter a 'deletedItems'
-        //et seront supprimer a la sauvegarde.
-    }
     
     public void copy(){
+        checkEnabledMenuAction();
         if(!copyItem.isEnabled()){ return; }
         
-        CopyPasteMgr.copyEditorData(getCurrentEditorData());
-        //CopyPasteMgr.copyGameData(mapTree.getCurrentGameData());
-        ((DatabaseTree)CopyPasteMgr.lastFocused).checkEnabledMenuAction();
-    }
-    
-    public void copyHierarchy(){
-        if(!copyHierarchyItem.isEnabled()){ return; }
+        TransferMgr.copyEditorData(getCurrentEditorData());
+        TransferMgr.copyGameData(getCurrentGameData());
+        
+        checkEnabledMenuAction();
     }
     
     public void paste(){
+        checkEnabledMenuAction();
         if(!pasteItem.isEnabled()){ return; }
         
-        //
+        
+        
+        checkEnabledMenuAction();
     }
     
     public void delete(){
+        checkEnabledMenuAction();
         if(!deleteItem.isEnabled()){ return; }
         
-        DatabaseTreeItem parentItem = (DatabaseTreeItem) getCurrentItem();
-        removeItem(parentItem);
+        TreeItem item = getCurrentItem();
+        TreeItem parentItem = (TreeItem) item.getParent();
+        int index = parentItem.getIndex(item);
+                
+        removeItem(item);
+        
+        int count = parentItem.getChildCount();
+        if(count == 0){
+            setCurrentItem(parentItem);
+        }
+        else{
+            if(index == count){
+                setCurrentItem((TreeItem) parentItem.getChildAt(index-1));
+            }
+            else{
+                setCurrentItem((TreeItem) parentItem.getChildAt(index));
+            }
+        }
+        //if(parentItem.ch)
+        //setCurrentItem(rootItem);
+        
+        checkEnabledMenuAction();
     }
     
     public void save(){

@@ -10,7 +10,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
-import lib.editor.mgr.CopyPasteMgr;
+import lib.editor.mgr.TransferMgr;
 import lib.editor.widget.tree.interfaces.TreeWithMenu;
 
 /**
@@ -67,7 +67,7 @@ public abstract class TreeMenu extends Tree implements TreeWithMenu{
     }
     
     public void grabFocus(){
-        CopyPasteMgr.lastFocused = this;
+        TransferMgr.lastFocused = this;
     }
     
     public void currentItemChanged(){
