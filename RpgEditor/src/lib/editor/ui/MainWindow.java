@@ -175,6 +175,17 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel4 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTree1 = new javax.swing.JTree();
+        jXTaskPaneContainer2 = new org.jdesktop.swingx.JXTaskPaneContainer();
+        jXTaskPane1 = new org.jdesktop.swingx.JXTaskPane();
+        propertyPanel = new javax.swing.JPanel();
+        jPanel7 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
+        label1 = new java.awt.Label();
+        jPanel6 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
+        jTextField1 = new javax.swing.JTextField();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileNew = new lib.editor.widget.menu.MenuItem();
@@ -395,6 +406,45 @@ public class MainWindow extends javax.swing.JFrame {
         jScrollPane2.setViewportView(jTree1);
 
         jSplitPane3.setRightComponent(jScrollPane2);
+
+        org.jdesktop.swingx.VerticalLayout verticalLayout2 = new org.jdesktop.swingx.VerticalLayout();
+        verticalLayout2.setGap(14);
+        jXTaskPaneContainer2.setLayout(verticalLayout2);
+
+        jXTaskPane1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/project_root.png"))); // NOI18N
+        jXTaskPane1.setScrollOnExpand(true);
+        jXTaskPane1.setSpecial(true);
+        jXTaskPane1.setTitle("Properties");
+        jXTaskPaneContainer2.add(jXTaskPane1);
+
+        propertyPanel.setLayout(new javax.swing.BoxLayout(propertyPanel, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel7.setPreferredSize(new java.awt.Dimension(100, 28));
+        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
+
+        jLabel2.setText("ID:");
+        jPanel7.add(jLabel2);
+        jPanel7.add(filler3);
+
+        label1.setAlignment(java.awt.Label.RIGHT);
+        label1.setText("0001");
+        jPanel7.add(label1);
+
+        propertyPanel.add(jPanel7);
+
+        jPanel6.setPreferredSize(new java.awt.Dimension(100, 28));
+        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
+
+        jLabel1.setText("Name:");
+        jPanel6.add(jLabel1);
+        jPanel6.add(filler2);
+        jPanel6.add(jTextField1);
+
+        propertyPanel.add(jPanel6);
+
+        jXTaskPaneContainer2.add(propertyPanel);
+
+        jSplitPane3.setRightComponent(jXTaskPaneContainer2);
 
         middlePanel.add(jSplitPane3);
 
@@ -736,6 +786,7 @@ public class MainWindow extends javax.swing.JFrame {
     
     public void refresh(){
         mapTree.setup();//setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
+        jXTaskPane1.add(propertyPanel);
     }
     
 
@@ -754,11 +805,17 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.menu.MenuItem fileNew;
     private lib.editor.widget.menu.MenuItem fileOpen;
     private lib.editor.widget.menu.MenuItem fileSave;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel7;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JToolBar.Separator jSeparator1;
@@ -768,13 +825,18 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JTree jTree1;
+    private org.jdesktop.swingx.JXTaskPane jXTaskPane1;
+    private org.jdesktop.swingx.JXTaskPaneContainer jXTaskPaneContainer2;
+    private java.awt.Label label1;
     private javax.swing.JMenuBar mainMenuBar;
     private javax.swing.JToolBar mainToolBar;
     private lib.editor.widget.tree.tree.MapTree mapTree;
     private lib.editor.widget.button.ToolBarButton mapTreeCreateMapButton;
     private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
     private javax.swing.JPanel middlePanel;
+    private javax.swing.JPanel propertyPanel;
     private javax.swing.JLabel statusBarLabel;
     private lib.editor.widget.button.ToolBarButton toolBarCopy;
     private lib.editor.widget.button.ToolBarButton toolBarCut;

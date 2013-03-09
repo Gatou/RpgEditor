@@ -234,9 +234,7 @@ public class MapTree extends DatabaseTree {
     }
     
     public void newMap(boolean pastedData){
-        
         checkEnabledMenuAction();
-        
         if(!newMapItem.isEnabled()){ return; }
         
         DatabaseTreeItem parentItem = (DatabaseTreeItem) getCurrentItem();
