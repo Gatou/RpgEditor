@@ -45,7 +45,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         
         return id;
     }
-    
+    /*
     public DataBase getCurrentGameData(){
         DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();
         
@@ -53,7 +53,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
             return null;
         }
         return item.gameData;
-    }
+    }*/
     
     public DataEditorBase getCurrentEditorData(){
         DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();

@@ -45,6 +45,7 @@ import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.util.Shortcut;
+import lib.editor.widget.inspector.Inspector;
 import lib.editor.widget.menu.MenuItem;
 import lib.editor.widget.tree.item.DatabaseTreeItem;
 import lib.editor.widget.tree.tree.option.MapTreeFilter;
@@ -350,7 +351,21 @@ public class MapTree extends DatabaseTree {
         return super.itemWillCollapsed(item);
     }
     
+    public DataBase getGameData(TreeItem item){
+        DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
+        DataBase data = dataItem.gameData;
+        
+        if(data == null){
+            File file = new File(ProjectMgr.getDataGamePath(), "Map" + dataItem.editorData.getIdName() + "." + AppMgr.getExtension("data file"));
+            return (DataBase) DataMgr.load(file.getAbsolutePath());
+        }
+        
+        return data;
+    }
+    
     public DataBase getCurrentGameData(){
+        return getGameData(getCurrentItem());
+        /*
         DataBase data = super.getCurrentGameData();
         
         if(data == null){
@@ -359,8 +374,13 @@ public class MapTree extends DatabaseTree {
             return (DataBase) DataMgr.load(file.getAbsolutePath());
         }
         
-        return data;
+        return data;*/
         
+    }
+    
+    public void currentItemChanged(TreeItem newItem){
+        super.currentItemChanged(newItem);
+        WidgetMgr.INSPECTOR.setMapMode((DataMap) getGameData(newItem));
     }
     
 }

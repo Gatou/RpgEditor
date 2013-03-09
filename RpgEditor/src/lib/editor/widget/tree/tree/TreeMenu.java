@@ -12,6 +12,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import lib.editor.mgr.TransferMgr;
 import lib.editor.widget.tree.interfaces.TreeWithMenu;
+import lib.editor.widget.tree.item.TreeItem;
 
 /**
  *
@@ -70,8 +71,8 @@ public abstract class TreeMenu extends Tree implements TreeWithMenu{
         TransferMgr.lastFocused = this;
     }
     
-    public void currentItemChanged(){
-        super.currentItemChanged();
+    public void currentItemChanged(TreeItem newItem){
+        super.currentItemChanged(newItem);
         checkEnabledMenuAction();
     }
 }

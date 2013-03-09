@@ -6,6 +6,7 @@ package lib.editor.mgr;
 
 import javax.swing.JLabel;
 import lib.editor.ui.MainWindow;
+import lib.editor.widget.inspector.Inspector;
 import lib.editor.widget.tree.tree.MapTree;
 
 /**
@@ -19,4 +20,5 @@ public class WidgetMgr {
     
     public static JLabel STATUS_LABEL;
     
+    public static Inspector INSPECTOR;
 }

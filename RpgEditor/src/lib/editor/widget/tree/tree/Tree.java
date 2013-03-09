@@ -62,7 +62,7 @@ public abstract class Tree extends JXTree{
         
         addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                currentItemChanged();
+                currentItemChanged((TreeItem)e.getNewLeadSelectionPath().getLastPathComponent());
             }
         });
         
@@ -126,8 +126,7 @@ public abstract class Tree extends JXTree{
         
     }
     
-    public void currentItemChanged(){
-        
+    public void currentItemChanged(TreeItem newItem){
     }
     
     public void itemExpanded(TreeItem item){
