@@ -25,6 +25,7 @@ import java.util.logging.Logger;
 import lib.editor.widget.tree.item.TreeItem;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
+import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu.Separator;
 import javax.swing.JTextField;
@@ -43,6 +44,7 @@ import lib.editor.mgr.IconMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
+import lib.editor.util.Shortcut;
 import lib.editor.widget.menu.MenuItem;
 import lib.editor.widget.tree.item.DatabaseTreeItem;
 import lib.editor.widget.tree.tree.option.MapTreeFilter;
@@ -111,35 +113,38 @@ public class MapTree extends DatabaseTree {
         menu.add(deleteItem);
     }
     
+  
+    
     public void createMenuShortcut() {
         //new map
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), "newMap");
-        getActionMap().put("newMap", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                newMap(false);
-            }
-        });
+        new Shortcut(this, KeyStroke.getKeyStroke(KeyEvent.VK_INSERT, 0), "NEW_MAP", false, 
+                new AbstractAction(){
+                    public void actionPerformed(ActionEvent e) {
+                        newMap(false);
+                    }
+                });
         //copy
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK), "copy");
-        getActionMap().put("copy", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                WidgetMgr.MAIN_WINDOW.copy();
-            }
-        });
+        new Shortcut(this, KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK), "COPY", false, 
+                new AbstractAction(){
+                    public void actionPerformed(ActionEvent e) {
+                        WidgetMgr.MAIN_WINDOW.copy();
+                    }
+                });
+
         //paste
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK), "paste");
-        getActionMap().put("paste", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                WidgetMgr.MAIN_WINDOW.paste();
-            }
-        });
+        new Shortcut(this, KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK), "PASTE", false, 
+                new AbstractAction(){
+                    public void actionPerformed(ActionEvent e) {
+                        WidgetMgr.MAIN_WINDOW.paste();
+                    }
+                });
         //delete
-        getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "delete");
-        getActionMap().put("delete", new AbstractAction(){
-            public void actionPerformed(ActionEvent e) {
-                WidgetMgr.MAIN_WINDOW.delete();
-            }
-        });
+        new Shortcut(this, KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0), "DELETE", false, 
+                new AbstractAction(){
+                    public void actionPerformed(ActionEvent e) {
+                        WidgetMgr.MAIN_WINDOW.delete();
+                    }
+                });
     }
 
     public void checkEnabledMenuAction() {
@@ -188,11 +193,21 @@ public class MapTree extends DatabaseTree {
         refresh(rootMapEditorData);
         
         checkEnabledMenuAction();
+        /*
+        setCurrentItem(rootItem);
+        for(int i=0; i<2000; i++){
+            if(i%5==0){
+                setCurrentItem(root());
+            }
+            newMap(false);
+        }*/
+        
     }
     
     public void refresh(DataEditorBase dataEditor){
         clear();
         
+        rootItem.removeAllChildren();
         rootItem.editorData = dataEditor;
         addTopLevelItem(rootItem);
         
@@ -206,7 +221,7 @@ public class MapTree extends DatabaseTree {
             //System.out.println(data.name);
             DatabaseTreeItem item = new DatabaseTreeItem(data.name, null, null, data);
             //DatabaseTreeItem item = generateItem(null, data);
-            addItem(item, parentItem);
+            addItem(item, parentItem, false);
             refreshRec((DataEditorMap) data, item);
             DataEditorTreeItem dataTree = (DataEditorTreeItem) item.editorData;
             
@@ -233,6 +248,9 @@ public class MapTree extends DatabaseTree {
         
         if(pastedData){
             gameData = (DataMap) TransferMgr.pasteGameData();
+            if(gameData == null){
+                gameData = new DataMap(0, "" , 32, 24);
+            }
             //editorData = (DataEditorMap) TransferMgr.pasteEditorData();
         }
         else{
@@ -251,9 +269,6 @@ public class MapTree extends DatabaseTree {
         addItem(item, parentItem, true);
         setItemExpanded(parentItem, true);
         setCurrentItem(item);
-        //expandPath(getSelectionPath());
-        
-        //item.gameData = null;
         
         checkEnabledMenuAction();
     }

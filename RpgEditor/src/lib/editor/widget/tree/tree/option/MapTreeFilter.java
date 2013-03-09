@@ -48,6 +48,7 @@ public class MapTreeFilter extends TreeFilter{
             
             for(TreeItem item : tree.getAllItems()){
                 if(item.text.toLowerCase().contains(filterText.toLowerCase())){
+                    item.removeAllChildren();
                     tree.addTopLevelItem(item);
                 }
             }

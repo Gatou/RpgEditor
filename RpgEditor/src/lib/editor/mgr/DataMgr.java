@@ -83,6 +83,10 @@ public class DataMgr {
     }
     
     public static Object load(String path){
+        if(! new File(path).exists()){
+            return null;
+        }
+            
         Object object = null;
         try {
             FileInputStream fis = new FileInputStream(path);

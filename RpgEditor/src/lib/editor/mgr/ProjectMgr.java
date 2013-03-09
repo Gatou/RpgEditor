@@ -10,10 +10,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import lib.editor.util.ProjectError;
 
 /**
  *
@@ -21,6 +24,8 @@ import javax.swing.JOptionPane;
  */
 public class ProjectMgr {
     
+
+    private static List<String> allPath = new ArrayList<String>();
     private static String projectPath, assetsPath, settingsPath, dataGamePath, dataEditorPath;
     //private static String ;
     
@@ -108,14 +113,31 @@ public class ProjectMgr {
     }
     
     private static void createPath(String path){
+        allPath.clear();
         projectPath = (new File(path)).getAbsolutePath();
         assetsPath = (new File(projectPath, "Assets")).getAbsolutePath();
         settingsPath = (new File(projectPath, "ProjectSettings")).getAbsolutePath();
         dataGamePath = (new File(projectPath, "Data/Game")).getAbsolutePath();
         dataEditorPath = (new File(projectPath, "Data/Editor")).getAbsolutePath();
+        
+        allPath.add(projectPath);
+        allPath.add(assetsPath);
+        allPath.add(settingsPath);
+        allPath.add(dataGamePath);
+        allPath.add(dataEditorPath);
     }
     
     private static void checkProjectValid(){
+        List<ProjectError> errors = new ArrayList<ProjectError>();
+        File file;
+        
+        for(String path : allPath){
+            file = new File(path);
+            if(!file.exists()){
+                errors.add(new ProjectError(ProjectError.FOLDER_MISSING, path));
+            }
+        }
+        /*
         String errorMessage = "";
         
         if(!(new File(projectPath).exists())){
@@ -133,17 +155,16 @@ public class ProjectMgr {
         //else if(!(new File(settingsPath).exists())){
         //    errorMessage = "This project is invalid.\nCan't find settings folder (" + settingsPath + ")";
         //}
+        */
         
-        
-        if(errorMessage.equals("")){ //Valid project
+        if(errors.size() == 0){ //Valid project
 
         }
         else{ //Invalid project
             closeProject();
             WidgetMgr.MAIN_WINDOW.setVisible(true);
-            
-            JOptionPane.showMessageDialog(WidgetMgr.MAIN_WINDOW, errorMessage, "Invalid project", JOptionPane.ERROR_MESSAGE);
-            
+            JOptionPane.showMessageDialog(WidgetMgr.MAIN_WINDOW, "Can't find folder (" + errors.get(0).path + ")", "Invalid project", JOptionPane.ERROR_MESSAGE);
+            //JOptionPane.showMessageDialog(WidgetMgr.MAIN_WINDOW, errorMessage, "Invalid project", JOptionPane.ERROR_MESSAGE);
             
         }
     }

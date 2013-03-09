@@ -85,6 +85,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
     }
     
     public void itemExpanded(TreeItem item){
+        
         for(int i=0; i<item.getChildCount(); i++){
             DatabaseTreeItem childItem = (DatabaseTreeItem) item.getChildAt(i);
             if(((DataEditorTreeItem)childItem.editorData).expanded){

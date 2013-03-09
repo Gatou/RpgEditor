@@ -18,7 +18,7 @@ public class TransferMgr {
     public static Object lastFocused;
     
     public static void copyGameData(Object data){
-        System.out.println(data);
+        //System.out.println(data);
         copiedGameData = DeepCopy.copy(data);
     }
     
