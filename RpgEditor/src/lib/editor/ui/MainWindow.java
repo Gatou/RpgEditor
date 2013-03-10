@@ -95,9 +95,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         
         
-        inspector = new Inspector();
-        inspector.propertyCollapsiblePane = propertyCollapsiblePane;
-        inspector.init();
+        inspector = new Inspector(jXTaskPaneContainer2);
         WidgetMgr.INSPECTOR = inspector;
         //Inspector.init();
         //propertyCollapsiblePane.add();
@@ -192,7 +190,6 @@ public class MainWindow extends javax.swing.JFrame {
         mapTreeCreateMapButton = new lib.editor.widget.button.ToolBarButton();
         mapTreeFilterTextField = new lib.editor.widget.textfield.IconTextField();
         jXTaskPaneContainer2 = new org.jdesktop.swingx.JXTaskPaneContainer();
-        propertyCollapsiblePane = new org.jdesktop.swingx.JXTaskPane();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileNew = new lib.editor.widget.menu.MenuItem();
@@ -410,13 +407,6 @@ public class MainWindow extends javax.swing.JFrame {
         org.jdesktop.swingx.VerticalLayout verticalLayout2 = new org.jdesktop.swingx.VerticalLayout();
         verticalLayout2.setGap(14);
         jXTaskPaneContainer2.setLayout(verticalLayout2);
-
-        propertyCollapsiblePane.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/project_root.png"))); // NOI18N
-        propertyCollapsiblePane.setScrollOnExpand(true);
-        propertyCollapsiblePane.setSpecial(true);
-        propertyCollapsiblePane.setTitle("Properties");
-        jXTaskPaneContainer2.add(propertyCollapsiblePane);
-
         jSplitPane3.setRightComponent(jXTaskPaneContainer2);
 
         middlePanel.add(jSplitPane3);
@@ -798,7 +788,6 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.button.ToolBarButton mapTreeCreateMapButton;
     private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
     private javax.swing.JPanel middlePanel;
-    private org.jdesktop.swingx.JXTaskPane propertyCollapsiblePane;
     private javax.swing.JLabel statusBarLabel;
     private lib.editor.widget.button.ToolBarButton toolBarCopy;
     private lib.editor.widget.button.ToolBarButton toolBarCut;

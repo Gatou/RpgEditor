@@ -4,9 +4,11 @@
  */
 package lib.editor.widget.inspector;
 
+import java.awt.Dimension;
 import javax.swing.JPanel;
 import lib.editor.data.game.DataMap;
 import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
 /**
  *
@@ -14,25 +16,43 @@ import org.jdesktop.swingx.JXTaskPane;
  */
 public class Inspector {
     
-    public JXTaskPane propertyCollapsiblePane;
+    public JXTaskPaneContainer container;
     public PropertyPanel propertyPanel;
+    private int mode;
     
-    public Inspector(){
+    public Inspector(JXTaskPaneContainer container){
+        this.container = container;
+        container.setPreferredSize(new Dimension(200, 0));
+        container.setMinimumSize(container.getPreferredSize());
+         
         propertyPanel = new PropertyPanel();
+        container.add(propertyPanel.collapsible);
+        
+        hide();
     }
     
-    public void init(){
-        propertyCollapsiblePane.add(propertyPanel);
-    }
     
     public void hide(){
-        propertyCollapsiblePane.setVisible(false);
+        mode = Inspector.Mode.Null;
+        //container.removeAll();
+        propertyPanel.collapsible.setVisible(false);
     }
     
     public void setMapMode(DataMap data){
         hide();
-        propertyCollapsiblePane.setVisible(true);
-        propertyPanel.refresh(data);
+        if(data != null){
+            mode = Inspector.Mode.Map;
+            propertyPanel.collapsible.setVisible(true);
+            propertyPanel.refresh(data);
+        }
     }
     
+    public int getMode(){
+        return mode;
+    }
+    
+    public class Mode{
+        public final static int Null = 0;
+        public final static int Map = 1;
+    }
 }

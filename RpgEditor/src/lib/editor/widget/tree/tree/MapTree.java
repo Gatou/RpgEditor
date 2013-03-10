@@ -10,6 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -57,10 +59,10 @@ import lib.editor.widget.tree.tree.option.MapTreeFilter;
 public class MapTree extends DatabaseTree {
     
     public final static String ROOT_NAME = "Project";
-    DatabaseTreeItem rootItem;
+    public DatabaseTreeItem rootItem;
             
     MenuItem newMapItem, copyItem, pasteItem, deleteItem;
-    MapTreeFilter filter;
+    //MapTreeFilter filter;
             
     
     public MapTree(){
@@ -164,7 +166,7 @@ public class MapTree extends DatabaseTree {
             //pasteItem.setEnabled(false);
             deleteItem.setEnabled(false);
         }      
-        else if(item == root()){
+        else if(item == rootItem){
             copyItem.setEnabled(false);
             deleteItem.setEnabled(false);
         }
@@ -177,19 +179,20 @@ public class MapTree extends DatabaseTree {
         WidgetMgr.MAIN_WINDOW.setActionEnabled("delete", deleteItem.isEnabled());
     }
     
-    public DatabaseTreeItem root(){
-        return rootItem;
-    }
+    //public DatabaseTreeItem getMapRoot(){
+    //    return rootItem;
+    //}
     
+    /*
     public List<TreeItem> getAllItems(){
         List<TreeItem> result = super.getAllItems();
         result.remove(0);
         return result;
-    }
+    }*/
     
     public void setup(){
         DataEditorBase rootMapEditorData = (DataEditorBase) DataMgr.load(new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file")).getAbsolutePath());
-        rootItem = new DatabaseTreeItem(ROOT_NAME, Mgr.icon.getIcon("project_root.png"), null, null);
+        rootItem = new DatabaseTreeItem(this, ROOT_NAME, Mgr.icon.getIcon("project_root.png"), null, null);
         
         refresh(rootMapEditorData);
         
@@ -209,20 +212,20 @@ public class MapTree extends DatabaseTree {
         clear();
         
         rootItem.removeAllChildren();
-        rootItem.editorData = dataEditor;
+        rootItem.editorData = (DataEditorTreeItem) dataEditor;
         addTopLevelItem(rootItem);
-        
-        refreshRec((DataEditorMap) dataEditor, (DatabaseTreeItem) root());
-        setItemExpanded(root(), true);
+        refreshRec((DataEditorMap) dataEditor, (DatabaseTreeItem) rootItem);
+        setItemExpanded(rootItem, true);
         
     }
         
     private void refreshRec(DataEditorMap dataEditorMap, DatabaseTreeItem parentItem){
         for(DataEditorBase data : dataEditorMap.children){
             //System.out.println(data.name);
-            DatabaseTreeItem item = new DatabaseTreeItem(data.name, null, null, data);
+            DatabaseTreeItem item = new DatabaseTreeItem(this, data.name, null, null, (DataEditorTreeItem) data);
             //DatabaseTreeItem item = generateItem(null, data);
-            addItem(item, parentItem, false);
+            //addItem(item, parentItem, false);
+            parentItem.addChild(item, false);
             refreshRec((DataEditorMap) data, item);
             DataEditorTreeItem dataTree = (DataEditorTreeItem) item.editorData;
             
@@ -263,11 +266,13 @@ public class MapTree extends DatabaseTree {
         //editorData.id = gameData.id;
         //editorData.name = gameData.name;
         
-        DatabaseTreeItem item = new DatabaseTreeItem(gameData.name, null, gameData, editorData);
+        DatabaseTreeItem item = new DatabaseTreeItem(this, gameData.name, null, gameData, editorData);
         
-        addItem(item, parentItem, true);
+        parentItem.addChild(item, true);
         setItemExpanded(parentItem, true);
         setCurrentItem(item);
+        
+        WidgetMgr.INSPECTOR.propertyPanel.focusNameTextField();
         
         checkEnabledMenuAction();
     }
@@ -299,8 +304,9 @@ public class MapTree extends DatabaseTree {
         TreeItem item = getCurrentItem();
         TreeItem parentItem = (TreeItem) item.getParent();
         int index = parentItem.getIndex(item);
-                
-        removeItem(item);
+            
+        parentItem.removeChild(item);
+        //removeItem(item);
         
         int count = parentItem.getChildCount();
         if(count == 0){
@@ -320,9 +326,18 @@ public class MapTree extends DatabaseTree {
         checkEnabledMenuAction();
     }
     
+    //public List<TreeItem> getItems(){
+        //List<TreeItem> result = super.getItems();
+        //result.remove(0);
+        //return result;
+    //}
+    
     public void save(){
         
-        for(TreeItem item : getAllItems()){
+        List<TreeItem> items = getItems();
+        items.remove(0); //Remove the tree root ("Project")
+        
+        for(TreeItem item : items){
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
             
             if(dataItem.gameData != null){
@@ -332,7 +347,8 @@ public class MapTree extends DatabaseTree {
             }
         }
         
-        DataEditorMap rootMapEditorData = (DataEditorMap) root().editorData;
+        
+        DataEditorMap rootMapEditorData = (DataEditorMap) rootItem.editorData;
         
         File file = new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
         DataMgr.dump(rootMapEditorData, file.getAbsolutePath());
@@ -345,13 +361,17 @@ public class MapTree extends DatabaseTree {
     }
         
     public boolean itemWillCollapsed(TreeItem item){
-        if(item == root()){
+        if(item == rootItem){
             return false;
         }
         return super.itemWillCollapsed(item);
     }
     
     public DataBase getGameData(TreeItem item){
+        if(item == null){
+            return null;
+        }
+        
         DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
         DataBase data = dataItem.gameData;
         
@@ -364,23 +384,28 @@ public class MapTree extends DatabaseTree {
     }
     
     public DataBase getCurrentGameData(){
-        return getGameData(getCurrentItem());
-        /*
-        DataBase data = super.getCurrentGameData();
-        
-        if(data == null){
-            DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();
-            File file = new File(ProjectMgr.getDataGamePath(), "Map" + item.editorData.getIdName() + "." + AppMgr.getExtension("data file"));
-            return (DataBase) DataMgr.load(file.getAbsolutePath());
-        }
-        
-        return data;*/
-        
+        return getGameData(getCurrentItem()); 
     }
     
     public void currentItemChanged(TreeItem newItem){
         super.currentItemChanged(newItem);
         WidgetMgr.INSPECTOR.setMapMode((DataMap) getGameData(newItem));
     }
+    
+    public void currentMapEdited(){
+        DataMap data = (DataMap) getCurrentGameData();
+        DatabaseTreeItem item = (DatabaseTreeItem) getCurrentItem();
+        item.gameData = data;
+    }
+    
+    public void mapNameChanged(String name){
+        currentMapEdited();
+        DataMap gameData = (DataMap) getCurrentGameData();
+        DataEditorBase editorData = getCurrentEditorData();
+        gameData.name = name;
+        editorData.name = name;
+        getCurrentItem().setText(name);
+    }
+    
     
 }

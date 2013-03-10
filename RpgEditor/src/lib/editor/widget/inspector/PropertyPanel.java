@@ -4,25 +4,59 @@
  */
 package lib.editor.widget.inspector;
 
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import lib.editor.data.game.DataMap;
+import lib.editor.mgr.WidgetMgr;
+import org.jdesktop.swingx.JXTaskPane;
 
 /**
  *
  * @author gaetan
  */
-public class PropertyPanel extends javax.swing.JPanel {
+public class PropertyPanel extends InspectorPanel {
 
+    
     /**
      * Creates new form PropertyPanel
      */
     public PropertyPanel() {
+        super("Properties", "project_root.png");
         initComponents();
+        
+        nameTextField.getDocument().addDocumentListener(new DocumentListener(){  
+            public void insertUpdate(DocumentEvent e) {
+                nameTextChanged();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                nameTextChanged();
+            }
+
+            public void changedUpdate(DocumentEvent e) {}
+      });  
     }
 
     public void refresh(DataMap data){
         idLabel.setText( String.valueOf(data.id));
         nameTextField.setText(data.name);
     }
+    
+    public void focusNameTextField(){
+        nameTextField.requestFocus();
+        nameTextField.selectAll();
+    }
+    
+    public void nameTextChanged(){
+        if(!refreshing){
+            switch(WidgetMgr.INSPECTOR.getMode()){
+                case (Inspector.Mode.Map):{
+                    WidgetMgr.MAP_TREE.mapNameChanged(nameTextField.getText());
+                }
+            }
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -43,6 +77,9 @@ public class PropertyPanel extends javax.swing.JPanel {
 
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
 
+        jPanel7.setMaximumSize(null);
+        jPanel7.setMinimumSize(new java.awt.Dimension(0, 28));
+        jPanel7.setPreferredSize(new java.awt.Dimension(0, 28));
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel2.setText("ID:");
@@ -54,10 +91,16 @@ public class PropertyPanel extends javax.swing.JPanel {
 
         idLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         idLabel.setText("jLabel3");
+        idLabel.setMaximumSize(null);
+        idLabel.setMinimumSize(null);
+        idLabel.setPreferredSize(null);
         jPanel7.add(idLabel);
 
         add(jPanel7);
 
+        jPanel6.setMaximumSize(null);
+        jPanel6.setMinimumSize(new java.awt.Dimension(0, 28));
+        jPanel6.setPreferredSize(new java.awt.Dimension(0, 28));
         jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
 
         jLabel1.setText("Name:");

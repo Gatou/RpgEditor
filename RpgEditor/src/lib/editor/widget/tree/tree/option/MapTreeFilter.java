@@ -26,34 +26,28 @@ public class MapTreeFilter extends TreeFilter{
     
     
     public MapTreeFilter(MapTree tree, JTextField filterTextField) {
-        super(filterTextField);
+        super(tree, filterTextField);
         this.tree = tree;
     }
     
     public void filterTextChanged(){
+        super.filterTextChanged();
+        
         String filterText = filterTextField.getText();
-        isFiltering = !filterText.equals("");
-        
-        
         
         if(filterText.equals("")){
-            tree.itemCacheEnabled = true;
-            //DatabaseTreeItem item = (DatabaseTreeItem) tree.itemsByText.get("Project");
-            tree.refresh(tree.root().editorData);
+            tree.refresh(tree.rootItem.editorData);
         }
         else{
-            tree.visualClear();
-
-            tree.itemCacheEnabled = false;
+            tree.clear();
             
-            for(TreeItem item : tree.getAllItems()){
-                if(item.text.toLowerCase().contains(filterText.toLowerCase())){
+            for(TreeItem item : items){
+                if(item.getText().toLowerCase().contains(filterText.toLowerCase())){
                     item.removeAllChildren();
                     tree.addTopLevelItem(item);
                 }
             }
             
-            tree.itemCacheEnabled = true;
         }
         
         tree.checkEnabledMenuAction();

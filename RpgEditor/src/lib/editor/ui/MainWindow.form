@@ -559,18 +559,6 @@
                   <JSplitPaneConstraints position="right"/>
                 </Constraint>
               </Constraints>
-              <SubComponents>
-                <Component class="org.jdesktop.swingx.JXTaskPane" name="propertyCollapsiblePane">
-                  <Properties>
-                    <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/assets/icons/project_root.png"/>
-                    </Property>
-                    <Property name="scrollOnExpand" type="boolean" value="true"/>
-                    <Property name="special" type="boolean" value="true"/>
-                    <Property name="title" type="java.lang.String" value="Properties"/>
-                  </Properties>
-                </Component>
-              </SubComponents>
               <LayoutCode>
                 <CodeStatement>
                   <CodeExpression id="1_verticalLayout2">
@@ -612,22 +600,6 @@
                   </StatementProvider>
                   <Parameters>
                     <CodeExpression id="1_verticalLayout2"/>
-                  </Parameters>
-                </CodeStatement>
-                <CodeStatement>
-                  <CodeExpression id="3_jXTaskPaneContainer2"/>
-                  <StatementProvider type="CodeMethod">
-                    <CodeMethod name="add" class="java.awt.Container" parameterTypes="java.awt.Component"/>
-                  </StatementProvider>
-                  <Parameters>
-                    <CodeExpression id="4_propertyCollapsiblePane">
-                      <CodeVariable name="propertyCollapsiblePane" type="8194" declaredType="org.jdesktop.swingx.JXTaskPane"/>
-                      <ExpressionOrigin>
-                        <ExpressionProvider type="ComponentRef">
-                          <ComponentRef name="propertyCollapsiblePane"/>
-                        </ExpressionProvider>
-                      </ExpressionOrigin>
-                    </CodeExpression>
                   </Parameters>
                 </CodeStatement>
               </LayoutCode>

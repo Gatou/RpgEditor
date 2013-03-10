@@ -5,6 +5,8 @@
 package lib.editor.util;
 
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractAction;
 import javax.swing.JComponent;
@@ -20,6 +22,19 @@ public class Shortcut {
     
     public Shortcut(JComponent source, KeyStroke shortcut, String name, final boolean autoRepeat, final AbstractAction action){
         isRepeated = false;
+        
+        source.addFocusListener(new FocusListener() {
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                isRepeated = false;
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                isRepeated = false;
+            }
+        });
         
         source.getInputMap().put(shortcut, name);
         source.getActionMap().put(name,

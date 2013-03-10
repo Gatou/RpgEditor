@@ -10,6 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import javax.swing.tree.TreeSelectionModel;
 import lib.editor.data.editor.DataEditorTreeItem;
 import lib.editor.widget.tree.item.DatabaseTreeItem;
 import lib.editor.widget.tree.item.TreeItem;
+import lib.editor.widget.tree.tree.option.TreeFilter;
 import org.jdesktop.swingx.JXTree;
 
 
@@ -36,16 +38,16 @@ import org.jdesktop.swingx.JXTree;
  */
 public abstract class Tree extends JXTree{
     
-    public boolean itemCacheEnabled;
-    public List<TreeItem> itemCache;
-    int topLevelItemCount;
-    
+    //public boolean itemCacheEnabled;
+    //public List<TreeItem> itemCache;
+    //int topLevelItemCount;
+    public TreeFilter filter;
     
     public Tree(){
-        topLevelItemCount = 0;
-        itemCacheEnabled = true;
+        //topLevelItemCount = 0;
+        //itemCacheEnabled = true;
         
-        TreeItem root = new TreeItem("", null);
+        TreeItem root = new TreeItem(this, "", null);
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         model.setRoot(root);
         //DefaultMutableTreeNode root = (DefaultMutableTreeNode)model.getRoot();
@@ -53,7 +55,7 @@ public abstract class Tree extends JXTree{
         //root.add(new TreeItem("another_child"));
         //expandRow(0);
         
-        itemCache = new ArrayList<TreeItem>();
+        //itemCache = new ArrayList<TreeItem>();
         
         setRootVisible(false);
         setCellRenderer(new TreeItemRenderer());
@@ -62,7 +64,12 @@ public abstract class Tree extends JXTree{
         
         addTreeSelectionListener(new TreeSelectionListener() {
             public void valueChanged(TreeSelectionEvent e) {
-                currentItemChanged((TreeItem)e.getNewLeadSelectionPath().getLastPathComponent());
+                if(e.getNewLeadSelectionPath() == null){
+                    currentItemChanged(null);
+                }
+                else{
+                    currentItemChanged((TreeItem)e.getNewLeadSelectionPath().getLastPathComponent());
+                }
             }
         });
         
@@ -145,29 +152,29 @@ public abstract class Tree extends JXTree{
     }
     
     public void clear(){
-        topLevelItemCount = 0;
-        itemCache.clear();
+        //topLevelItemCount = 0;
+        //itemCache.clear();
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         getRoot().removeAllChildren();
         model.reload(getRoot());
     }
-    
+    /*
     public void visualClear(){
-        topLevelItemCount = 0;
+        //topLevelItemCount = 0;
         DefaultTreeModel model = (DefaultTreeModel)getModel();
         getRoot().removeAllChildren();
         model.reload(getRoot());
-    }
+    }*/
     
     public int getTopLevelItemCount(){
-        return topLevelItemCount;
+        return getRoot().getChildCount();
     }
     
     public void addTopLevelItem(TreeItem item){
-        topLevelItemCount += 1;
-        addItem(item, getRoot());
-        //DefaultTreeModel model = (DefaultTreeModel)getModel();
-        //model.insertNodeInto(item, getRoot(), getRoot().getChildCount());
+        //topLevelItemCount += 1;
+        //addItem(item, getRoot());
+        DefaultTreeModel model = (DefaultTreeModel)getModel();
+        model.insertNodeInto(item, getRoot(), getRoot().getChildCount());
         //model.reload(getRoot());
     }
     
@@ -196,46 +203,20 @@ public abstract class Tree extends JXTree{
         setSelectionPath(new TreePath(item.getPath()));
     }
     
-    public void addItem(TreeItem item, TreeItem parentItem){
-        DefaultTreeModel model = (DefaultTreeModel)getModel();
-        model.insertNodeInto(item, parentItem, parentItem.getChildCount());
-        //model.reload(getRoot());
-        if(itemCacheEnabled){
-            itemCache.add(item);
+    public List<TreeItem> getItems(){
+        if(filter != null && filter.items != null){
+            System.out.println(filter.items.size());
+            return new ArrayList<TreeItem>(filter.items);
         }
         
-    }
-    
-    public void removeItem(TreeItem item){
-        DefaultTreeModel model = (DefaultTreeModel)getModel();
-        model.removeNodeFromParent(item);
-        //model.reload(getRoot());
-        if(itemCacheEnabled){
-            itemCache.remove(item);
-        }
-        
-        for(int i=0; i<item.getChildCount(); i++){
-            removeItem((TreeItem) item.getChildAt(i));
-        }
-    }
-    
-    public List<TreeItem> getAllItems(){
-        return new ArrayList<TreeItem>(itemCache);
-    }
-    /*
-    public List<TreeItem> getAllItems(){
         List<TreeItem> result = new ArrayList<TreeItem>();
-        getAllItemsRec(getRoot(), result);
+        Enumeration e = getRoot().breadthFirstEnumeration();
+        e.nextElement();
+        while(e.hasMoreElements()){
+            result.add((TreeItem) e.nextElement());
+        }
         return result;
     }
-    
-    private void getAllItemsRec(TreeItem parentItem, List<TreeItem> result){
-        for(int i=0; i<parentItem.getChildCount(); i++){
-            TreeItem item = (TreeItem) parentItem.getChildAt(i);
-            result.add(item);
-            getAllItemsRec(item, result);
-        }
-    }*/
     
     public void setItemExpanded(TreeItem item, boolean expanded){
         if(expanded){

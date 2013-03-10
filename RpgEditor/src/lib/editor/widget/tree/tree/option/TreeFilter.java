@@ -5,6 +5,7 @@
 package lib.editor.widget.tree.tree.option;
 
 import java.util.Enumeration;
+import java.util.List;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.event.DocumentEvent;
@@ -22,8 +23,12 @@ public abstract class TreeFilter {
     
     JTextField filterTextField;
     public boolean isFiltering;
+    public List<TreeItem> items;
+    Tree source;
     
-    public TreeFilter(JTextField filterTextField){
+    public TreeFilter(Tree source, JTextField filterTextField){
+        this.source = source;
+        
         this.filterTextField = filterTextField;
         isFiltering = false;
                 
@@ -43,8 +48,23 @@ public abstract class TreeFilter {
         
     }
     
+    public void needRefresh(){
+        items = null;
+    }
     
     public void filterTextChanged(){
+        String filterText = filterTextField.getText();
+        
+        if(filterText.equals("")){
+            isFiltering = false;
+            items = null;
+        }
+        else{
+            isFiltering = true;
+            if(items == null){
+                items = source.getItems();
+            }
+        }
     }
     
 

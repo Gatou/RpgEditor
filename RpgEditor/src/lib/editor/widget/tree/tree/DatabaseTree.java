@@ -5,6 +5,7 @@
 package lib.editor.widget.tree.tree;
 
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
@@ -33,12 +34,17 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         int id = 1;
         List<Integer> allId = new ArrayList<Integer>();
         
-
+        List<TreeItem> items = getItems();
+        for(TreeItem item : items){
+            DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
+            allId.add(dataItem.editorData.id);
+        }
+        /*
         for(TreeItem item : getAllItems()){
             
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
             allId.add(dataItem.editorData.id);
-        }
+        }*/
         while(allId.contains(id)){
             id += 1;
         }
@@ -63,6 +69,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         return item.editorData;
     }
     
+    /*
     public void addItem(TreeItem item, TreeItem parentItem, boolean addToDatabase){
         super.addItem(item, parentItem);
         DataEditorTreeItem parentData = (DataEditorTreeItem) ((DatabaseTreeItem) parentItem).editorData;
@@ -82,7 +89,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         deletedItems.add((DatabaseTreeItem) item);
         
         super.removeItem(item);
-    }
+    }*/
     
     public void itemExpanded(TreeItem item){
         

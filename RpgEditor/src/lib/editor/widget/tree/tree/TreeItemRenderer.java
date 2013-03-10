@@ -34,8 +34,8 @@ public class TreeItemRenderer extends DefaultTreeCellRenderer{
                 boolean hasFocus) {
 
         TreeItem item = (TreeItem) value;
-        label.setIcon(item.icon);
-        label.setText(item.text);
+        label.setIcon(item.getIcon());
+        label.setText(item.getText());
         
         if (sel) {
             label.setForeground(textSelectionColor);
