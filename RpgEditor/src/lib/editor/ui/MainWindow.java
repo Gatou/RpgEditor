@@ -75,7 +75,9 @@ public class MainWindow extends javax.swing.JFrame {
         initComponents();
         
         mapEditor = new MapEditorGraphicsView();
+        WidgetMgr.MAP_EDITOR = mapEditor;
         jPanel3.add(mapEditor.getCanvas());
+        
         
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         

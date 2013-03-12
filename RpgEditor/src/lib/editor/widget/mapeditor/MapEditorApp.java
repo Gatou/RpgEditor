@@ -15,6 +15,7 @@ import com.badlogic.gdx.math.Intersector;
 import com.badlogic.gdx.math.Plane;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.math.collision.Ray;
+import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
@@ -24,31 +25,24 @@ import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
  */
 public class MapEditorApp  implements ApplicationListener, InputProcessor {
 
+
     public static final Plane XY_PLANE = new Plane(new Vector3(0, 0, 1), 0);
-	final Vector3 curr = new Vector3();
-	final Vector3 last = new Vector3(-1, -1, -1);
-	final Vector3 delta = new Vector3();
-        
-        final Vector3 camPos = new Vector3();
-        
-    IsoGrid grid;
-    public OrthographicCamera camera; 
+    final Vector3 curr = new Vector3();
+    final Vector3 last = new Vector3(-1, -1, -1);
+    final Vector3 delta = new Vector3();
+
     
-    @Override
     public void create() {
         WindowMgr.init();
         
-        grid = new IsoGrid(100, 100, 32, 16);
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-      // if (resources.openFile("/editor-bg.png") != null) bgImage = new Image(gl, "/editor-bg.png");
-      Gdx.input.setInputProcessor(this);
+        
+        Gdx.input.setInputProcessor(this);
     }
 
     @Override
     public void resize(int width, int height) {
       Gdx.gl.glViewport(0, 0, width, height);
-      camera.setToOrtho(true, width, height);
-      camera.position.set( camPos);
+      WidgetMgr.MAP_EDITOR.resize(width, height);
       WindowMgr.resize(width, height);
       //spriteBatch.getProjectionMatrix().setToOrtho(0, width, height, 0, 0, 1);
 
@@ -57,10 +51,7 @@ public class MapEditorApp  implements ApplicationListener, InputProcessor {
 
     @Override
     public void render() {
-        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
-        camera.update();
-        grid.update(camera);
-        
+        WidgetMgr.MAP_EDITOR.update();
         WindowMgr.update();
     }
 
@@ -95,7 +86,6 @@ public class MapEditorApp  implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.print("lal");
         return false;
     }
 
@@ -107,22 +97,24 @@ public class MapEditorApp  implements ApplicationListener, InputProcessor {
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-		if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
+        OrthographicCamera camera = WidgetMgr.MAP_EDITOR.camera;
+        
+        if(Gdx.input.isButtonPressed(Input.Buttons.RIGHT)){
 
-			Ray pickRay = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
-			Intersector.intersectRayPlane(pickRay, XY_PLANE, curr);
+                Ray pickRay = camera.getPickRay(Gdx.input.getX(), Gdx.input.getY());
+                Intersector.intersectRayPlane(pickRay, XY_PLANE, curr);
 
-			if(!(last.x == -1 && last.y == -1 && last.z == -1)) {
-				pickRay = camera.getPickRay(last.x, last.y);
-				Intersector.intersectRayPlane(pickRay, XY_PLANE, delta);			
-				delta.sub(curr);
-				camera.position.add(delta.x, delta.y, delta.z);
-                                
-			}
-			last.set(Gdx.input.getX(), Gdx.input.getY(), 0);
-                        camPos.set(camera.position);
-		}
-		return false;
+                if(!(last.x == -1 && last.y == -1 && last.z == -1)) {
+                        pickRay = camera.getPickRay(last.x, last.y);
+                        Intersector.intersectRayPlane(pickRay, XY_PLANE, delta);			
+                        delta.sub(curr);
+                        camera.position.add(delta.x, delta.y, delta.z);
+
+                }
+                last.set(Gdx.input.getX(), Gdx.input.getY(), 0);
+                WidgetMgr.MAP_EDITOR.camPos.set(camera.position);
+        }
+        return false;
     }
 
     @Override

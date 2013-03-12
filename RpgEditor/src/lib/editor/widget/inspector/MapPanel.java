@@ -5,6 +5,7 @@
 package lib.editor.widget.inspector;
 
 import java.awt.Dimension;
+import javax.swing.JSpinner;
 import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -21,6 +22,7 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
 public class MapPanel extends InspectorPanel {
 
     
+    
     /**
      * Creates new form PropertyPanel
      */
@@ -33,12 +35,42 @@ public class MapPanel extends InspectorPanel {
         textPanel.setPreferredSize(new Dimension(LEFT_COLUMN_WIDTH, textPanel.getComponentCount()*28));
     }
 
-    public void refresh(DataBase data){
+    public void refresh(){
+        refreshing = true;
         DataMap dataMap = (DataMap) data;
-        widthSpinner.setValue(dataMap.width);
-        heightSpinner.setValue(dataMap.height);
+        resetSpinners();
+        setSizeText();
+        refreshing = false;
+        //widthSpinner.setValue(dataMap.width);
+        //heightSpinner.setValue(dataMap.height);
     }
     
+    public void resetSpinners(){
+        topSpinner.setValue(0);
+        bottomSpinner.setValue(0);
+        leftSpinner.setValue(0);
+        rightSpinner.setValue(0);
+    }
+    
+    public void setSizeText(){
+        DataMap dataMap = (DataMap) data;
+        int width = dataMap.width + (((Integer)rightSpinner.getValue() - (Integer)leftSpinner.getValue()));
+        int height = dataMap.height + (((Integer)bottomSpinner.getValue() - (Integer)topSpinner.getValue()));
+        sizeLabel.setText(width + " x " + height);
+        WidgetMgr.MAP_EDITOR.resizeGrid(width, height);
+    }
+    
+    public void setSpinnerValue(JSpinner spinner, int value){
+        spinner.setValue(value);
+        if(!refreshing){
+            setSizeText();
+        }
+        
+    }
+    
+    public void resizeMap(){
+        
+    }
     
     /**
      * This method is called from within the constructor to initialize the form.
@@ -50,30 +82,74 @@ public class MapPanel extends InspectorPanel {
     private void initComponents() {
 
         textPanel = new javax.swing.JPanel();
+        jLabel6 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(20, 32767));
         jPanel2 = new javax.swing.JPanel();
-        widthSpinner = new javax.swing.JSpinner();
-        heightSpinner = new javax.swing.JSpinner();
-        jButton1 = new javax.swing.JButton();
+        sizeLabel = new javax.swing.JLabel();
+        jPanel1 = new javax.swing.JPanel();
+        topIncreaseButton = new javax.swing.JButton();
+        topDecreaseButton = new javax.swing.JButton();
+        topSpinner = new javax.swing.JSpinner();
+        jPanel3 = new javax.swing.JPanel();
+        bottomDecreaseButton = new javax.swing.JButton();
+        bottomIncreaseButton = new javax.swing.JButton();
+        bottomSpinner = new javax.swing.JSpinner();
+        jPanel4 = new javax.swing.JPanel();
+        leftIncreaseButton = new javax.swing.JButton();
+        leftDecreaseButton = new javax.swing.JButton();
+        leftSpinner = new javax.swing.JSpinner();
+        jPanel5 = new javax.swing.JPanel();
+        rightDecreaseButton = new javax.swing.JButton();
+        rightIncreaseButton = new javax.swing.JButton();
+        rightSpinner = new javax.swing.JSpinner();
+        jPanel6 = new javax.swing.JPanel();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        applyButton = new javax.swing.JButton();
 
         setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
         textPanel.setMaximumSize(null);
         textPanel.setLayout(new java.awt.GridLayout(0, 1));
 
-        jLabel2.setText("Width");
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/grid.png"))); // NOI18N
+        jLabel6.setText("Size");
+        jLabel6.setMaximumSize(new java.awt.Dimension(28, 28));
+        jLabel6.setMinimumSize(new java.awt.Dimension(28, 28));
+        jLabel6.setPreferredSize(new java.awt.Dimension(28, 28));
+        textPanel.add(jLabel6);
+
+        jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/grid_top.png"))); // NOI18N
+        jLabel2.setText("Top");
         jLabel2.setMaximumSize(new java.awt.Dimension(28, 28));
         jLabel2.setMinimumSize(new java.awt.Dimension(28, 28));
         jLabel2.setPreferredSize(new java.awt.Dimension(28, 28));
         textPanel.add(jLabel2);
 
-        jLabel1.setText("Height");
+        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/grid_down.png"))); // NOI18N
+        jLabel1.setText("Bottom");
         jLabel1.setMaximumSize(new java.awt.Dimension(28, 28));
         jLabel1.setMinimumSize(new java.awt.Dimension(28, 28));
         jLabel1.setPreferredSize(new java.awt.Dimension(28, 28));
         textPanel.add(jLabel1);
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/grid_left.png"))); // NOI18N
+        jLabel4.setText("Left");
+        jLabel4.setMaximumSize(new java.awt.Dimension(28, 28));
+        jLabel4.setMinimumSize(new java.awt.Dimension(28, 28));
+        jLabel4.setPreferredSize(new java.awt.Dimension(28, 28));
+        textPanel.add(jLabel4);
+
+        jLabel5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/grid_right.png"))); // NOI18N
+        jLabel5.setText("Right");
+        jLabel5.setMaximumSize(new java.awt.Dimension(28, 28));
+        jLabel5.setMinimumSize(new java.awt.Dimension(28, 28));
+        jLabel5.setPreferredSize(new java.awt.Dimension(28, 28));
+        textPanel.add(jLabel5);
 
         jLabel3.setMaximumSize(new java.awt.Dimension(28, 28));
         jLabel3.setMinimumSize(new java.awt.Dimension(28, 28));
@@ -81,35 +157,234 @@ public class MapPanel extends InspectorPanel {
         textPanel.add(jLabel3);
 
         add(textPanel);
+        add(filler1);
 
         jPanel2.setMaximumSize(null);
         jPanel2.setLayout(new java.awt.GridLayout(0, 1));
-        jPanel2.add(widthSpinner);
-        jPanel2.add(heightSpinner);
 
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/refresh.png"))); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        sizeLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        sizeLabel.setText("10x 10");
+        sizeLabel.setMaximumSize(new java.awt.Dimension(28, 28));
+        sizeLabel.setMinimumSize(new java.awt.Dimension(28, 28));
+        sizeLabel.setPreferredSize(new java.awt.Dimension(28, 28));
+        jPanel2.add(sizeLabel);
+
+        jPanel1.setMaximumSize(new java.awt.Dimension(32831, 28));
+        jPanel1.setMinimumSize(new java.awt.Dimension(93, 28));
+        jPanel1.setPreferredSize(new java.awt.Dimension(100, 28));
+        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
+
+        topIncreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_up.png"))); // NOI18N
+        topIncreaseButton.setMargin(null);
+        topIncreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        topIncreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        topIncreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        topIncreaseButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                topIncreaseButtonActionPerformed(evt);
             }
         });
-        jPanel2.add(jButton1);
+        jPanel1.add(topIncreaseButton);
+
+        topDecreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_down.png"))); // NOI18N
+        topDecreaseButton.setMargin(null);
+        topDecreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        topDecreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        topDecreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        topDecreaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                topDecreaseButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(topDecreaseButton);
+        jPanel1.add(topSpinner);
+
+        jPanel2.add(jPanel1);
+
+        jPanel3.setMaximumSize(new java.awt.Dimension(32831, 28));
+        jPanel3.setMinimumSize(new java.awt.Dimension(93, 28));
+        jPanel3.setPreferredSize(new java.awt.Dimension(100, 28));
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
+
+        bottomDecreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_up.png"))); // NOI18N
+        bottomDecreaseButton.setMargin(null);
+        bottomDecreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        bottomDecreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        bottomDecreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        bottomDecreaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bottomDecreaseButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(bottomDecreaseButton);
+
+        bottomIncreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_down.png"))); // NOI18N
+        bottomIncreaseButton.setMargin(null);
+        bottomIncreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        bottomIncreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        bottomIncreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        bottomIncreaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bottomIncreaseButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(bottomIncreaseButton);
+        jPanel3.add(bottomSpinner);
+
+        jPanel2.add(jPanel3);
+
+        jPanel4.setMaximumSize(new java.awt.Dimension(32831, 28));
+        jPanel4.setMinimumSize(new java.awt.Dimension(93, 28));
+        jPanel4.setPreferredSize(new java.awt.Dimension(100, 28));
+        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
+
+        leftIncreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_left.png"))); // NOI18N
+        leftIncreaseButton.setMargin(null);
+        leftIncreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        leftIncreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        leftIncreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        leftIncreaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                leftIncreaseButtonActionPerformed(evt);
+            }
+        });
+        jPanel4.add(leftIncreaseButton);
+
+        leftDecreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_right.png"))); // NOI18N
+        leftDecreaseButton.setMargin(null);
+        leftDecreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        leftDecreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        leftDecreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        leftDecreaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                leftDecreaseButtonActionPerformed(evt);
+            }
+        });
+        jPanel4.add(leftDecreaseButton);
+        jPanel4.add(leftSpinner);
+
+        jPanel2.add(jPanel4);
+
+        jPanel5.setMaximumSize(new java.awt.Dimension(32831, 28));
+        jPanel5.setMinimumSize(new java.awt.Dimension(93, 28));
+        jPanel5.setPreferredSize(new java.awt.Dimension(100, 28));
+        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
+
+        rightDecreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_left.png"))); // NOI18N
+        rightDecreaseButton.setMargin(null);
+        rightDecreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        rightDecreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        rightDecreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        rightDecreaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rightDecreaseButtonActionPerformed(evt);
+            }
+        });
+        jPanel5.add(rightDecreaseButton);
+
+        rightIncreaseButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/arrow_right.png"))); // NOI18N
+        rightIncreaseButton.setMargin(null);
+        rightIncreaseButton.setMaximumSize(new java.awt.Dimension(28, 28));
+        rightIncreaseButton.setMinimumSize(new java.awt.Dimension(28, 28));
+        rightIncreaseButton.setPreferredSize(new java.awt.Dimension(28, 28));
+        rightIncreaseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rightIncreaseButtonActionPerformed(evt);
+            }
+        });
+        jPanel5.add(rightIncreaseButton);
+        jPanel5.add(rightSpinner);
+
+        jPanel2.add(jPanel5);
+
+        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel6.add(filler2);
+
+        applyButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/refresh.png"))); // NOI18N
+        applyButton.setText("Apply");
+        applyButton.setMargin(null);
+        applyButton.setMaximumSize(null);
+        applyButton.setMinimumSize(new java.awt.Dimension(60, 25));
+        applyButton.setPreferredSize(new java.awt.Dimension(80, 25));
+        applyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                applyButtonActionPerformed(evt);
+            }
+        });
+        jPanel6.add(applyButton);
+
+        jPanel2.add(jPanel6);
 
         add(jPanel2);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+    private void applyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyButtonActionPerformed
+        DataMap dataMap = (DataMap) data;
+        resetSpinners();
+        resizeMap();
+    }//GEN-LAST:event_applyButtonActionPerformed
+
+    private void topIncreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topIncreaseButtonActionPerformed
+        setSpinnerValue(topSpinner, ((Integer)topSpinner.getValue())-1);
+    }//GEN-LAST:event_topIncreaseButtonActionPerformed
+
+    private void topDecreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topDecreaseButtonActionPerformed
+        setSpinnerValue(topSpinner, ((Integer)topSpinner.getValue())+1);
+    }//GEN-LAST:event_topDecreaseButtonActionPerformed
+
+    private void bottomDecreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bottomDecreaseButtonActionPerformed
+        setSpinnerValue(bottomSpinner, ((Integer)bottomSpinner.getValue())-1);
+    }//GEN-LAST:event_bottomDecreaseButtonActionPerformed
+
+    private void bottomIncreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bottomIncreaseButtonActionPerformed
+        setSpinnerValue(bottomSpinner, ((Integer)bottomSpinner.getValue())+1);
+    }//GEN-LAST:event_bottomIncreaseButtonActionPerformed
+
+    private void leftIncreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leftIncreaseButtonActionPerformed
+        setSpinnerValue(leftSpinner, ((Integer)leftSpinner.getValue())-1);
+    }//GEN-LAST:event_leftIncreaseButtonActionPerformed
+
+    private void leftDecreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leftDecreaseButtonActionPerformed
+        setSpinnerValue(leftSpinner, ((Integer)leftSpinner.getValue())+1);
+    }//GEN-LAST:event_leftDecreaseButtonActionPerformed
+
+    private void rightDecreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightDecreaseButtonActionPerformed
+        setSpinnerValue(rightSpinner, ((Integer)rightSpinner.getValue())-1);
+    }//GEN-LAST:event_rightDecreaseButtonActionPerformed
+
+    private void rightIncreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rightIncreaseButtonActionPerformed
+        setSpinnerValue(rightSpinner, ((Integer)rightSpinner.getValue())+1);
+    }//GEN-LAST:event_rightIncreaseButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JSpinner heightSpinner;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton applyButton;
+    private javax.swing.JButton bottomDecreaseButton;
+    private javax.swing.JButton bottomIncreaseButton;
+    private javax.swing.JSpinner bottomSpinner;
+    private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JButton leftDecreaseButton;
+    private javax.swing.JButton leftIncreaseButton;
+    private javax.swing.JSpinner leftSpinner;
+    private javax.swing.JButton rightDecreaseButton;
+    private javax.swing.JButton rightIncreaseButton;
+    private javax.swing.JSpinner rightSpinner;
+    private javax.swing.JLabel sizeLabel;
     private javax.swing.JPanel textPanel;
-    private javax.swing.JSpinner widthSpinner;
+    private javax.swing.JButton topDecreaseButton;
+    private javax.swing.JButton topIncreaseButton;
+    private javax.swing.JSpinner topSpinner;
     // End of variables declaration//GEN-END:variables
 }

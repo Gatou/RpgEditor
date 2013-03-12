@@ -24,7 +24,7 @@ public class Inspector {
     
     public Inspector(JXTaskPaneContainer container){
         this.container = container;
-        container.setPreferredSize(new Dimension(200, 0));
+        container.setPreferredSize(new Dimension(240, 0));
         container.setMinimumSize(container.getPreferredSize());
          
         panels = new Hashtable<String, InspectorPanel>();
@@ -38,18 +38,16 @@ public class Inspector {
     public void hide(){
         mode = Inspector.Mode.Null;
         //container.removeAll();
-        panels.get("property").collapsible.setVisible(false);
-        panels.get("map").collapsible.setVisible(false);
+        panels.get("property").setVisible(false, null);
+        panels.get("map").setVisible(false, null);
     }
     
     public void setMapMode(DataMap data){
         hide();
         if(data != null){
             mode = Inspector.Mode.Map;
-            panels.get("property").collapsible.setVisible(true);
-            panels.get("property").refresh(data);
-            panels.get("map").collapsible.setVisible(true);
-            panels.get("map").refresh(data);
+            panels.get("property").setVisible(true, data);
+            panels.get("map").setVisible(true, data);
         }
     }
     

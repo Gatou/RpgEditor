@@ -44,7 +44,7 @@ public class PropertyPanel extends InspectorPanel {
         textPanel.setPreferredSize(new Dimension(LEFT_COLUMN_WIDTH, getComponentCount()*28));
     }
 
-    public void refresh(DataBase data){
+    public void refresh(){
         idLabel.setText( String.valueOf(data.id));
         nameTextField.setText(data.name);
     }

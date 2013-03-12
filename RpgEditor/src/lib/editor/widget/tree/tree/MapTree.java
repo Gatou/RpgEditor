@@ -252,12 +252,12 @@ public class MapTree extends DatabaseTree {
         if(pastedData){
             gameData = (DataMap) TransferMgr.pasteGameData();
             if(gameData == null){
-                gameData = new DataMap(0, "" , 32, 24);
+                gameData = new DataMap(0, "" , 4, 8);
             }
             //editorData = (DataEditorMap) TransferMgr.pasteEditorData();
         }
         else{
-            gameData = new DataMap(0, "" , 32, 24);
+            gameData = new DataMap(0, "" , 4, 8);
             
         }
         
@@ -391,6 +391,7 @@ public class MapTree extends DatabaseTree {
     public void currentItemChanged(TreeItem newItem){
         super.currentItemChanged(newItem);
         WidgetMgr.INSPECTOR.setMapMode((DataMap) getGameData(newItem));
+        WidgetMgr.MAP_EDITOR.refresh((DataMap) getGameData(newItem));
     }
     
     public void currentMapEdited(){

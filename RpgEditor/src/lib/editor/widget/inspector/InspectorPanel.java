@@ -23,6 +23,8 @@ public abstract class InspectorPanel extends JPanel{
     public JXTaskPane collapsible;
     boolean refreshing;
     
+    DataBase data;
+    
     public InspectorPanel(JXTaskPaneContainer container, String title, String iconFilename){
 
         
@@ -41,8 +43,16 @@ public abstract class InspectorPanel extends JPanel{
         
     }
 
-    public void refresh(DataBase data){
-        
+    public void refresh(){
+    }
+    
+    public void setVisible(boolean visible, DataBase data){
+        this.data = data;
+        if(visible){
+            refresh();
+        }
+        collapsible.setVisible(visible);
+        super.setVisible(visible);
     }
         
 }
