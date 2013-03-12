@@ -6,8 +6,11 @@ package lib.editor.widget.inspector;
 
 import java.awt.Dimension;
 import javax.swing.JPanel;
+import javax.swing.SpringLayout;
+import lib.editor.data.game.DataBase;
 import lib.editor.mgr.Mgr;
 import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
 /**
  *
@@ -15,10 +18,12 @@ import org.jdesktop.swingx.JXTaskPane;
  */
 public abstract class InspectorPanel extends JPanel{
     
+    public static final int LEFT_COLUMN_WIDTH = 70;
+    
     public JXTaskPane collapsible;
     boolean refreshing;
     
-    public InspectorPanel(String title, String iconFilename){
+    public InspectorPanel(JXTaskPaneContainer container, String title, String iconFilename){
 
         
         collapsible = new JXTaskPane();
@@ -30,8 +35,14 @@ public abstract class InspectorPanel extends JPanel{
         collapsible.setTitle(title);
         collapsible.add(this);
         
+        container.add(collapsible);
         refreshing = false;
+        
+        
     }
 
+    public void refresh(DataBase data){
+        
+    }
         
 }

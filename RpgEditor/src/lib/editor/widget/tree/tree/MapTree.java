@@ -48,6 +48,7 @@ import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.util.Shortcut;
 import lib.editor.widget.inspector.Inspector;
+import lib.editor.widget.inspector.PropertyPanel;
 import lib.editor.widget.menu.MenuItem;
 import lib.editor.widget.tree.item.DatabaseTreeItem;
 import lib.editor.widget.tree.tree.option.MapTreeFilter;
@@ -272,7 +273,7 @@ public class MapTree extends DatabaseTree {
         setItemExpanded(parentItem, true);
         setCurrentItem(item);
         
-        WidgetMgr.INSPECTOR.propertyPanel.focusNameTextField();
+        ((PropertyPanel) WidgetMgr.INSPECTOR.panels.get("property")).focusNameTextField();
         
         checkEnabledMenuAction();
     }

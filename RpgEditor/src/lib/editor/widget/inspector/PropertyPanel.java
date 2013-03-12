@@ -4,11 +4,15 @@
  */
 package lib.editor.widget.inspector;
 
+import java.awt.Dimension;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import lib.editor.data.game.DataBase;
 import lib.editor.data.game.DataMap;
 import lib.editor.mgr.WidgetMgr;
+import static lib.editor.widget.inspector.InspectorPanel.LEFT_COLUMN_WIDTH;
 import org.jdesktop.swingx.JXTaskPane;
+import org.jdesktop.swingx.JXTaskPaneContainer;
 
 /**
  *
@@ -20,8 +24,8 @@ public class PropertyPanel extends InspectorPanel {
     /**
      * Creates new form PropertyPanel
      */
-    public PropertyPanel() {
-        super("Properties", "project_root.png");
+    public PropertyPanel(JXTaskPaneContainer container) {
+        super(container, "Properties", "project_root.png");
         initComponents();
         
         nameTextField.getDocument().addDocumentListener(new DocumentListener(){  
@@ -34,10 +38,13 @@ public class PropertyPanel extends InspectorPanel {
             }
 
             public void changedUpdate(DocumentEvent e) {}
-      });  
+        }); 
+        
+        textPanel.setMaximumSize(new Dimension(LEFT_COLUMN_WIDTH, getComponentCount()*28));
+        textPanel.setPreferredSize(new Dimension(LEFT_COLUMN_WIDTH, getComponentCount()*28));
     }
 
-    public void refresh(DataMap data){
+    public void refresh(DataBase data){
         idLabel.setText( String.valueOf(data.id));
         nameTextField.setText(data.name);
     }
@@ -66,65 +73,45 @@ public class PropertyPanel extends InspectorPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel7 = new javax.swing.JPanel();
+        textPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
-        idLabel = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 0), new java.awt.Dimension(16, 32767));
+        jPanel2 = new javax.swing.JPanel();
+        idLabel = new javax.swing.JLabel();
         nameTextField = new javax.swing.JTextField();
 
-        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.PAGE_AXIS));
+        setLayout(new javax.swing.BoxLayout(this, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel7.setMaximumSize(null);
-        jPanel7.setMinimumSize(new java.awt.Dimension(0, 28));
-        jPanel7.setPreferredSize(new java.awt.Dimension(0, 28));
-        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
+        textPanel.setLayout(new java.awt.GridLayout(0, 1));
 
-        jLabel2.setText("ID:");
-        jLabel2.setMaximumSize(null);
-        jLabel2.setMinimumSize(null);
-        jLabel2.setPreferredSize(null);
-        jPanel7.add(jLabel2);
-        jPanel7.add(filler1);
+        jLabel2.setText("ID");
+        textPanel.add(jLabel2);
+
+        jLabel1.setText("Name");
+        textPanel.add(jLabel1);
+
+        add(textPanel);
+
+        jPanel2.setLayout(new java.awt.GridLayout(0, 1));
 
         idLabel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         idLabel.setText("jLabel3");
         idLabel.setMaximumSize(null);
         idLabel.setMinimumSize(null);
         idLabel.setPreferredSize(null);
-        jPanel7.add(idLabel);
-
-        add(jPanel7);
-
-        jPanel6.setMaximumSize(null);
-        jPanel6.setMinimumSize(new java.awt.Dimension(0, 28));
-        jPanel6.setPreferredSize(new java.awt.Dimension(0, 28));
-        jPanel6.setLayout(new javax.swing.BoxLayout(jPanel6, javax.swing.BoxLayout.LINE_AXIS));
-
-        jLabel1.setText("Name:");
-        jLabel1.setMaximumSize(null);
-        jLabel1.setMinimumSize(null);
-        jLabel1.setPreferredSize(null);
-        jPanel6.add(jLabel1);
-        jPanel6.add(filler2);
+        jPanel2.add(idLabel);
 
         nameTextField.setMaximumSize(null);
-        nameTextField.setMinimumSize(null);
-        nameTextField.setPreferredSize(null);
-        jPanel6.add(nameTextField);
+        jPanel2.add(nameTextField);
 
-        add(jPanel6);
+        add(jPanel2);
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.Box.Filler filler1;
-    private javax.swing.Box.Filler filler2;
     private javax.swing.JLabel idLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField nameTextField;
+    private javax.swing.JPanel textPanel;
     // End of variables declaration//GEN-END:variables
 }
