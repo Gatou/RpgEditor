@@ -57,7 +57,8 @@ public class MapPanel extends InspectorPanel {
         int width = dataMap.width + (((Integer)rightSpinner.getValue() - (Integer)leftSpinner.getValue()));
         int height = dataMap.height + (((Integer)bottomSpinner.getValue() - (Integer)topSpinner.getValue()));
         sizeLabel.setText(width + " x " + height);
-        WidgetMgr.MAP_EDITOR.resizeGrid(width, height);
+        WidgetMgr.MAP_EDITOR.resizeRenderer.setResize(dataMap.width, dataMap.height, width, height, (Integer)topSpinner.getValue(), (Integer)bottomSpinner.getValue(), (Integer)leftSpinner.getValue(), (Integer)rightSpinner.getValue());
+        
     }
     
     public void setSpinnerValue(JSpinner spinner, int value){

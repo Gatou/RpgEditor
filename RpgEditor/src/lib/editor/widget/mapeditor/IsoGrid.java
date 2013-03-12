@@ -14,7 +14,7 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer.ShapeType;
  */
 public class IsoGrid {
     
-    int width, height, cellWidth, cellHeight;
+    private int width, height, cellWidth, cellHeight;
     ShapeRenderer shapeRenderer;
     
     public IsoGrid(int width, int height, int cellWidth, int cellHeight){
@@ -22,19 +22,20 @@ public class IsoGrid {
         this.height = height;
         this.cellWidth = cellWidth;
         this.cellHeight = cellHeight;
-        
+        shapeRenderer = new ShapeRenderer();
+        shapeRenderer.setColor(1, 1, 1, 1);
     }
 
-
+    public void resize(int width, int height){
+        this.width = width;
+        this.height = height;
+    }
+    
     void update(OrthographicCamera camera) {
-        if(shapeRenderer == null){
-            shapeRenderer = new ShapeRenderer();
-        }
-        
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeType.Line);
           
-        shapeRenderer.setColor(1, 1, 1, 1);
+        
         
         int lineWidth = (width*cellWidth)/2;
         int lineHeight = (height*cellHeight)/2;

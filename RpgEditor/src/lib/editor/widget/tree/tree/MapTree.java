@@ -257,7 +257,7 @@ public class MapTree extends DatabaseTree {
             //editorData = (DataEditorMap) TransferMgr.pasteEditorData();
         }
         else{
-            gameData = new DataMap(0, "" , 4, 8);
+            gameData = new DataMap(0, "" , 300, 300);
             
         }
         
