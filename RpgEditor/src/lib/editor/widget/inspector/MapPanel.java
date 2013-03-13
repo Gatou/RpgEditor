@@ -126,10 +126,14 @@ public class MapPanel extends InspectorPanel {
         
         rightDecreaseButton.setEnabled(rightSpinner.prevButton.isEnabled());
         rightIncreaseButton.setEnabled(rightSpinner.nextButton.isEnabled());
+        
+        boolean applyEnbaled = (Integer)topSpinner.getValue() != 0 || (Integer)bottomSpinner.getValue() != 0 || (Integer)leftSpinner.getValue() != 0 || (Integer)rightSpinner.getValue() != 0;
+        applyButton.setEnabled(applyEnbaled);
     }
     
-    public void resizeMap(){
-        
+    public void applyResizeMap(){
+        DataMap dataMap = (DataMap) data;
+        resetSpinners();
     }
     
     /**
@@ -403,9 +407,7 @@ public class MapPanel extends InspectorPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void applyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_applyButtonActionPerformed
-        DataMap dataMap = (DataMap) data;
-        resetSpinners();
-        resizeMap();
+        applyResizeMap();
     }//GEN-LAST:event_applyButtonActionPerformed
 
     private void topIncreaseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_topIncreaseButtonActionPerformed

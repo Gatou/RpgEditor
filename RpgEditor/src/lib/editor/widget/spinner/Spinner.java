@@ -23,6 +23,7 @@ public class Spinner extends JSpinner{
     public Spinner() {
         for(Component comp : getComponents()){
             if(comp instanceof JButton){
+                System.out.println(comp.getName());
                 if(comp.getName().equals("Spinner.nextButton")){
                     nextButton = (JButton) comp;
                 }
@@ -36,13 +37,15 @@ public class Spinner extends JSpinner{
         addChangeListener(new ChangeListener() {
 
             public void stateChanged(ChangeEvent e) {
+                System.out.println(getValue());
                 nextButton.setEnabled((Integer)getValue() < getMaximum());
                 prevButton.setEnabled((Integer)getValue() > getMinimum());
             }
         });
         
-        nextButton.setEnabled((Integer)getValue() < getMaximum());
-        prevButton.setEnabled((Integer)getValue() > getMinimum());
+        
+        nextButton.setEnabled((Integer)getValue() < (Integer)getMaximum());
+        prevButton.setEnabled((Integer)getValue() > (Integer)getMinimum());
     }
     
     public JButton getNextButton(){

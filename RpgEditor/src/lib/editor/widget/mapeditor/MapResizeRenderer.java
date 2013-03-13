@@ -42,19 +42,20 @@ public class MapResizeRenderer {
         updateTop();
         updateBottom();
         updateLeft();
+        updateRight();
         shapeRenderer.end();
     }
     
     public void updateTop(){
         if(top > 0){
-            for(int i=0; i<width; i++){
+            for(int i=0; i<width+left-right; i++){
                 for(int j=0; j<top; j++){
                     drawDiamond(i, j);
                 }
             }
         }
         else if(top < 0){
-            for(int i=0; i<width; i++){
+            for(int i=left; i<width+left-right; i++){
                 for(int j=-1; j>top-1; j--){
                     drawDiamond(i, j);
                 }
@@ -64,14 +65,14 @@ public class MapResizeRenderer {
     
     public void updateBottom(){
         if(bottom > 0){
-            for(int i=0; i<width; i++){
+            for(int i=0; i<width+left-right; i++){
                 for(int j=originalHeight; j<originalHeight+bottom; j++){
                     drawDiamond(i, j);
                 }
             }
         }
         else if (bottom < 0){
-            for(int i=0; i<width; i++){
+            for(int i=0; i<width+left-right; i++){
                 for(int j=originalHeight-1; j>originalHeight+bottom-1; j--){
                     drawDiamond(i, j);
                 }
@@ -81,15 +82,32 @@ public class MapResizeRenderer {
     
     public void updateLeft(){
         if(left > 0){
-            for(int i=0; i<height; i++){
+            for(int i=top; i<height+top; i++){
                 for(int j=0; j<left; j++){
                     drawDiamond(j, i);
                 }
             }
         }
         else if(left < 0){
-            for(int i=0; i<height; i++){
+            for(int i=top; i<height+top; i++){
                 for(int j=-1; j>left-1; j--){
+                    drawDiamond(j, i);
+                }
+            }
+        }
+    }
+    
+    public void updateRight(){
+        if(right > 0){
+            for(int i=top; i<height+top; i++){
+                for(int j=originalWidth; j<originalWidth+right; j++){
+                    drawDiamond(j, i);
+                }
+            }
+        }
+        else if(right < 0){
+            for(int i=top; i<height+top; i++){
+                for(int j=originalWidth-1; j>originalWidth+right-1; j--){
                     drawDiamond(j, i);
                 }
             }
