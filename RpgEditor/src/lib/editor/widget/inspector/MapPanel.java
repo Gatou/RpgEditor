@@ -55,6 +55,7 @@ public class MapPanel extends InspectorPanel {
         setSpinnerValue(leftSpinner, 0);
         setSpinnerValue(rightSpinner, 0);
         adjustSpinners();
+        
     }
     
     public void setSizeText(){
@@ -133,7 +134,13 @@ public class MapPanel extends InspectorPanel {
     
     public void applyResizeMap(){
         DataMap dataMap = (DataMap) data;
-        resetSpinners();
+        //resetSpinners();
+        
+        dataMap.width = getResizedWidth();
+        dataMap.height = getResizedHeight();
+        WidgetMgr.MAP_EDITOR.refresh(dataMap);
+        
+        refresh();
     }
     
     /**
