@@ -39,40 +39,58 @@ public class MapResizeRenderer {
     public void update(OrthographicCamera camera){
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeType.FilledTriangle);
-        updateTop(top);
-        updateBottom(bottom);
+        updateTop();
+        updateBottom();
+        updateLeft();
         shapeRenderer.end();
     }
     
-    public void updateTop(int value){
-        if(value > 0){
+    public void updateTop(){
+        if(top > 0){
             for(int i=0; i<width; i++){
-                for(int j=0; j<value; j++){
+                for(int j=0; j<top; j++){
                     drawDiamond(i, j);
                 }
             }
         }
-        else{
+        else if(top < 0){
             for(int i=0; i<width; i++){
-                for(int j=-1; j>value-1; j--){
+                for(int j=-1; j>top-1; j--){
                     drawDiamond(i, j);
                 }
             }
         }
     }
     
-    public void updateBottom(int value){
-        if(value > 0){
+    public void updateBottom(){
+        if(bottom > 0){
             for(int i=0; i<width; i++){
-                for(int j=originalHeight; j<originalHeight+value; j++){
+                for(int j=originalHeight; j<originalHeight+bottom; j++){
                     drawDiamond(i, j);
                 }
             }
         }
-        else{
+        else if (bottom < 0){
             for(int i=0; i<width; i++){
-                for(int j=originalHeight-1; j>originalHeight+value-1; j--){
+                for(int j=originalHeight-1; j>originalHeight+bottom-1; j--){
                     drawDiamond(i, j);
+                }
+            }
+        }
+    }
+    
+    public void updateLeft(){
+        if(left > 0){
+            for(int i=0; i<height; i++){
+                for(int j=0; j<left; j++){
+                    drawDiamond(j, i);
+                }
+            }
+        }
+        else if(left < 0){
+            for(int i=0; i<height; i++){
+                for(int j=-1; j>left-1; j--){
+                    drawDiamond(j, i);
                 }
             }
         }

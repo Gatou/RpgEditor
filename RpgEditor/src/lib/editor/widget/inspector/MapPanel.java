@@ -4,14 +4,18 @@
  */
 package lib.editor.widget.inspector;
 
+import java.awt.Component;
 import java.awt.Dimension;
+import javax.swing.JButton;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import lib.editor.data.game.DataBase;
 import lib.editor.data.game.DataMap;
 import lib.editor.mgr.WidgetMgr;
+import lib.editor.util.Cst;
 import org.jdesktop.swingx.JXTaskPane;
 import org.jdesktop.swingx.JXTaskPaneContainer;
 
@@ -33,6 +37,7 @@ public class MapPanel extends InspectorPanel {
         
         textPanel.setMaximumSize(new Dimension(LEFT_COLUMN_WIDTH, textPanel.getComponentCount()*28));
         textPanel.setPreferredSize(new Dimension(LEFT_COLUMN_WIDTH, textPanel.getComponentCount()*28));
+        
     }
 
     public void refresh(){
@@ -40,25 +45,25 @@ public class MapPanel extends InspectorPanel {
         DataMap dataMap = (DataMap) data;
         resetSpinners();
         setSizeText();
+        adjustSpinners();
         refreshing = false;
-        //widthSpinner.setValue(dataMap.width);
-        //heightSpinner.setValue(dataMap.height);
     }
     
     public void resetSpinners(){
-        topSpinner.setValue(0);
-        bottomSpinner.setValue(0);
-        leftSpinner.setValue(0);
-        rightSpinner.setValue(0);
+        setSpinnerValue(topSpinner, 0);
+        setSpinnerValue(bottomSpinner, 0);
+        setSpinnerValue(leftSpinner, 0);
+        setSpinnerValue(rightSpinner, 0);
+        adjustSpinners();
     }
     
     public void setSizeText(){
         DataMap dataMap = (DataMap) data;
-        int width = dataMap.width + (((Integer)rightSpinner.getValue() - (Integer)leftSpinner.getValue()));
-        int height = dataMap.height + (((Integer)bottomSpinner.getValue() - (Integer)topSpinner.getValue()));
+        int width = getResizedWidth();
+        int height = getResizedHeight();
         sizeLabel.setText(width + " x " + height);
         WidgetMgr.MAP_EDITOR.resizeRenderer.setResize(dataMap.width, dataMap.height, width, height, (Integer)topSpinner.getValue(), (Integer)bottomSpinner.getValue(), (Integer)leftSpinner.getValue(), (Integer)rightSpinner.getValue());
-        
+        adjustSpinners();
     }
     
     public void setSpinnerValue(JSpinner spinner, int value){
@@ -66,7 +71,61 @@ public class MapPanel extends InspectorPanel {
         if(!refreshing){
             setSizeText();
         }
+        adjustSpinners();
+    }
+    
+    public void adjustSpinners(){
+        int topMax = Math.min(getCurrentHeight() + (Integer)bottomSpinner.getValue() - 1, getCurrentHeight() - 1);
+        topSpinner.setMaximum(topMax);
+        topSpinner.setMinimum(-Cst.MAX_MAP_HEIGHT/2);
         
+        int bottomMax = Math.max(-getCurrentHeight() + (Integer)topSpinner.getValue() + 1, -getCurrentHeight() +1);
+        bottomSpinner.setMinimum(bottomMax);
+        bottomSpinner.setMaximum(Cst.MAX_MAP_HEIGHT/2);
+        
+        int leftMax = Math.min(getCurrentWidth() + (Integer)rightSpinner.getValue() - 1, getCurrentWidth() - 1);
+        leftSpinner.setMaximum(leftMax);
+        leftSpinner.setMinimum(-Cst.MAX_MAP_WIDTH/2);
+        
+        int rightMax = Math.max(-getCurrentWidth() + (Integer)leftSpinner.getValue() + 1, -getCurrentWidth() +1);
+        rightSpinner.setMinimum(rightMax);
+        rightSpinner.setMaximum(Cst.MAX_MAP_HEIGHT/2);
+        
+        checkButtonsEnabled();
+    }
+    
+    public int getCurrentWidth(){
+        DataMap dataMap = (DataMap) data;
+        return dataMap.width;
+    }
+    
+    public int getCurrentHeight(){
+        DataMap dataMap = (DataMap) data;
+        return dataMap.height;
+    }
+    
+    public int getResizedWidth(){
+        DataMap dataMap = (DataMap) data;
+        return dataMap.width + (((Integer)rightSpinner.getValue() - (Integer)leftSpinner.getValue()));
+    }
+    
+    public int getResizedHeight(){
+        DataMap dataMap = (DataMap) data;
+        return dataMap.height + (((Integer)bottomSpinner.getValue() - (Integer)topSpinner.getValue()));
+    }
+    
+    public void checkButtonsEnabled(){
+        topDecreaseButton.setEnabled(topSpinner.nextButton.isEnabled());
+        topIncreaseButton.setEnabled(topSpinner.prevButton.isEnabled());
+        
+        bottomDecreaseButton.setEnabled(bottomSpinner.prevButton.isEnabled());
+        bottomIncreaseButton.setEnabled(bottomSpinner.nextButton.isEnabled());
+        
+        leftDecreaseButton.setEnabled(leftSpinner.nextButton.isEnabled());
+        leftIncreaseButton.setEnabled(leftSpinner.prevButton.isEnabled());
+        
+        rightDecreaseButton.setEnabled(rightSpinner.prevButton.isEnabled());
+        rightIncreaseButton.setEnabled(rightSpinner.nextButton.isEnabled());
     }
     
     public void resizeMap(){
@@ -95,19 +154,19 @@ public class MapPanel extends InspectorPanel {
         jPanel1 = new javax.swing.JPanel();
         topIncreaseButton = new javax.swing.JButton();
         topDecreaseButton = new javax.swing.JButton();
-        topSpinner = new javax.swing.JSpinner();
+        topSpinner = new lib.editor.widget.spinner.Spinner();
         jPanel3 = new javax.swing.JPanel();
         bottomDecreaseButton = new javax.swing.JButton();
         bottomIncreaseButton = new javax.swing.JButton();
-        bottomSpinner = new javax.swing.JSpinner();
+        bottomSpinner = new lib.editor.widget.spinner.Spinner();
         jPanel4 = new javax.swing.JPanel();
         leftIncreaseButton = new javax.swing.JButton();
         leftDecreaseButton = new javax.swing.JButton();
-        leftSpinner = new javax.swing.JSpinner();
+        leftSpinner = new lib.editor.widget.spinner.Spinner();
         jPanel5 = new javax.swing.JPanel();
         rightDecreaseButton = new javax.swing.JButton();
         rightIncreaseButton = new javax.swing.JButton();
-        rightSpinner = new javax.swing.JSpinner();
+        rightSpinner = new lib.editor.widget.spinner.Spinner();
         jPanel6 = new javax.swing.JPanel();
         filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         applyButton = new javax.swing.JButton();
@@ -198,6 +257,12 @@ public class MapPanel extends InspectorPanel {
             }
         });
         jPanel1.add(topDecreaseButton);
+
+        topSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                topSpinnerStateChanged(evt);
+            }
+        });
         jPanel1.add(topSpinner);
 
         jPanel2.add(jPanel1);
@@ -230,6 +295,12 @@ public class MapPanel extends InspectorPanel {
             }
         });
         jPanel3.add(bottomIncreaseButton);
+
+        bottomSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                bottomSpinnerStateChanged(evt);
+            }
+        });
         jPanel3.add(bottomSpinner);
 
         jPanel2.add(jPanel3);
@@ -262,6 +333,12 @@ public class MapPanel extends InspectorPanel {
             }
         });
         jPanel4.add(leftDecreaseButton);
+
+        leftSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                leftSpinnerStateChanged(evt);
+            }
+        });
         jPanel4.add(leftSpinner);
 
         jPanel2.add(jPanel4);
@@ -294,6 +371,12 @@ public class MapPanel extends InspectorPanel {
             }
         });
         jPanel5.add(rightIncreaseButton);
+
+        rightSpinner.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                rightSpinnerStateChanged(evt);
+            }
+        });
         jPanel5.add(rightSpinner);
 
         jPanel2.add(jPanel5);
@@ -357,11 +440,27 @@ public class MapPanel extends InspectorPanel {
         setSpinnerValue(rightSpinner, ((Integer)rightSpinner.getValue())+1);
     }//GEN-LAST:event_rightIncreaseButtonActionPerformed
 
+    private void topSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_topSpinnerStateChanged
+        setSpinnerValue(topSpinner, (Integer)topSpinner.getValue());
+    }//GEN-LAST:event_topSpinnerStateChanged
+
+    private void bottomSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bottomSpinnerStateChanged
+        setSpinnerValue(bottomSpinner, (Integer)bottomSpinner.getValue());
+    }//GEN-LAST:event_bottomSpinnerStateChanged
+
+    private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
+        setSpinnerValue(leftSpinner, (Integer)leftSpinner.getValue());
+    }//GEN-LAST:event_leftSpinnerStateChanged
+
+    private void rightSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rightSpinnerStateChanged
+        setSpinnerValue(rightSpinner, (Integer)rightSpinner.getValue());
+    }//GEN-LAST:event_rightSpinnerStateChanged
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton applyButton;
     private javax.swing.JButton bottomDecreaseButton;
     private javax.swing.JButton bottomIncreaseButton;
-    private javax.swing.JSpinner bottomSpinner;
+    private lib.editor.widget.spinner.Spinner bottomSpinner;
     private javax.swing.Box.Filler filler1;
     private javax.swing.Box.Filler filler2;
     private javax.swing.JLabel jLabel1;
@@ -378,14 +477,14 @@ public class MapPanel extends InspectorPanel {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JButton leftDecreaseButton;
     private javax.swing.JButton leftIncreaseButton;
-    private javax.swing.JSpinner leftSpinner;
+    private lib.editor.widget.spinner.Spinner leftSpinner;
     private javax.swing.JButton rightDecreaseButton;
     private javax.swing.JButton rightIncreaseButton;
-    private javax.swing.JSpinner rightSpinner;
+    private lib.editor.widget.spinner.Spinner rightSpinner;
     private javax.swing.JLabel sizeLabel;
     private javax.swing.JPanel textPanel;
     private javax.swing.JButton topDecreaseButton;
     private javax.swing.JButton topIncreaseButton;
-    private javax.swing.JSpinner topSpinner;
+    private lib.editor.widget.spinner.Spinner topSpinner;
     // End of variables declaration//GEN-END:variables
 }

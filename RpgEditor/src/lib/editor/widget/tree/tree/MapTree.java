@@ -252,12 +252,12 @@ public class MapTree extends DatabaseTree {
         if(pastedData){
             gameData = (DataMap) TransferMgr.pasteGameData();
             if(gameData == null){
-                gameData = new DataMap(0, "" , 4, 8);
+                gameData = new DataMap(0, "" , 16, 16);
             }
             //editorData = (DataEditorMap) TransferMgr.pasteEditorData();
         }
         else{
-            gameData = new DataMap(0, "" , 300, 300);
+            gameData = new DataMap(0, "" , 16, 16);
             
         }
         

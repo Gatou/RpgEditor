@@ -230,7 +230,10 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="topDecreaseButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JSpinner" name="topSpinner">
+            <Component class="lib.editor.widget.spinner.Spinner" name="topSpinner">
+              <Events>
+                <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="topSpinnerStateChanged"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -293,7 +296,10 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="bottomIncreaseButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JSpinner" name="bottomSpinner">
+            <Component class="lib.editor.widget.spinner.Spinner" name="bottomSpinner">
+              <Events>
+                <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="bottomSpinnerStateChanged"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -356,7 +362,10 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="leftDecreaseButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JSpinner" name="leftSpinner">
+            <Component class="lib.editor.widget.spinner.Spinner" name="leftSpinner">
+              <Events>
+                <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="leftSpinnerStateChanged"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
@@ -419,7 +428,10 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rightIncreaseButtonActionPerformed"/>
               </Events>
             </Component>
-            <Component class="javax.swing.JSpinner" name="rightSpinner">
+            <Component class="lib.editor.widget.spinner.Spinner" name="rightSpinner">
+              <Events>
+                <EventHandler event="stateChanged" listener="javax.swing.event.ChangeListener" parameters="javax.swing.event.ChangeEvent" handler="rightSpinnerStateChanged"/>
+              </Events>
             </Component>
           </SubComponents>
         </Container>
