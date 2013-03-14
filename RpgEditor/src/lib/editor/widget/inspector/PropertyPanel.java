@@ -58,6 +58,7 @@ public class PropertyPanel extends InspectorPanel {
         if(!refreshing){
             switch(WidgetMgr.INSPECTOR.getMode()){
                 case (Inspector.Mode.Map):{
+                    collapsible.setTitle("Map");
                     WidgetMgr.MAP_TREE.mapNameChanged(nameTextField.getText());
                 }
             }

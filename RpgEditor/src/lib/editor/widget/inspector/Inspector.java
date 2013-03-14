@@ -29,7 +29,7 @@ public class Inspector {
          
         panels = new Hashtable<String, InspectorPanel>();
         panels.put("property", new PropertyPanel(container));
-        panels.put("map", new MapPanel(container));
+        panels.put("map", new MapSizePanel(container));
         
         hide();
     }

@@ -82,7 +82,7 @@ public class MapResizeRenderer {
     
     public void updateLeft(){
         if(left > 0){
-            for(int i=top; i<height+top; i++){
+            for(int i=0; i<height+top; i++){
                 for(int j=0; j<left; j++){
                     drawDiamond(j, i);
                 }

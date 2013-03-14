@@ -10,8 +10,7 @@ package lib.editor.util;
  */
 public class Cst {
     
-    public static final int MAX_MAP_WIDTH = 400;
-    public static final int MAX_MAP_HEIGHT = 400;
+    public static final int MAX_MAP_SIZE = 400;
     
     public static final int TILE_W = 32;
     public static final int TILE_H = 16;

@@ -23,15 +23,15 @@ import org.jdesktop.swingx.JXTaskPaneContainer;
  *
  * @author gaetan
  */
-public class MapPanel extends InspectorPanel {
+public class MapSizePanel extends InspectorPanel {
 
     
     
     /**
      * Creates new form PropertyPanel
      */
-    public MapPanel(JXTaskPaneContainer container) {
-        super(container, "Map", "project_root.png");
+    public MapSizePanel(JXTaskPaneContainer container) {
+        super(container, "Dimension", "grid.png");
         
         initComponents();
         
@@ -50,12 +50,23 @@ public class MapPanel extends InspectorPanel {
     }
     
     public void resetSpinners(){
-        setSpinnerValue(topSpinner, 0);
-        setSpinnerValue(bottomSpinner, 0);
-        setSpinnerValue(leftSpinner, 0);
-        setSpinnerValue(rightSpinner, 0);
-        adjustSpinners();
+        topSpinner.setMaximum(1);
+        topSpinner.setMinimum(-1);
+        topSpinner.setValue(0);
         
+        bottomSpinner.setMaximum(1);
+        bottomSpinner.setMinimum(-1);
+        bottomSpinner.setValue(0);
+        
+        leftSpinner.setMaximum(1);
+        leftSpinner.setMinimum(-1);
+        leftSpinner.setValue(0);
+        
+        rightSpinner.setMaximum(1);
+        rightSpinner.setMinimum(-1);
+        rightSpinner.setValue(0);
+        
+        adjustSpinners();
     }
     
     public void setSizeText(){
@@ -78,19 +89,21 @@ public class MapPanel extends InspectorPanel {
     public void adjustSpinners(){
         int topMax = Math.min(getCurrentHeight() + (Integer)bottomSpinner.getValue() - 1, getCurrentHeight() - 1);
         topSpinner.setMaximum(topMax);
-        topSpinner.setMinimum(-Cst.MAX_MAP_HEIGHT/2);
+        topSpinner.setMinimum(-(Cst.MAX_MAP_SIZE - getCurrentHeight()) + (Integer)bottomSpinner.getValue());
+        
         
         int bottomMax = Math.max(-getCurrentHeight() + (Integer)topSpinner.getValue() + 1, -getCurrentHeight() +1);
         bottomSpinner.setMinimum(bottomMax);
-        bottomSpinner.setMaximum(Cst.MAX_MAP_HEIGHT/2);
+        bottomSpinner.setMaximum((Cst.MAX_MAP_SIZE - getCurrentHeight()) + (Integer)topSpinner.getValue());
+        System.out.println(bottomSpinner.getMaximum());
         
         int leftMax = Math.min(getCurrentWidth() + (Integer)rightSpinner.getValue() - 1, getCurrentWidth() - 1);
         leftSpinner.setMaximum(leftMax);
-        leftSpinner.setMinimum(-Cst.MAX_MAP_WIDTH/2);
+        leftSpinner.setMinimum(-(Cst.MAX_MAP_SIZE - getCurrentWidth()) + (Integer)rightSpinner.getValue());
         
         int rightMax = Math.max(-getCurrentWidth() + (Integer)leftSpinner.getValue() + 1, -getCurrentWidth() +1);
         rightSpinner.setMinimum(rightMax);
-        rightSpinner.setMaximum(Cst.MAX_MAP_HEIGHT/2);
+        rightSpinner.setMaximum((Cst.MAX_MAP_SIZE - getCurrentWidth()) + (Integer)leftSpinner.getValue());
         
         checkButtonsEnabled();
     }
@@ -138,9 +151,10 @@ public class MapPanel extends InspectorPanel {
         
         dataMap.width = getResizedWidth();
         dataMap.height = getResizedHeight();
-        WidgetMgr.MAP_EDITOR.refresh(dataMap);
         
         refresh();
+        WidgetMgr.MAP_EDITOR.refresh(dataMap);
+        
     }
     
     /**
@@ -450,19 +464,27 @@ public class MapPanel extends InspectorPanel {
     }//GEN-LAST:event_rightIncreaseButtonActionPerformed
 
     private void topSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_topSpinnerStateChanged
-        setSpinnerValue(topSpinner, (Integer)topSpinner.getValue());
+        if(!refreshing){
+            setSpinnerValue(topSpinner, (Integer)topSpinner.getValue());
+        }
     }//GEN-LAST:event_topSpinnerStateChanged
 
     private void bottomSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_bottomSpinnerStateChanged
-        setSpinnerValue(bottomSpinner, (Integer)bottomSpinner.getValue());
+        if(!refreshing){
+            setSpinnerValue(bottomSpinner, (Integer)bottomSpinner.getValue());
+        }
     }//GEN-LAST:event_bottomSpinnerStateChanged
 
     private void leftSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_leftSpinnerStateChanged
-        setSpinnerValue(leftSpinner, (Integer)leftSpinner.getValue());
+        if(!refreshing){
+            setSpinnerValue(leftSpinner, (Integer)leftSpinner.getValue());
+        }
     }//GEN-LAST:event_leftSpinnerStateChanged
 
     private void rightSpinnerStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_rightSpinnerStateChanged
-        setSpinnerValue(rightSpinner, (Integer)rightSpinner.getValue());
+        if(!refreshing){
+            setSpinnerValue(rightSpinner, (Integer)rightSpinner.getValue());
+        }
     }//GEN-LAST:event_rightSpinnerStateChanged
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

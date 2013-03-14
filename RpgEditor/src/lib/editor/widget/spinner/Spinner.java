@@ -30,12 +30,14 @@ import javax.swing.text.PlainDocument;
  */
 public class Spinner extends JSpinner{
 
+    
     public JButton nextButton;
     public JButton prevButton;
     int maximum;
     int minimum;
     
     public Spinner() {
+        /*
         for(Component comp : getComponents()){
             if(comp instanceof JButton){
                 if(comp.getName().equals("Spinner.nextButton")){
@@ -45,11 +47,11 @@ public class Spinner extends JSpinner{
                     prevButton = (JButton) comp;
                 }
             }
-        }
+        }*/
         
         minimum = 0;
         maximum = 20;
-        //setModel(new SpinnerModel(this, 0, 0, 99, 1));
+        //setModel(new SpinnerNumberModel(0, null, null, 1));
         
         
         JTextField textField = ((JSpinner.DefaultEditor)getEditor()).getTextField();
@@ -68,6 +70,31 @@ public class Spinner extends JSpinner{
         setValue(0);
     }
     
+    public JButton getNextButton(){
+        if(nextButton == null){
+            for(Component comp : getComponents()){
+                if(comp instanceof JButton){
+                    if("Spinner.nextButton".equals(comp.getName())){
+                        nextButton = (JButton) comp;
+                    }
+                }
+            }
+        }
+        return nextButton;
+    }
+    
+    public JButton getPrevButton(){
+        if(prevButton == null){
+            for(Component comp : getComponents()){
+                if(comp instanceof JButton){
+                    if("Spinner.previousButton".equals(comp.getName())){
+                        prevButton = (JButton) comp;
+                    }
+                }
+            }
+        }
+        return prevButton;
+    }
     public boolean adjustValue(){
         JTextField texField = ((JSpinner.DefaultEditor)getEditor()).getTextField();
         try{
@@ -83,8 +110,12 @@ public class Spinner extends JSpinner{
     }
     
     public void checkUpDownButtonsEnabled(){
-        nextButton.setEnabled((Integer)getValue() < (Integer)getMaximum());
-        prevButton.setEnabled((Integer)getValue() > (Integer)getMinimum());
+        if(getNextButton() != null){
+            nextButton.setEnabled((Integer)getValue() < (Integer)getMaximum());
+        }
+        if(getPrevButton() != null){
+            prevButton.setEnabled((Integer)getValue() > (Integer)getMinimum());
+        }
     }
     
     public int getMaximum(){
@@ -114,6 +145,7 @@ public class Spinner extends JSpinner{
     }
     
     public void setValue(Object value){
+        int currentValue = (Integer) getValue();
         
         int v = (Integer) value;
         int result = v;
@@ -124,10 +156,13 @@ public class Spinner extends JSpinner{
             result = getMinimum();
         }
         
-        super.setValue(result);
-        checkUpDownButtonsEnabled();
+        if(result != currentValue){
+            super.setValue(result);
+            checkUpDownButtonsEnabled();
+        }
+            JTextField textField = ((JSpinner.DefaultEditor)getEditor()).getTextField();
+            textField.setText(String.valueOf(getValue()));
         
-        JTextField textField = ((JSpinner.DefaultEditor)getEditor()).getTextField();
-        textField.setText(String.valueOf(result));
+        
     }
 }
