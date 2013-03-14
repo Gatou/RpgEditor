@@ -37,6 +37,7 @@ public class MapEditorApp  implements ApplicationListener, InputProcessor {
         
         
         Gdx.input.setInputProcessor(this);
+        Gdx.graphics.getGL20().glClearColor(0.4f, 0.4f, 0.4f, 1);
     }
 
     @Override

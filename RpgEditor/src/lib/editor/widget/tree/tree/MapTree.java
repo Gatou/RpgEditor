@@ -388,7 +388,7 @@ public class MapTree extends DatabaseTree {
     }
     
     public DataBase getGameData(TreeItem item){
-        if(item == null){
+        if(item == null || item == rootItem){
             return null;
         }
         
@@ -430,7 +430,7 @@ public class MapTree extends DatabaseTree {
         currentMapEdited();
         DataMap gameData = (DataMap) getCurrentGameData();
         
-        System.out.println(gameData.name + " " + name);
+        //System.out.println(gameData.name + " " + name);
         if(name.equals(gameData.name)){ 
             return;
         }

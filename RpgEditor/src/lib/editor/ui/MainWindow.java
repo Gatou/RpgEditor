@@ -259,6 +259,13 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     
+    public void openWindow(String window){
+        statusBarLabel.setText("");
+        if(window.equals("resourceManager")){
+            (new ResourceManagerWindow(this, true)).setVisible(true);
+        }
+    }
+    
     public void refresh(){
         mapTree.setup();//setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
         
@@ -287,6 +294,7 @@ public class MainWindow extends javax.swing.JFrame {
         toolBarUndo = new lib.editor.widget.button.ToolBarButton();
         toolBarRedo = new lib.editor.widget.button.ToolBarButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
+        toolBarButton1 = new lib.editor.widget.button.ToolBarButton();
         jPanel1 = new javax.swing.JPanel();
         statusBarLabel = new javax.swing.JLabel();
         middlePanel = new javax.swing.JPanel();
@@ -316,6 +324,8 @@ public class MainWindow extends javax.swing.JFrame {
         editCopy = new lib.editor.widget.menu.MenuItem();
         editPaste = new lib.editor.widget.menu.MenuItem();
         editDelete = new lib.editor.widget.menu.MenuItem();
+        jMenu2 = new javax.swing.JMenu();
+        menuItem2 = new lib.editor.widget.menu.MenuItem();
         jMenu1 = new javax.swing.JMenu();
         menuItem1 = new lib.editor.widget.menu.MenuItem();
 
@@ -444,6 +454,18 @@ public class MainWindow extends javax.swing.JFrame {
         });
         mainToolBar.add(toolBarRedo);
         mainToolBar.add(jSeparator3);
+
+        toolBarButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/resource.png"))); // NOI18N
+        toolBarButton1.setFocusable(false);
+        toolBarButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        toolBarButton1.setStatusText("Open the resource manager.");
+        toolBarButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        toolBarButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                toolBarButton1ActionPerformed(evt);
+            }
+        });
+        mainToolBar.add(toolBarButton1);
 
         getContentPane().add(mainToolBar, java.awt.BorderLayout.PAGE_START);
 
@@ -643,6 +665,21 @@ public class MainWindow extends javax.swing.JFrame {
 
         mainMenuBar.add(editMenu);
 
+        jMenu2.setText("Tools");
+
+        menuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
+        menuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/resource.png"))); // NOI18N
+        menuItem2.setText("Resource Manager");
+        menuItem2.setStatusText("Open the resource manager.");
+        menuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItem2ActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuItem2);
+
+        mainMenuBar.add(jMenu2);
+
         jMenu1.setText("Game");
 
         menuItem1.setText("Open Game Folder");
@@ -762,6 +799,15 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_menuItem1ActionPerformed
 
+    private void toolBarButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarButton1ActionPerformed
+        openWindow("resourceManager");
+    }//GEN-LAST:event_toolBarButton1ActionPerformed
+
+    private void menuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItem2ActionPerformed
+        openWindow("resourceManager");
+    }//GEN-LAST:event_menuItem2ActionPerformed
+
+
 
     
 
@@ -781,6 +827,7 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.menu.MenuItem fileOpen;
     private lib.editor.widget.menu.MenuItem fileSave;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JMenu jMenu2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -800,8 +847,10 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.button.ToolBarButton mapTreeCreateMapButton;
     private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
     private lib.editor.widget.menu.MenuItem menuItem1;
+    private lib.editor.widget.menu.MenuItem menuItem2;
     private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
+    private lib.editor.widget.button.ToolBarButton toolBarButton1;
     private lib.editor.widget.button.ToolBarButton toolBarCopy;
     private lib.editor.widget.button.ToolBarButton toolBarCut;
     private lib.editor.widget.button.ToolBarButton toolBarDelete;
