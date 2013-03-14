@@ -31,6 +31,11 @@ public class IsoGrid {
         this.height = height;
     }
     
+    public void clear(){
+        width = 0;
+        height = 0;
+    }
+    
     void update(OrthographicCamera camera) {
         shapeRenderer.setProjectionMatrix(camera.combined);
         shapeRenderer.begin(ShapeType.Line);

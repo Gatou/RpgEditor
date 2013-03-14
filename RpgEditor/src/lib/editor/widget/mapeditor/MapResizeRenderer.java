@@ -23,6 +23,7 @@ public class MapResizeRenderer {
     public MapResizeRenderer() {
         shapeRenderer = new ShapeRenderer();
         shapeRenderer.setColor(new Color(255,0,0,20));
+        clear();
     }
     
     public void setResize(int originalWidth, int originalHeight, int width, int height, int top, int bottom, int left, int right){
@@ -34,6 +35,10 @@ public class MapResizeRenderer {
         this.bottom = bottom;
         this.left = left;
         this.right = right;
+    }
+    
+    public void clear(){
+        setResize(0, 0, 0, 0, 0, 0, 0, 0);
     }
     
     public void update(OrthographicCamera camera){

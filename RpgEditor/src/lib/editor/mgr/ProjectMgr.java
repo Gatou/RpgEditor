@@ -97,6 +97,7 @@ public class ProjectMgr {
             
         }
         
+        SaveMgr.clear();
     }
     
     public static void closeProject(){

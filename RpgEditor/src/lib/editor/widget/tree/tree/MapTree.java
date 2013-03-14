@@ -45,6 +45,7 @@ import lib.editor.mgr.DataMgr;
 import lib.editor.mgr.IconMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
+import lib.editor.mgr.SaveMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.util.Shortcut;
 import lib.editor.widget.inspector.Inspector;
@@ -195,7 +196,9 @@ public class MapTree extends DatabaseTree {
         DataEditorBase rootMapEditorData = (DataEditorBase) DataMgr.load(new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file")).getAbsolutePath());
         rootItem = new DatabaseTreeItem(this, ROOT_NAME, Mgr.icon.getIcon("project_root.png"), null, null);
         
-        refresh(rootMapEditorData);
+        rootItem.editorData = (DataEditorTreeItem) rootMapEditorData;
+        
+        refresh(null);
         
         checkEnabledMenuAction();
         /*
@@ -209,25 +212,37 @@ public class MapTree extends DatabaseTree {
         
     }
     
-    public void refresh(DataEditorBase dataEditor){
+    public void refresh(Map<Integer, TreeItem> itemsById){
         clear();
         
         rootItem.removeAllChildren();
-        rootItem.editorData = (DataEditorTreeItem) dataEditor;
+        
         addTopLevelItem(rootItem);
-        refreshRec((DataEditorMap) dataEditor, (DatabaseTreeItem) rootItem);
+        refreshRec((DataEditorMap) rootItem.editorData, (DatabaseTreeItem) rootItem, itemsById);
         setItemExpanded(rootItem, true);
         
     }
         
-    private void refreshRec(DataEditorMap dataEditorMap, DatabaseTreeItem parentItem){
+    private void refreshRec(DataEditorMap dataEditorMap, DatabaseTreeItem parentItem, Map<Integer, TreeItem> itemsById){
         for(DataEditorBase data : dataEditorMap.children){
+            
+            DatabaseTreeItem item = null;
+            
             //System.out.println(data.name);
-            DatabaseTreeItem item = new DatabaseTreeItem(this, data.name, null, null, (DataEditorTreeItem) data);
+            if(itemsById == null){
+                item = new DatabaseTreeItem(this, data.name, null, null, (DataEditorTreeItem) data);
+            }
+            else{
+                item = (DatabaseTreeItem) itemsById.get(data.id);
+            }
+            
             //DatabaseTreeItem item = generateItem(null, data);
             //addItem(item, parentItem, false);
             parentItem.addChild(item, false);
-            refreshRec((DataEditorMap) data, item);
+            
+
+            
+            refreshRec((DataEditorMap) data, item, itemsById);
             DataEditorTreeItem dataTree = (DataEditorTreeItem) item.editorData;
             
             if(dataTree.expanded){
@@ -276,6 +291,8 @@ public class MapTree extends DatabaseTree {
         ((PropertyPanel) WidgetMgr.INSPECTOR.panels.get("property")).focusNameTextField();
         
         checkEnabledMenuAction();
+        
+        SaveMgr.requestSaveEnabled();
     }
     
     
@@ -325,6 +342,8 @@ public class MapTree extends DatabaseTree {
         //setCurrentItem(rootItem);
         
         checkEnabledMenuAction();
+        
+        SaveMgr.requestSaveEnabled();
     }
     
     //public List<TreeItem> getItems(){
@@ -378,7 +397,14 @@ public class MapTree extends DatabaseTree {
         
         if(data == null){
             File file = new File(ProjectMgr.getDataGamePath(), "Map" + dataItem.editorData.getIdName() + "." + AppMgr.getExtension("data file"));
-            return (DataBase) DataMgr.load(file.getAbsolutePath());
+            data =  (DataBase) DataMgr.load(file.getAbsolutePath());
+            if(data == null){
+                data = new DataMap(0, "" , 16, 16);
+                data.id = dataItem.editorData.id;
+                data.name = dataItem.editorData.name;
+                dataItem.gameData = data;
+                SaveMgr.requestSaveEnabled();
+            }
         }
         
         return data;
@@ -403,10 +429,18 @@ public class MapTree extends DatabaseTree {
     public void mapNameChanged(String name){
         currentMapEdited();
         DataMap gameData = (DataMap) getCurrentGameData();
+        
+        System.out.println(gameData.name + " " + name);
+        if(name.equals(gameData.name)){ 
+            return;
+        }
+        
         DataEditorBase editorData = getCurrentEditorData();
         gameData.name = name;
         editorData.name = name;
         getCurrentItem().setText(name);
+        
+        SaveMgr.requestSaveEnabled();
     }
     
     

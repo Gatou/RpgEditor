@@ -205,7 +205,6 @@ public abstract class Tree extends JXTree{
     
     public List<TreeItem> getItems(){
         if(filter != null && filter.items != null){
-            System.out.println(filter.items.size());
             return new ArrayList<TreeItem>(filter.items);
         }
         

@@ -52,14 +52,14 @@ public class DataMgr {
         
     }
     
-    
+    /*
     public static void save(){
         WidgetMgr.MAP_TREE.save();
         //File file1 = new File(ProjectMgr.getDataGamePath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
         //File file = new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file"));
         //dump(dataEditor.get("MapInfos"), file.getAbsolutePath());
 
-    }
+    }*/
     
     public static void dump(Object object, String path){
         try{

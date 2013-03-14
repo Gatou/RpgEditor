@@ -24,6 +24,7 @@ public class MapEditorGraphicsView extends GraphicsView{
     public MapResizeRenderer resizeRenderer;
     final Vector3 camPos = new Vector3();
     public OrthographicCamera camera; 
+    DataMap data;
     
     public MapEditorGraphicsView() {
         super(new MapEditorApp(), false);
@@ -33,6 +34,7 @@ public class MapEditorGraphicsView extends GraphicsView{
     public void init(){
         grid = new IsoGrid(10, 10, Cst.TILE_W, Cst.TILE_H);
         resizeRenderer = new MapResizeRenderer();
+        refresh(null);
     }
     
     public void resize(int width, int height){
@@ -40,10 +42,19 @@ public class MapEditorGraphicsView extends GraphicsView{
       camera.position.set( camPos);
     }
     
+    public void clear(){
+        grid.clear();
+        resizeRenderer.clear();
+    }
+    
     public void refresh(DataMap data){
+        this.data = data;
+        clear();
+        
         if(data == null){
             return;
         }
+        
         grid.resize(data.width, data.height);
         //resizeGrid(data.width, data.height);
     }

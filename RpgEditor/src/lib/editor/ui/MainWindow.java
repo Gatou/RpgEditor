@@ -4,16 +4,21 @@ import com.badlogic.gdx.Gdx;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -33,6 +38,7 @@ import lib.editor.mgr.TransferMgr;
 import lib.editor.mgr.DataMgr;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
+import lib.editor.mgr.SaveMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
 import lib.editor.util.SwingUtil;
@@ -102,6 +108,9 @@ public class MainWindow extends javax.swing.JFrame {
         //Inspector.init();
         //propertyCollapsiblePane.add();
         //jXTaskPane1.add(jTable1);
+        AbstractButton[] saveButtons = new AbstractButton[]{fileSave, toolBarSave};
+        SaveMgr.init(saveButtons);
+        
     }
     
     
@@ -157,6 +166,105 @@ public class MainWindow extends javax.swing.JFrame {
         middlePanel.setVisible(enabled);
     }
 
+    private void openProject(){
+        String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
+        File result = SwingUtil.getFileChoice(this, "", new FileNameExtensionFilter(filterText, AppMgr.getExtension("project file")), "Open project");
+        if(result != null){
+            String projectPath = result.getParent();
+            if(projectPath != null){
+                ProjectMgr.openProject(projectPath);
+            }
+        }
+    }
+    
+    private void exit(){
+        AppMgr.saveSettings();
+        ProjectMgr.closeProject();
+        dispose();
+    }
+    
+    public void undo(){
+        System.out.println("undo");
+    }
+    
+    public void redo(){
+        System.out.println("redo");
+    }
+    
+    public void cut(){
+        if(!toolBarCut.isEnabled()){
+            return;
+        }
+        
+    }
+    
+    public void copy(){
+        if(!toolBarCopy.isEnabled()){
+            return;
+        }
+        
+        if(TransferMgr.lastFocused == mapTree){
+            mapTree.copy();
+        }
+    }
+    
+    public void paste(){
+        if(!toolBarPaste.isEnabled()){
+            return;
+        }
+        
+        if(TransferMgr.lastFocused == mapTree){
+            mapTree.paste();
+        }
+    }
+    
+    public void delete(){
+        if(!toolBarDelete.isEnabled()){
+            return;
+        }
+        
+        if(TransferMgr.lastFocused == mapTree){
+            mapTree.delete();
+        }
+        
+    }
+    
+    public void setActionEnabled(String type, boolean enabled){
+        if(type.equals("undo")){
+            toolBarUndo.setEnabled(enabled);
+            editUndo.setEnabled(enabled);
+        }
+        else if(type.equals("redo")){
+            toolBarRedo.setEnabled(enabled);
+            editRedo.setEnabled(enabled);
+        }
+        else if(type.equals("cut")){
+            toolBarCut.setEnabled(enabled);
+            editCut.setEnabled(enabled);
+        }
+        else if(type.equals("copy")){
+            toolBarCopy.setEnabled(enabled);
+            editCopy.setEnabled(enabled);
+        }
+        else if(type.equals("paste")){
+            toolBarPaste.setEnabled(enabled);
+            editPaste.setEnabled(enabled);
+        }
+        else if(type.equals("delete")){
+            toolBarDelete.setEnabled(enabled);
+            editDelete.setEnabled(enabled);
+        }
+        else if(type.equals("new map")){
+            mapTreeCreateMapButton.setEnabled(enabled);
+        }
+    }
+    
+    public void refresh(){
+        mapTree.setup();//setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
+        
+
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -208,6 +316,8 @@ public class MainWindow extends javax.swing.JFrame {
         editCopy = new lib.editor.widget.menu.MenuItem();
         editPaste = new lib.editor.widget.menu.MenuItem();
         editDelete = new lib.editor.widget.menu.MenuItem();
+        jMenu1 = new javax.swing.JMenu();
+        menuItem1 = new lib.editor.widget.menu.MenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 200));
@@ -252,11 +362,6 @@ public class MainWindow extends javax.swing.JFrame {
         toolBarSave.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         toolBarSave.setStatusText("Save the current project.");
         toolBarSave.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toolBarSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                toolBarSaveActionPerformed(evt);
-            }
-        });
         mainToolBar.add(toolBarSave);
         mainToolBar.add(jSeparator1);
 
@@ -419,7 +524,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         fileNew.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_N, java.awt.event.InputEvent.CTRL_MASK));
         fileNew.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
-        fileNew.setText("New project...");
+        fileNew.setText("New Project...");
         fileNew.setStatusText("Create a new project.");
         fileNew.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -430,7 +535,7 @@ public class MainWindow extends javax.swing.JFrame {
 
         fileOpen.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_O, java.awt.event.InputEvent.CTRL_MASK));
         fileOpen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/open.png"))); // NOI18N
-        fileOpen.setText("Open project...");
+        fileOpen.setText("Open Project...");
         fileOpen.setPreferredSize(null);
         fileOpen.setStatusText("Open an existing project.");
         fileOpen.addActionListener(new java.awt.event.ActionListener() {
@@ -440,7 +545,7 @@ public class MainWindow extends javax.swing.JFrame {
         });
         fileMenu.add(fileOpen);
 
-        fileClose.setText("Close project");
+        fileClose.setText("Close Project");
         fileClose.setStatusText("Close the current project.");
         fileClose.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -451,13 +556,8 @@ public class MainWindow extends javax.swing.JFrame {
 
         fileSave.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_S, java.awt.event.InputEvent.CTRL_MASK));
         fileSave.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/floppy.png"))); // NOI18N
-        fileSave.setText("Save project");
+        fileSave.setText("Save Project");
         fileSave.setStatusText("Save the current project.");
-        fileSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                fileSaveActionPerformed(evt);
-            }
-        });
         fileMenu.add(fileSave);
         fileMenu.add(jSeparator4);
 
@@ -543,6 +643,19 @@ public class MainWindow extends javax.swing.JFrame {
 
         mainMenuBar.add(editMenu);
 
+        jMenu1.setText("Game");
+
+        menuItem1.setText("Open Game Folder");
+        menuItem1.setStatusText("Open folder for game currently being edited.");
+        menuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuItem1);
+
+        mainMenuBar.add(jMenu1);
+
         setJMenuBar(mainMenuBar);
 
         pack();
@@ -561,10 +674,6 @@ public class MainWindow extends javax.swing.JFrame {
         statusBarLabel.setText("");
         openProject();
     }//GEN-LAST:event_toolBarOpenActionPerformed
-
-    private void toolBarSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarSaveActionPerformed
-        save();
-    }//GEN-LAST:event_toolBarSaveActionPerformed
 
     private void toolBarCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toolBarCutActionPerformed
         cut();
@@ -605,11 +714,6 @@ public class MainWindow extends javax.swing.JFrame {
         ProjectMgr.closeProject();
     }//GEN-LAST:event_fileCloseActionPerformed
 
-    private void fileSaveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileSaveActionPerformed
-        statusBarLabel.setText("");
-        save();
-    }//GEN-LAST:event_fileSaveActionPerformed
-
     private void fileExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileExitActionPerformed
         statusBarLabel.setText("");
         exit();
@@ -649,111 +753,16 @@ public class MainWindow extends javax.swing.JFrame {
         mapTree.newMap(false);
     }//GEN-LAST:event_mapTreeCreateMapButtonActionPerformed
 
-    private void openProject(){
-        String filterText = AppMgr.NAME + " (*." + AppMgr.getExtension("project file") + ")";
-        File result = SwingUtil.getFileChoice(this, "", new FileNameExtensionFilter(filterText, AppMgr.getExtension("project file")), "Open project");
-        if(result != null){
-            String projectPath = result.getParent();
-            if(projectPath != null){
-                ProjectMgr.openProject(projectPath);
-            }
+    private void menuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItem1ActionPerformed
+        statusBarLabel.setText("");
+        try {
+            Desktop.getDesktop().open(new File(ProjectMgr.getProjectPath()));
+        } catch (IOException ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    private void exit(){
-        AppMgr.saveSettings();
-        ProjectMgr.closeProject();
-        dispose();
-    }
-
-    public void save(){
-        DataMgr.save();
-       for(int i=0; i<2; i++){
-            System.gc();
-        }
-    }
-    
-    public void undo(){
-        System.out.println("undo");
-    }
-    
-    public void redo(){
-        System.out.println("redo");
-    }
-    
-    public void cut(){
-        if(!toolBarCut.isEnabled()){
-            return;
-        }
-        
-    }
-    
-    public void copy(){
-        if(!toolBarCopy.isEnabled()){
-            return;
-        }
-        
-        if(TransferMgr.lastFocused == mapTree){
-            mapTree.copy();
-        }
-    }
-    
-    public void paste(){
-        if(!toolBarPaste.isEnabled()){
-            return;
-        }
-        
-        if(TransferMgr.lastFocused == mapTree){
-            mapTree.paste();
-        }
-    }
-    
-    public void delete(){
-        if(!toolBarDelete.isEnabled()){
-            return;
-        }
-        
-        if(TransferMgr.lastFocused == mapTree){
-            mapTree.delete();
-        }
-        
-    }
-    
-    public void setActionEnabled(String type, boolean enabled){
-        if(type.equals("undo")){
-            toolBarUndo.setEnabled(enabled);
-            editUndo.setEnabled(enabled);
-        }
-        else if(type.equals("redo")){
-            toolBarRedo.setEnabled(enabled);
-            editRedo.setEnabled(enabled);
-        }
-        else if(type.equals("cut")){
-            toolBarCut.setEnabled(enabled);
-            editCut.setEnabled(enabled);
-        }
-        else if(type.equals("copy")){
-            toolBarCopy.setEnabled(enabled);
-            editCopy.setEnabled(enabled);
-        }
-        else if(type.equals("paste")){
-            toolBarPaste.setEnabled(enabled);
-            editPaste.setEnabled(enabled);
-        }
-        else if(type.equals("delete")){
-            toolBarDelete.setEnabled(enabled);
-            editDelete.setEnabled(enabled);
-        }
-        else if(type.equals("new map")){
-            mapTreeCreateMapButton.setEnabled(enabled);
-        }
-    }
-    
-    public void refresh(){
-        mapTree.setup();//setDatabase(DataMgr.dataGame.get("MapInfos"), DataMgr.dataEditor.get("MapInfos"));
+    }//GEN-LAST:event_menuItem1ActionPerformed
 
 
-    }
     
 
     
@@ -771,6 +780,7 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.menu.MenuItem fileNew;
     private lib.editor.widget.menu.MenuItem fileOpen;
     private lib.editor.widget.menu.MenuItem fileSave;
+    private javax.swing.JMenu jMenu1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -789,6 +799,7 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.tree.tree.MapTree mapTree;
     private lib.editor.widget.button.ToolBarButton mapTreeCreateMapButton;
     private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
+    private lib.editor.widget.menu.MenuItem menuItem1;
     private javax.swing.JPanel middlePanel;
     private javax.swing.JLabel statusBarLabel;
     private lib.editor.widget.button.ToolBarButton toolBarCopy;

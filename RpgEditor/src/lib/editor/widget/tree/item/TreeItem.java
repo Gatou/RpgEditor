@@ -54,16 +54,16 @@ public class TreeItem extends DefaultMutableTreeNode{
         DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
         model.insertNodeInto(item, this, getChildCount());
         //add(item);
-        if(tree.filter != null){
-            tree.filter.needRefresh();
+        if(tree.filter != null && tree.filter.isFiltering){
+            tree.filter.needRefresh(item, true);
         }
     }
     
     public void removeChild(TreeItem item){
         DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
         model.removeNodeFromParent(item);
-        if(tree.filter != null){
-            tree.filter.needRefresh();
+        if(tree.filter != null && tree.filter.isFiltering){
+            tree.filter.needRefresh(item, false);
         }
     }
 }

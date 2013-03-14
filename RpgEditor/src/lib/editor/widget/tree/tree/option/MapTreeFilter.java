@@ -30,15 +30,36 @@ public class MapTreeFilter extends TreeFilter{
         this.tree = tree;
     }
     
+    public void stopFiltering(){
+        ///needRefresh();
+        //refreshItems();
+        //System.out.println(items.size());
+        itemsById = new Hashtable<Integer, TreeItem>();
+        for(TreeItem item : items){
+            itemsById.put(((DatabaseTreeItem)item).editorData.id, item);
+        }
+        
+        for(TreeItem item : items){
+            item.removeAllChildren();
+        }
+        //System.out.println(itemsById);
+        tree.refresh(itemsById);
+        itemsById = null;
+        items = null;
+    }
+    
     public void filterTextChanged(){
         super.filterTextChanged();
         
         String filterText = filterTextField.getText();
         
-        if(filterText.equals("")){
-            tree.refresh(tree.rootItem.editorData);
-        }
-        else{
+        //if(filterText.equals("")){
+        //    stopFiltering();
+            //tree.refresh(tree.rootItem.editorData, true);
+        //}
+        
+        
+        if(isFiltering){
             tree.clear();
             
             for(TreeItem item : items){
@@ -48,6 +69,9 @@ public class MapTreeFilter extends TreeFilter{
                 }
             }
             
+        }
+        else{
+            stopFiltering();
         }
         
         tree.checkEnabledMenuAction();

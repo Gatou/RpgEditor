@@ -45,8 +45,16 @@ public class PropertyPanel extends InspectorPanel {
     }
 
     public void refresh(){
+        refreshing = true;
         idLabel.setText( String.valueOf(data.id));
         nameTextField.setText(data.name);
+        
+        switch(WidgetMgr.INSPECTOR.getMode()){
+            case (Inspector.Mode.Map):{
+                collapsible.setTitle("Map");
+            }
+        }
+        refreshing = false;
     }
     
     public void focusNameTextField(){
@@ -58,7 +66,7 @@ public class PropertyPanel extends InspectorPanel {
         if(!refreshing){
             switch(WidgetMgr.INSPECTOR.getMode()){
                 case (Inspector.Mode.Map):{
-                    collapsible.setTitle("Map");
+                    
                     WidgetMgr.MAP_TREE.mapNameChanged(nameTextField.getText());
                 }
             }

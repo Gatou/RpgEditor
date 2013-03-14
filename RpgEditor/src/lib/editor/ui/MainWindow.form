@@ -17,7 +17,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/assets/icons/new.png"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="New project..."/>
+                <Property name="text" type="java.lang.String" value="New Project..."/>
                 <Property name="statusText" type="java.lang.String" value="Create a new project."/>
               </Properties>
               <Events>
@@ -32,7 +32,7 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/assets/icons/open.png"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Open project..."/>
+                <Property name="text" type="java.lang.String" value="Open Project..."/>
                 <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                   <Dimension value="null"/>
                 </Property>
@@ -44,7 +44,7 @@
             </Menu>
             <Menu class="lib.editor.widget.menu.MenuItem" name="fileClose">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Close project"/>
+                <Property name="text" type="java.lang.String" value="Close Project"/>
                 <Property name="statusText" type="java.lang.String" value="Close the current project."/>
               </Properties>
               <Events>
@@ -59,12 +59,9 @@
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                   <Image iconType="3" name="/assets/icons/floppy.png"/>
                 </Property>
-                <Property name="text" type="java.lang.String" value="Save project"/>
+                <Property name="text" type="java.lang.String" value="Save Project"/>
                 <Property name="statusText" type="java.lang.String" value="Save the current project."/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="fileSaveActionPerformed"/>
-              </Events>
             </Menu>
             <MenuItem class="javax.swing.JPopupMenu$Separator" name="jSeparator4">
             </MenuItem>
@@ -178,6 +175,22 @@
             </Menu>
           </SubComponents>
         </Menu>
+        <Menu class="javax.swing.JMenu" name="jMenu1">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Game"/>
+          </Properties>
+          <SubComponents>
+            <Menu class="lib.editor.widget.menu.MenuItem" name="menuItem1">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Open Game Folder"/>
+                <Property name="statusText" type="java.lang.String" value="Open folder for game currently being edited."/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="menuItem1ActionPerformed"/>
+              </Events>
+            </Menu>
+          </SubComponents>
+        </Menu>
       </SubComponents>
     </Menu>
   </NonVisualComponents>
@@ -264,9 +277,6 @@
             <Property name="statusText" type="java.lang.String" value="Save the current project."/>
             <Property name="verticalTextPosition" type="int" value="3"/>
           </Properties>
-          <Events>
-            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="toolBarSaveActionPerformed"/>
-          </Events>
         </Component>
         <Component class="javax.swing.JToolBar$Separator" name="jSeparator1">
         </Component>

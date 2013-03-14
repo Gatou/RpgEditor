@@ -14,6 +14,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import lib.editor.data.game.DataBase;
 import lib.editor.data.game.DataMap;
+import lib.editor.mgr.SaveMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.util.Cst;
 import org.jdesktop.swingx.JXTaskPane;
@@ -95,7 +96,6 @@ public class MapSizePanel extends InspectorPanel {
         int bottomMax = Math.max(-getCurrentHeight() + (Integer)topSpinner.getValue() + 1, -getCurrentHeight() +1);
         bottomSpinner.setMinimum(bottomMax);
         bottomSpinner.setMaximum((Cst.MAX_MAP_SIZE - getCurrentHeight()) + (Integer)topSpinner.getValue());
-        System.out.println(bottomSpinner.getMaximum());
         
         int leftMax = Math.min(getCurrentWidth() + (Integer)rightSpinner.getValue() - 1, getCurrentWidth() - 1);
         leftSpinner.setMaximum(leftMax);
@@ -155,6 +155,7 @@ public class MapSizePanel extends InspectorPanel {
         refresh();
         WidgetMgr.MAP_EDITOR.refresh(dataMap);
         
+        SaveMgr.requestSaveEnabled();
     }
     
     /**
