@@ -24,7 +24,8 @@ import lib.editor.util.ProjectError;
  */
 public class ProjectMgr {
     
-
+    public static final String[] assetsFolders = {"Scripts", "Animations", "Sounds", "Characters", "Tiles",
+        "System", "Pictures"};
     private static List<String> allPath = new ArrayList<String>();
     private static String projectPath, assetsPath, settingsPath, dataGamePath, dataEditorPath;
     //private static String ;
@@ -54,7 +55,12 @@ public class ProjectMgr {
         createPath(path);
         //Create project folders
         (new File(projectPath)).mkdir();
+        
         (new File(assetsPath)).mkdir();
+        for(String folderName : assetsFolders){
+            (new File(assetsPath, folderName)).mkdir();
+        }
+        
         (new File(settingsPath)).mkdir();
         (new File(projectPath, "Data")).mkdir();
         (new File(dataGamePath)).mkdir();

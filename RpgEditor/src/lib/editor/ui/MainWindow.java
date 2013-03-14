@@ -1,5 +1,6 @@
 package lib.editor.ui;
 
+import lib.editor.ui.assetmanager.AssetManagerWindow;
 import com.badlogic.gdx.Gdx;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -262,7 +263,7 @@ public class MainWindow extends javax.swing.JFrame {
     public void openWindow(String window){
         statusBarLabel.setText("");
         if(window.equals("resourceManager")){
-            (new ResourceManagerWindow(this, true)).setVisible(true);
+            (new AssetManagerWindow(this, true)).setVisible(true);
         }
     }
     
@@ -456,9 +457,10 @@ public class MainWindow extends javax.swing.JFrame {
         mainToolBar.add(jSeparator3);
 
         toolBarButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/resource.png"))); // NOI18N
+        toolBarButton1.setToolTipText("Open the assets manager.");
         toolBarButton1.setFocusable(false);
         toolBarButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        toolBarButton1.setStatusText("Open the resource manager.");
+        toolBarButton1.setStatusText("Open the assets manager.");
         toolBarButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         toolBarButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -669,8 +671,8 @@ public class MainWindow extends javax.swing.JFrame {
 
         menuItem2.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F9, 0));
         menuItem2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/resource.png"))); // NOI18N
-        menuItem2.setText("Resource Manager");
-        menuItem2.setStatusText("Open the resource manager.");
+        menuItem2.setText("Assets Manager");
+        menuItem2.setStatusText("Open the assets manager.");
         menuItem2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuItem2ActionPerformed(evt);

@@ -2,26 +2,34 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package lib.editor.ui;
+package lib.editor.ui.assetmanager;
 
 import java.awt.Frame;
 import javax.swing.JPanel;
+import javax.swing.JRootPane;
+import lib.editor.ui.Dialog;
 
 /**
  *
  * @author gaetan
  */
-public class ResourceManagerWindow extends Dialog {
+public class AssetManagerWindow extends Dialog {
 
-    public ResourceManagerWindow(Frame parent, boolean modal) {
+    
+    
+    public AssetManagerWindow(Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
         layoutDialog(0);
+        
+        folderList.setAssetTree(assetTree);
+        assetTree.setFolderList(folderList);
     }
 
     
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -32,42 +40,40 @@ public class ResourceManagerWindow extends Dialog {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
         jSplitPane3 = new javax.swing.JSplitPane();
         jSplitPane4 = new javax.swing.JSplitPane();
         jPanel6 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        mapTree = new lib.editor.widget.tree.tree.MapTree();
         jPanel5 = new javax.swing.JPanel();
         mapTreeFilterTextField = new lib.editor.widget.textfield.IconTextField();
-        jPanel7 = new javax.swing.JPanel();
-        jButton3 = new javax.swing.JButton();
-        jPanel4 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jXList1 = new org.jdesktop.swingx.JXList();
+        assetTree = new lib.editor.ui.assetmanager.AssetManagerAssetsTree();
+        jPanel7 = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        jTextArea1 = new javax.swing.JTextArea();
+        jPanel8 = new javax.swing.JPanel();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        folderList = new lib.editor.ui.assetmanager.AssetManagerAssetFolderList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Resource Manager");
+        setTitle("Assets Manager");
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
 
         mainPanel.setLayout(new javax.swing.BoxLayout(mainPanel, javax.swing.BoxLayout.LINE_AXIS));
+
+        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
         jSplitPane4.setResizeWeight(1.0);
 
         jPanel6.setMinimumSize(new java.awt.Dimension(160, 226));
         jPanel6.setPreferredSize(new java.awt.Dimension(160, 226));
         jPanel6.setLayout(new java.awt.BorderLayout());
-
-        jScrollPane2.setAutoscrolls(true);
-
-        mapTree.setAutoscrolls(true);
-        mapTree.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
-        mapTree.setMaximumSize(null);
-        mapTree.setMinimumSize(null);
-        mapTree.setPreferredSize(null);
-        mapTree.setRowHeight(18);
-        jScrollPane2.setViewportView(mapTree);
-
-        jPanel6.add(jScrollPane2, java.awt.BorderLayout.CENTER);
 
         jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
 
@@ -80,26 +86,38 @@ public class ResourceManagerWindow extends Dialog {
 
         jPanel6.add(jPanel5, java.awt.BorderLayout.PAGE_END);
 
+        jScrollPane1.setViewportView(assetTree);
+
+        jPanel6.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
         jSplitPane4.setLeftComponent(jPanel6);
 
-        jButton3.setText("jButton3");
+        jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
 
-        javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
-        jPanel7.setLayout(jPanel7Layout);
-        jPanel7Layout.setHorizontalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton3)
-                .addGap(125, 125, 125))
-        );
-        jPanel7Layout.setVerticalGroup(
-            jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel7Layout.createSequentialGroup()
-                .addContainerGap(226, Short.MAX_VALUE)
-                .addComponent(jButton3)
-                .addGap(123, 123, 123))
-        );
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
+
+        jTextArea1.setColumns(20);
+        jTextArea1.setRows(5);
+        jScrollPane3.setViewportView(jTextArea1);
+
+        jPanel3.add(jScrollPane3);
+
+        jPanel7.add(jPanel3);
+
+        jPanel8.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jButton2.setText("jButton1");
+        jPanel8.add(jButton2);
+
+        jButton3.setText("jButton1");
+        jPanel8.add(jButton3);
+
+        jButton4.setText("jButton1");
+        jPanel8.add(jButton4);
+        jPanel8.add(filler1);
+
+        jPanel7.add(jPanel8);
 
         jSplitPane4.setRightComponent(jPanel7);
 
@@ -109,18 +127,16 @@ public class ResourceManagerWindow extends Dialog {
         jPanel4.setPreferredSize(new java.awt.Dimension(160, 226));
         jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
 
-        jXList1.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public Object getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jXList1);
+        folderList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jScrollPane4.setViewportView(folderList);
 
-        jPanel4.add(jScrollPane1);
+        jPanel4.add(jScrollPane4);
 
         jSplitPane3.setLeftComponent(jPanel4);
 
-        mainPanel.add(jSplitPane3);
+        jPanel2.add(jSplitPane3);
+
+        mainPanel.add(jPanel2);
 
         getContentPane().add(mainPanel);
 
@@ -128,18 +144,26 @@ public class ResourceManagerWindow extends Dialog {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private lib.editor.ui.assetmanager.AssetManagerAssetsTree assetTree;
+    private javax.swing.Box.Filler filler1;
+    private lib.editor.ui.assetmanager.AssetManagerAssetFolderList folderList;
+    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
+    private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane jSplitPane3;
     private javax.swing.JSplitPane jSplitPane4;
-    private org.jdesktop.swingx.JXList jXList1;
+    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JPanel mainPanel;
-    private lib.editor.widget.tree.tree.MapTree mapTree;
     private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
     // End of variables declaration//GEN-END:variables
 
@@ -155,6 +179,8 @@ public class ResourceManagerWindow extends Dialog {
 
     @Override
     public void refresh() {
+        folderList.refresh();
+        assetTree.refresh();
     }
 
     @Override
