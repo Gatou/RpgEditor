@@ -32,11 +32,11 @@
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBoxLayout"/>
           <SubComponents>
-            <Container class="javax.swing.JSplitPane" name="jSplitPane3">
+            <Container class="javax.swing.JSplitPane" name="leftSplitPane">
 
               <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
               <SubComponents>
-                <Container class="javax.swing.JSplitPane" name="jSplitPane4">
+                <Container class="javax.swing.JSplitPane" name="middleSplitPane">
                   <Properties>
                     <Property name="resizeWeight" type="double" value="1.0"/>
                   </Properties>

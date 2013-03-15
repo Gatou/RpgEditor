@@ -10,6 +10,11 @@ package lib.editor.util;
  */
 public class Cst {
     
+    public static final String[] VALID_IMAGE_FORMAT = {"png", "jpg", "bmp"};
+    public static final String[] VALID_SOUND_FORMAT = {"ogg", "mp3", "wma", "wav"};
+    public static final String[] VALID_SCRIPT_FORMAT = {"rb"};
+    //public static final String[] VALID_ASSET_FORMAT = {
+       
     public static final int MAX_MAP_SIZE = 400;
     
     public static final int TILE_W = 32;

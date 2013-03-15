@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
@@ -20,24 +21,32 @@ import javax.swing.ImageIcon;
  */
 public class IconMgr {
     
-    private final static String ICON_PATH = "/assets/icons/";
+    public final String ICON_PATH = "/assets/icons/";
+    //private Map<String, String> icons;
+
+    public IconMgr() {
+        //addIconExtension("png", "png.png");
+    }
+    
+    
     
     public ImageIcon getIcon (String filename) {
-        ImageIcon icon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
-        return icon;
-        /*
-        System.out.println(new File(ICON_PATH, filename).getAbsolutePath());
-        BufferedImage image = null;
-        try {
-            image = ImageIO.read(new File(ICON_PATH, filename));
-        } catch (IOException ex) {
-            Logger.getLogger(IconMgr.class.getName()).log(Level.SEVERE, null, ex);
+        ImageIcon icon = null;
+        try{
+            icon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
         }
-        //java.awt.Graphics g = image.getGraphics();
-        //g.setColor(color);
-        //g.fillRect(1, 1, 30, 14);
-        //g.setColor(java.awt.Color.black);
-        //g.drawRect(0, 0, 31, 15);
-        return new ImageIcon(image);*/
+        catch(NullPointerException e){
+            
+        }
+        return icon;
     }
+    /*
+    public void addIconExtension(String ext, String iconFilename){
+        icons.put(ext, iconFilename);
+    }
+    
+    public ImageIcon getIconByExtension(String ext){
+        return getIcon(icons.get(ext));
+    }*/
+    
 }

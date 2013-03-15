@@ -5,9 +5,13 @@
 package lib.editor.ui.assetmanager;
 
 import java.awt.Frame;
+import java.util.Properties;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import lib.editor.mgr.ProjectMgr;
 import lib.editor.ui.Dialog;
+import lib.editor.util.SwingUtil;
 
 /**
  *
@@ -41,8 +45,8 @@ public class AssetManagerWindow extends Dialog {
 
         mainPanel = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        jSplitPane3 = new javax.swing.JSplitPane();
-        jSplitPane4 = new javax.swing.JSplitPane();
+        leftSplitPane = new javax.swing.JSplitPane();
+        middleSplitPane = new javax.swing.JSplitPane();
         jPanel6 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         mapTreeFilterTextField = new lib.editor.widget.textfield.IconTextField();
@@ -69,7 +73,7 @@ public class AssetManagerWindow extends Dialog {
 
         jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.LINE_AXIS));
 
-        jSplitPane4.setResizeWeight(1.0);
+        middleSplitPane.setResizeWeight(1.0);
 
         jPanel6.setMinimumSize(new java.awt.Dimension(160, 226));
         jPanel6.setPreferredSize(new java.awt.Dimension(160, 226));
@@ -90,7 +94,7 @@ public class AssetManagerWindow extends Dialog {
 
         jPanel6.add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
-        jSplitPane4.setLeftComponent(jPanel6);
+        middleSplitPane.setLeftComponent(jPanel6);
 
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
 
@@ -119,9 +123,9 @@ public class AssetManagerWindow extends Dialog {
 
         jPanel7.add(jPanel8);
 
-        jSplitPane4.setRightComponent(jPanel7);
+        middleSplitPane.setRightComponent(jPanel7);
 
-        jSplitPane3.setRightComponent(jSplitPane4);
+        leftSplitPane.setRightComponent(middleSplitPane);
 
         jPanel4.setMinimumSize(new java.awt.Dimension(160, 226));
         jPanel4.setPreferredSize(new java.awt.Dimension(160, 226));
@@ -132,9 +136,9 @@ public class AssetManagerWindow extends Dialog {
 
         jPanel4.add(jScrollPane4);
 
-        jSplitPane3.setLeftComponent(jPanel4);
+        leftSplitPane.setLeftComponent(jPanel4);
 
-        jPanel2.add(jSplitPane3);
+        jPanel2.add(leftSplitPane);
 
         mainPanel.add(jPanel2);
 
@@ -160,11 +164,11 @@ public class AssetManagerWindow extends Dialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JSplitPane jSplitPane3;
-    private javax.swing.JSplitPane jSplitPane4;
     private javax.swing.JTextArea jTextArea1;
+    private javax.swing.JSplitPane leftSplitPane;
     private javax.swing.JPanel mainPanel;
     private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
+    private javax.swing.JSplitPane middleSplitPane;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -187,4 +191,37 @@ public class AssetManagerWindow extends Dialog {
     public JPanel getMainPanel() {
         return mainPanel;
     }
+    
+    public void saveSettings(){
+        if(ProjectMgr.isProjectOpen()){
+            Properties prop = ProjectMgr.getProperties();
+            String prefix = "AssetManagerWindow_";
+            SwingUtil.saveWindowBasics(prop, prefix, this);
+            prop.setProperty(prefix + "LeftSplitPane", String.valueOf(leftSplitPane.getDividerLocation()));
+            prop.setProperty(prefix + "MiddleSplitPane", String.valueOf(middleSplitPane.getDividerLocation()));
+        }
+    }
+    
+    public void loadSettings(){
+        Properties prop = ProjectMgr.getProperties();
+        String prefix = "AssetManagerWindow_";
+        SwingUtil.loadWindowBasics(prop, prefix, this);
+        try{
+            leftSplitPane.setDividerLocation( Integer.parseInt(prop.getProperty(prefix + "LeftSplitPane")));
+            middleSplitPane.setDividerLocation( Integer.parseInt(prop.getProperty(prefix + "MiddleSplitPane")));
+        }catch(NumberFormatException e){}
+    }
+    
+    public void dispose(){
+        saveSettings();
+        super.dispose();
+    }
+    
+    public void setVisible(boolean visible){
+        if(visible){
+            loadSettings();
+        }
+        super.setVisible(visible);
+    }
+    
 }

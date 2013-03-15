@@ -6,9 +6,12 @@ package lib.editor.util;
 
 import java.awt.Component;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.io.File;
 import java.util.Properties;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JSplitPane;
 import javax.swing.filechooser.FileFilter;
 import lib.editor.mgr.WidgetMgr;
 
@@ -136,4 +139,31 @@ public class SwingUtil {
         }
     }
     
+    
+    public static void saveWindowBasics(Properties prop, String prefix, Window win){
+        //String prefix = "MainWindow_";
+        prop.put(prefix + "x", String.valueOf(win.getX()));
+        prop.put(prefix + "y", String.valueOf(win.getY()));
+        prop.put(prefix + "width", String.valueOf(win.getWidth()));
+        prop.put(prefix + "height", String.valueOf(win.getHeight()));
+        //prop.put(prefix + "maximized", String.valueOf(win.getExtendedState() & JFrame.MAXIMIZED_BOTH));
+        int i = 0;
+    }
+    
+    public static void loadWindowBasics(Properties prop, String prefix, Window win){
+        //String prefix = "MainWindow_";
+        try{
+            win.setBounds(
+                    Integer.parseInt(prop.getProperty(prefix + "x")), 
+                    Integer.parseInt(prop.getProperty(prefix + "y")),
+                    Integer.parseInt(prop.getProperty(prefix + "width")),
+                    Integer.parseInt(prop.getProperty(prefix + "height")));
+        }
+        catch(NullPointerException e){
+            
+        }
+        SwingUtil.adjustComponentBounds(win, null);
+
+        
+    }
 }

@@ -117,25 +117,16 @@ public class MainWindow extends javax.swing.JFrame {
     
     public void saveSettings(Properties prop){
         String prefix = "MainWindow_";
-        prop.put(prefix + "x", String.valueOf(this.getX()));
-        prop.put(prefix + "y", String.valueOf(this.getY()));
-        prop.put(prefix + "width", String.valueOf(this.getWidth()));
-        prop.put(prefix + "height", String.valueOf(this.getHeight()));
+        SwingUtil.saveWindowBasics(prop, prefix, this);
         prop.put(prefix + "maximized", String.valueOf(this.getExtendedState() & JFrame.MAXIMIZED_BOTH));
     }
     
     public void loadSettings(Properties prop){
         String prefix = "MainWindow_";
-        setBounds(
-                Integer.parseInt(prop.getProperty(prefix + "x")), 
-                Integer.parseInt(prop.getProperty(prefix + "y")),
-                Integer.parseInt(prop.getProperty(prefix + "width")),
-                Integer.parseInt(prop.getProperty(prefix + "height")));
-        SwingUtil.adjustComponentBounds(this, null);
+        SwingUtil.loadWindowBasics(prop, prefix, this);
         if(Integer.parseInt(prop.getProperty(prefix + "maximized")) != 0){
             setExtendedState(getExtendedState() | JFrame.MAXIMIZED_BOTH);
         }
-        
     }
     
     public void setProjectStateEnabled(boolean enabled){

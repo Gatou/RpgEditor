@@ -9,9 +9,11 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
+import lib.editor.util.Cst;
 import lib.editor.widget.tree.item.FilePathTreeItem;
 import lib.editor.widget.tree.item.TreeItem;
 import lib.editor.widget.tree.tree.Tree;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -22,6 +24,7 @@ public class AssetManagerAssetsTree extends Tree{
     AssetManagerAssetFolderList folderList;
     
     public AssetManagerAssetsTree() {
+        setRowHeight(20);
     }
     
     public void refresh(){
@@ -34,6 +37,10 @@ public class AssetManagerAssetsTree extends Tree{
         
         File file = new File(ProjectMgr.getAssetsPath(), folderName);
         for(File child : file.listFiles()){
+            if(child.isFile() && !isValidFormat(child.getName())){
+                continue;
+            } 
+            
             FilePathTreeItem item = generateFileItem(child);
             addTopLevelItem(item);
             if(child.isDirectory()){
@@ -44,6 +51,10 @@ public class AssetManagerAssetsTree extends Tree{
     
     public void refreshRec(File parentFile, FilePathTreeItem parentItem){
         for(File child : parentFile.listFiles()){
+            if(child.isFile() && !isValidFormat(child.getName())){
+                continue;
+            }    
+            
             FilePathTreeItem item = generateFileItem(child);
             parentItem.addChild(item);
             if(child.isDirectory()){
@@ -59,10 +70,36 @@ public class AssetManagerAssetsTree extends Tree{
         if(file.isDirectory()){
             icon = Mgr.icon.getIcon("folder.png");
         }
+        else{
+            String ext = FilenameUtils.getExtension(file.getName());
+            icon = Mgr.icon.getIcon(ext + ".png");
+        }
         
+        String text = FilenameUtils.getBaseName(file.getAbsolutePath());
         
-        FilePathTreeItem item = new FilePathTreeItem(this, file.getName(), icon, relativePath);
+        FilePathTreeItem item = new FilePathTreeItem(this, text, icon, relativePath);
         return item;
+    }
+    
+    public boolean isValidFormat(String filename){
+        String ext = FilenameUtils.getExtension(filename);
+        
+        for(String format : Cst.VALID_IMAGE_FORMAT){
+            if(format.equals(ext)){
+                return true;
+            }
+        }
+        for(String format : Cst.VALID_SOUND_FORMAT){
+            if(format.equals(ext)){
+                return true;
+            }
+        }
+        for(String format : Cst.VALID_SCRIPT_FORMAT){
+            if(format.equals(ext)){
+                return true;
+            }
+        }
+        return false;
     }
     
     public void setFolderList(AssetManagerAssetFolderList folderList){

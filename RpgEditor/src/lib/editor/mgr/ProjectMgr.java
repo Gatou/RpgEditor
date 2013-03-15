@@ -7,6 +7,7 @@ package lib.editor.mgr;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -23,6 +24,8 @@ import lib.editor.util.ProjectError;
  * @author gaetan
  */
 public class ProjectMgr {
+    
+    private static Properties properties;
     
     public static final String[] assetsFolders = {"Scripts", "Animations", "Sounds", "Characters", "Tiles",
         "System", "Pictures"};
@@ -117,6 +120,7 @@ public class ProjectMgr {
         projectPath = null;
         dataGamePath = null;
         dataEditorPath = null;
+        properties = null;
     }
     
     private static void createPath(String path){
@@ -176,53 +180,56 @@ public class ProjectMgr {
         }
     }
     
-    public static void loadSettings(){
-        //Check if the settings folder exist, if not create it
-        //Check if the settings folder exist, if not create it
+    public static File getPropertiesFile(){        
         File settingsFolder = new File(ProjectMgr.getSettingsPath());
         if(!settingsFolder.exists()){
             settingsFolder.mkdir();
         }
         
         File iniFile = new File(ProjectMgr.getSettingsPath(), "settings." + AppMgr.getExtension("settings file"));
-
-        if(iniFile.exists()){
-             try {
-                Properties prop = new Properties();
-                prop.load(new FileInputStream(iniFile));
-
-                //save main window settings
-                WidgetMgr.MAIN_WINDOW.loadSettings(prop);
-
-             }
-             catch(Exception ex) {
-                System.out.println(ex.getMessage());
-             }
+        if(!iniFile.exists()){
+            try {iniFile.createNewFile();} catch (IOException ex) {Logger.getLogger(ProjectMgr.class.getName()).log(Level.SEVERE, null, ex);}
         }
-        
+        return iniFile;
+    }
+    
+    public static Properties getProperties(){
+        if(properties == null){
+            createProperties();
+        }
+        return properties;
+    }
+    
+    public static void createProperties(){
+        File iniFile = getPropertiesFile();
+        properties = new Properties();
+        try {
+            properties.load(new FileInputStream(iniFile));
+        } catch (IOException ex) {
+            System.err.println("ProjectMgr -> createProperties() -> failed load properties");
+        }
+    }
+    
+    public static void loadSettings(){
+        Properties prop = getProperties();
+        WidgetMgr.MAIN_WINDOW.loadSettings(prop);
     }
     
     public static void saveSettings(){
-        //Check if the settings folder exist, if not create it
-        File settingsFolder = new File(ProjectMgr.getSettingsPath());
-        if(!settingsFolder.exists()){
-            settingsFolder.mkdir();
-        }
+        Properties prop = getProperties();
+        File iniFile = getPropertiesFile();
         
-        File iniFile = new File(ProjectMgr.getSettingsPath(), "settings." + AppMgr.getExtension("settings file"));
+        WidgetMgr.MAIN_WINDOW.saveSettings(prop);
+        
         try {
-            iniFile.createNewFile();
-            Properties prop = new Properties();
-            
-            //save main window settings
-            WidgetMgr.MAIN_WINDOW.saveSettings(prop);
-
             prop.store(new FileOutputStream(iniFile), AppMgr.getNameVersion() + " project settings");
-            
-       }
-       catch(IOException ioe) {
-            System.out.println(ioe.getMessage());
-       }
+        } catch (IOException ex) {
+            System.err.println("ProjectMgr -> saveSettings() -> failed to save settings");
+        }
+    }
+    
+    public static boolean isProjectOpen(){
+        return projectPath != null;
     }
 }
 
