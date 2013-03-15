@@ -24,10 +24,16 @@ public class AssetManagerAssetsTree extends Tree{
 
     AssetManagerAssetFolderList folderList;
     public TreeExpandMemorizer expandMemorizer;
+    String filterText;
     
     public AssetManagerAssetsTree() {
         setRowHeight(20);
         expandMemorizer = new TreeExpandMemorizer(this);
+        filterText = "";
+    }
+    
+    public void setFilterText(String filterText){
+        this.filterText = filterText.toUpperCase();
     }
     
     public void refresh(){
@@ -39,31 +45,50 @@ public class AssetManagerAssetsTree extends Tree{
         String folderName = folderList.getCurrentItem().getText();
         
         File file = new File(ProjectMgr.getAssetsPath(), folderName);
-        for(File child : file.listFiles()){
-            if(child.isFile() && !isValidFormat(child.getName())){
-                continue;
-            } 
-            
-            FilePathTreeItem item = generateFileItem(child);
-            addTopLevelItem(item);
-            if(child.isDirectory()){
-                refreshRec(child, item);
-            }
+        
+        if(filterText.equals("")){
+            refreshRec(file, getRoot());
         }
+        else{
+            refreshFilterRec(file);
+        }
+        
         
         expandMemorizer.applyExpensions();
     }
     
-    public void refreshRec(File parentFile, FilePathTreeItem parentItem){
+    private void refreshRec(File parentFile, TreeItem parentItem){
         for(File child : parentFile.listFiles()){
             if(child.isFile() && !isValidFormat(child.getName())){
                 continue;
-            }    
+            }
             
             FilePathTreeItem item = generateFileItem(child);
             parentItem.addChild(item);
             if(child.isDirectory()){
                 refreshRec(child, item);
+            }
+        }
+    }
+    
+    public void refreshFilterRec(File parentFile){
+        for(File child : parentFile.listFiles()){
+            if(child.isFile() && !isValidFormat(child.getName())){
+                continue;
+            }    
+            
+            if(child.isFile()){
+                String text = FilenameUtils.getBaseName(child.getAbsolutePath());
+                if(text.toUpperCase().contains(filterText)){
+                    FilePathTreeItem item = generateFileItem(child);
+                    addTopLevelItem(item);
+                }
+                
+            }
+            
+            //parentItem.addChild(item);
+            if(child.isDirectory()){
+                refreshFilterRec(child);
             };
         }
     }

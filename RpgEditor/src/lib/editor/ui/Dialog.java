@@ -4,6 +4,7 @@
  */
 package lib.editor.ui;
 
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -22,6 +23,7 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
         super(parent, modal);
         initComponents();
         refreshing = false;
+        setDialogButton(new String[]{"ok", "cancel"});
     }
 
     public void close(){
@@ -29,21 +31,26 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
         dispose();
     }
     
-    public void setVisible(boolean b){
-        refresh();
-        super.setVisible(b);
+    public void setVisible(boolean visible){
+        if(visible){
+            refresh();
+        }
+        super.setVisible(visible);
     }
     
     public JPanel getBodyPanel(){
         return bodyPanel;
     }
     
-    public JButton getDialogButton(String type){
-        if(type.equals("ok")){
+    public JButton getDialogButton(String buttonName){
+        if(buttonName.equals("ok")){
             return okButton;
         }
-        else if(type.equals("cancel")){
+        else if(buttonName.equals("cancel")){
             return cancelButton;
+        }
+        else if(buttonName.equals("close")){
+            return closeButton;
         }
         return null;
     }
@@ -57,6 +64,23 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
         setMinimumSize(getSize());
     }
     
+    public void setDialogButton(String[] buttons){
+        dialogButtonsPanel.removeAll();
+        dialogButtonsPanel.add(dialogFiller);
+        
+        for(String buttonName : buttons){
+            if(buttonName.equals("ok")){
+                dialogButtonsPanel.add(okButton);
+            }
+            else if(buttonName.equals("cancel")){
+                dialogButtonsPanel.add(cancelButton);
+            }
+            else if(buttonName.equals("close")){
+                dialogButtonsPanel.add(closeButton);
+            }
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -68,10 +92,11 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
 
         jPanel1 = new javax.swing.JPanel();
         bodyPanel = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        dialogButtonsPanel = new javax.swing.JPanel();
+        dialogFiller = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        closeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.BoxLayout(getContentPane(), javax.swing.BoxLayout.LINE_AXIS));
@@ -83,9 +108,9 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
         bodyPanel.setLayout(new javax.swing.BoxLayout(bodyPanel, javax.swing.BoxLayout.LINE_AXIS));
         jPanel1.add(bodyPanel);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 0, 0, 0));
-        jPanel4.setLayout(new javax.swing.BoxLayout(jPanel4, javax.swing.BoxLayout.LINE_AXIS));
-        jPanel4.add(filler5);
+        dialogButtonsPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 0, 0, 0));
+        dialogButtonsPanel.setLayout(new javax.swing.BoxLayout(dialogButtonsPanel, javax.swing.BoxLayout.LINE_AXIS));
+        dialogButtonsPanel.add(dialogFiller);
 
         okButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/ok.png"))); // NOI18N
         okButton.setText("OK");
@@ -97,7 +122,7 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
                 okButtonActionPerformed(evt);
             }
         });
-        jPanel4.add(okButton);
+        dialogButtonsPanel.add(okButton);
 
         cancelButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cancel.png"))); // NOI18N
         cancelButton.setText("Cancel");
@@ -109,9 +134,21 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
                 cancelButtonActionPerformed(evt);
             }
         });
-        jPanel4.add(cancelButton);
+        dialogButtonsPanel.add(cancelButton);
 
-        jPanel1.add(jPanel4);
+        closeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/cancel.png"))); // NOI18N
+        closeButton.setText("Close");
+        closeButton.setMaximumSize(new java.awt.Dimension(90, 28));
+        closeButton.setMinimumSize(new java.awt.Dimension(90, 28));
+        closeButton.setPreferredSize(new java.awt.Dimension(90, 28));
+        closeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                closeButtonActionPerformed(evt);
+            }
+        });
+        dialogButtonsPanel.add(closeButton);
+
+        jPanel1.add(dialogButtonsPanel);
 
         getContentPane().add(jPanel1);
 
@@ -132,14 +169,19 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
         }
     }//GEN-LAST:event_cancelButtonActionPerformed
 
+    private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
+        close();
+    }//GEN-LAST:event_closeButtonActionPerformed
+
     
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bodyPanel;
     private javax.swing.JButton cancelButton;
-    private javax.swing.Box.Filler filler5;
+    private javax.swing.JButton closeButton;
+    private javax.swing.JPanel dialogButtonsPanel;
+    private javax.swing.Box.Filler dialogFiller;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel4;
     private javax.swing.JButton okButton;
     // End of variables declaration//GEN-END:variables
 }

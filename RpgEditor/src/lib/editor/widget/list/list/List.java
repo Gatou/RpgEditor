@@ -32,7 +32,9 @@ public class List extends JXList{
     }
     
     public void clear(){
-        removeAll();
+        DefaultListModel model = (DefaultListModel) getModel();
+        clearSelection();
+        model.clear();
     }
     
     public int getCurrentRow(){
@@ -45,7 +47,12 @@ public class List extends JXList{
     
     public ListItem getItem(int row){
         DefaultListModel model = (DefaultListModel) getModel();
-        return (ListItem) model.getElementAt(row);
+        try{
+            return (ListItem) model.getElementAt(row);
+        }
+        catch(ArrayIndexOutOfBoundsException e){
+            return null;
+        }
     }
     
     public void addItem(ListItem item){

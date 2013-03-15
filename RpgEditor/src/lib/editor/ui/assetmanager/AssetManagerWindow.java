@@ -10,10 +10,15 @@ import java.util.Properties;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import lib.editor.mgr.AppMgr;
 import lib.editor.mgr.ProjectMgr;
+import lib.editor.mgr.WidgetMgr;
 import lib.editor.ui.Dialog;
 import lib.editor.util.SwingUtil;
+import lib.editor.widget.tree.item.FilePathTreeItem;
+import lib.editor.widget.tree.item.TreeItem;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -22,16 +27,32 @@ import org.apache.commons.io.FilenameUtils;
  */
 public class AssetManagerWindow extends Dialog {
 
+    boolean readOnly;
     
-    
-    public AssetManagerWindow(Frame parent, boolean modal) {
-        super(parent, modal);
+    public AssetManagerWindow(Frame parent, boolean readOnly) {
+        super(parent, true);
         initComponents();
         setLocationRelativeTo(null);
         layoutDialog(0);
         
         folderList.setAssetTree(assetTree);
         assetTree.setFolderList(folderList);
+        
+        assetFilterTextField.getDocument().addDocumentListener(new DocumentListener(){  
+            public void insertUpdate(DocumentEvent e) {
+                filterTextChanged();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                filterTextChanged();
+            }
+
+            public void changedUpdate(DocumentEvent e) {}
+        });
+        this.readOnly = readOnly;
+        if(readOnly){
+            setDialogButton(new String[]{"close"});
+        }
     }
 
     
@@ -52,7 +73,7 @@ public class AssetManagerWindow extends Dialog {
         middleSplitPane = new javax.swing.JSplitPane();
         jPanel6 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
-        mapTreeFilterTextField = new lib.editor.widget.textfield.IconTextField();
+        assetFilterTextField = new lib.editor.widget.textfield.IconTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         assetTree = new lib.editor.ui.assetmanager.AssetManagerAssetsTree();
         jPanel7 = new javax.swing.JPanel();
@@ -60,9 +81,7 @@ public class AssetManagerWindow extends Dialog {
         jScrollPane3 = new javax.swing.JScrollPane();
         jTextArea1 = new javax.swing.JTextArea();
         jPanel8 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        refreshButton = new javax.swing.JButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
         jPanel4 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -84,12 +103,12 @@ public class AssetManagerWindow extends Dialog {
 
         jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
 
-        mapTreeFilterTextField.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/find.png"))); // NOI18N
-        mapTreeFilterTextField.setMaximumSize(new java.awt.Dimension(2147483647, 28));
-        mapTreeFilterTextField.setMinimumSize(new java.awt.Dimension(20, 28));
-        mapTreeFilterTextField.setPreferredSize(new java.awt.Dimension(24, 28));
-        mapTreeFilterTextField.setStatusText("Live search filtering maps name.");
-        jPanel5.add(mapTreeFilterTextField);
+        assetFilterTextField.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/find.png"))); // NOI18N
+        assetFilterTextField.setMaximumSize(new java.awt.Dimension(2147483647, 28));
+        assetFilterTextField.setMinimumSize(new java.awt.Dimension(20, 28));
+        assetFilterTextField.setPreferredSize(new java.awt.Dimension(24, 28));
+        assetFilterTextField.setStatusText("Live search filtering maps name.");
+        jPanel5.add(assetFilterTextField);
 
         jPanel6.add(jPanel5, java.awt.BorderLayout.PAGE_END);
 
@@ -114,14 +133,14 @@ public class AssetManagerWindow extends Dialog {
         jPanel8.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
         jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jButton2.setText("jButton1");
-        jPanel8.add(jButton2);
-
-        jButton3.setText("jButton1");
-        jPanel8.add(jButton3);
-
-        jButton4.setText("jButton1");
-        jPanel8.add(jButton4);
+        refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/refresh.png"))); // NOI18N
+        refreshButton.setText("Refresh");
+        refreshButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                refreshButtonActionPerformed(evt);
+            }
+        });
+        jPanel8.add(refreshButton);
         jPanel8.add(filler1);
 
         jPanel7.add(jPanel8);
@@ -150,13 +169,32 @@ public class AssetManagerWindow extends Dialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void refreshButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshButtonActionPerformed
+        String folderSelectedText = null;
+        if(folderList.getCurrentItem() != null){
+            folderSelectedText = folderList.getCurrentItem().getText();
+        }
+        
+        String assetSelectedPath = null;
+        if(assetTree.getCurrentItem() != null){
+            assetSelectedPath = ((FilePathTreeItem) assetTree.getCurrentItem()).getFilePath();
+        }
+        
+        folderList.refresh();
+        if(folderSelectedText != null){
+            folderList.setCurrentItem(folderSelectedText);
+        }
+        
+        if(assetSelectedPath != null){
+            setCurrentTreeItemByPath(assetSelectedPath);
+        }
+    }//GEN-LAST:event_refreshButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private lib.editor.widget.textfield.IconTextField assetFilterTextField;
     private lib.editor.ui.assetmanager.AssetManagerAssetsTree assetTree;
     private javax.swing.Box.Filler filler1;
     private lib.editor.ui.assetmanager.AssetManagerAssetFolderList folderList;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -170,8 +208,8 @@ public class AssetManagerWindow extends Dialog {
     private javax.swing.JTextArea jTextArea1;
     private javax.swing.JSplitPane leftSplitPane;
     private javax.swing.JPanel mainPanel;
-    private lib.editor.widget.textfield.IconTextField mapTreeFilterTextField;
     private javax.swing.JSplitPane middleSplitPane;
+    private javax.swing.JButton refreshButton;
     // End of variables declaration//GEN-END:variables
 
     @Override
@@ -203,8 +241,8 @@ public class AssetManagerWindow extends Dialog {
             SwingUtil.saveWindowBasics(prop, prefix, this);
             prop.setProperty(prefix + "LeftSplitPane", String.valueOf(leftSplitPane.getDividerLocation()));
             prop.setProperty(prefix + "MiddleSplitPane", String.valueOf(middleSplitPane.getDividerLocation()));
+            assetTree.expandMemorizer.save("AssetManagerWindow_AssetTree." + AppMgr.getExtension("settings file"));
         }
-        assetTree.expandMemorizer.save("AssetManagerWindow_AssetTree." + AppMgr.getExtension("settings file"));
     }
     
     public void loadSettings(){
@@ -225,7 +263,11 @@ public class AssetManagerWindow extends Dialog {
     
     public void setVisible(boolean visible){
         if(visible){
+            WidgetMgr.ASSET_MANAGER_WINDOW = this;
             loadSettings();
+        }
+        else{
+            WidgetMgr.ASSET_MANAGER_WINDOW = null;
         }
         super.setVisible(visible);
     }
@@ -240,6 +282,27 @@ public class AssetManagerWindow extends Dialog {
         }
         String folder = file.getName();
         folderList.setCurrentItem(folder);
+        
+        setCurrentTreeItemByPath(relativePath);
+    }
+    
+    public void setCurrentTreeItemByPath(String relativePath){
+        for(TreeItem item : assetTree.getItems()){
+            if(((FilePathTreeItem) item).getFilePath().equals(relativePath)){
+                assetTree.setCurrentItem(item);
+                return;
+            }
+        }
+    }
+    
+    public void clearFilter(){
+        assetFilterTextField.setText("");
+    }
+    
+    public void filterTextChanged(){
+        String filterText = assetFilterTextField.getText();
+        assetTree.setFilterText(assetFilterTextField.getText());
+        assetTree.refresh();
     }
     
 }

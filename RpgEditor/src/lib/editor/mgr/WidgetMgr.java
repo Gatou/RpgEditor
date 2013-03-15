@@ -6,6 +6,7 @@ package lib.editor.mgr;
 
 import javax.swing.JLabel;
 import lib.editor.ui.MainWindow;
+import lib.editor.ui.assetmanager.AssetManagerWindow;
 import lib.editor.widget.inspector.Inspector;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
 import lib.editor.widget.tree.tree.MapTree;
@@ -23,4 +24,6 @@ public class WidgetMgr {
     public static JLabel STATUS_LABEL;
     
     public static Inspector INSPECTOR;
+    
+    public static AssetManagerWindow ASSET_MANAGER_WINDOW;
 }

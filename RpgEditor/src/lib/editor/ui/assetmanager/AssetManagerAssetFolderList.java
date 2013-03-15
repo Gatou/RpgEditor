@@ -7,6 +7,7 @@ package lib.editor.ui.assetmanager;
 import java.io.File;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
+import lib.editor.mgr.WidgetMgr;
 import lib.editor.widget.list.item.ListItem;
 import lib.editor.widget.list.list.List;
 
@@ -32,6 +33,7 @@ public class AssetManagerAssetFolderList extends List{
     }
     
     public void currentItemChanged(ListItem item, int row){
+        WidgetMgr.ASSET_MANAGER_WINDOW.clearFilter();
         assetTree.refresh();
     }
     
