@@ -119,7 +119,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         }
         return true;
     }
-    
+    /*
     public void setItemExpanded(TreeItem item, boolean expanded){
         
         if(!(item.getParent() == getRoot()) && expanded){
@@ -139,6 +139,6 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         super.setItemExpanded(item, expanded);
         
 
-    }
+    }*/
     
 }

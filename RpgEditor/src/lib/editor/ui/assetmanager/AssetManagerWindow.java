@@ -5,13 +5,16 @@
 package lib.editor.ui.assetmanager;
 
 import java.awt.Frame;
+import java.io.File;
 import java.util.Properties;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
+import lib.editor.mgr.AppMgr;
 import lib.editor.mgr.ProjectMgr;
 import lib.editor.ui.Dialog;
 import lib.editor.util.SwingUtil;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
@@ -185,6 +188,7 @@ public class AssetManagerWindow extends Dialog {
     public void refresh() {
         folderList.refresh();
         assetTree.refresh();
+        setCurrentPath("Tiles/Graphics/Battlers/Dummy_Character.png");
     }
 
     @Override
@@ -200,6 +204,7 @@ public class AssetManagerWindow extends Dialog {
             prop.setProperty(prefix + "LeftSplitPane", String.valueOf(leftSplitPane.getDividerLocation()));
             prop.setProperty(prefix + "MiddleSplitPane", String.valueOf(middleSplitPane.getDividerLocation()));
         }
+        assetTree.expandMemorizer.save("AssetManagerWindow_AssetTree." + AppMgr.getExtension("settings file"));
     }
     
     public void loadSettings(){
@@ -210,6 +215,7 @@ public class AssetManagerWindow extends Dialog {
             leftSplitPane.setDividerLocation( Integer.parseInt(prop.getProperty(prefix + "LeftSplitPane")));
             middleSplitPane.setDividerLocation( Integer.parseInt(prop.getProperty(prefix + "MiddleSplitPane")));
         }catch(NumberFormatException e){}
+        assetTree.expandMemorizer.load("AssetManagerWindow_AssetTree." + AppMgr.getExtension("settings file"));
     }
     
     public void dispose(){
@@ -222,6 +228,18 @@ public class AssetManagerWindow extends Dialog {
             loadSettings();
         }
         super.setVisible(visible);
+    }
+    
+    public void setCurrentPath(String relativePath){
+        File file = new File(ProjectMgr.getAssetsPath() ,relativePath);
+        
+        if(!file.exists()){return;}
+        
+        while(!file.getParent().equals(ProjectMgr.getAssetsPath())){
+            file = file.getParentFile();
+        }
+        String folder = file.getName();
+        folderList.setCurrentItem(folder);
     }
     
 }

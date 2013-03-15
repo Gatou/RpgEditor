@@ -57,4 +57,15 @@ public class List extends JXList{
         
     }
     
+    public void setCurrentItem(String text){
+        DefaultListModel model = (DefaultListModel) getModel();
+        for(int i=0; i<model.getSize(); i++){
+            ListItem item = (ListItem) model.getElementAt(i);
+            if(item.getText().equals(text)){
+                setSelectedValue(item, true);
+            }
+        }
+
+    }
+    
 }

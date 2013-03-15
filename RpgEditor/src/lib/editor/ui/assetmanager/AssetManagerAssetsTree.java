@@ -13,6 +13,7 @@ import lib.editor.util.Cst;
 import lib.editor.widget.tree.item.FilePathTreeItem;
 import lib.editor.widget.tree.item.TreeItem;
 import lib.editor.widget.tree.tree.Tree;
+import lib.editor.widget.tree.tree.option.TreeExpandMemorizer;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -22,9 +23,11 @@ import org.apache.commons.io.FilenameUtils;
 public class AssetManagerAssetsTree extends Tree{
 
     AssetManagerAssetFolderList folderList;
+    public TreeExpandMemorizer expandMemorizer;
     
     public AssetManagerAssetsTree() {
         setRowHeight(20);
+        expandMemorizer = new TreeExpandMemorizer(this);
     }
     
     public void refresh(){
@@ -47,6 +50,8 @@ public class AssetManagerAssetsTree extends Tree{
                 refreshRec(child, item);
             }
         }
+        
+        expandMemorizer.applyExpensions();
     }
     
     public void refreshRec(File parentFile, FilePathTreeItem parentItem){

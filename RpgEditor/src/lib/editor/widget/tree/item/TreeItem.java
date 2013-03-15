@@ -66,4 +66,9 @@ public class TreeItem extends DefaultMutableTreeNode{
             tree.filter.needRefresh(item, false);
         }
     }
+    
+    public void setExpanded(boolean expanded){
+        tree.setItemExpanded(this, expanded);
+    }
+    
 }

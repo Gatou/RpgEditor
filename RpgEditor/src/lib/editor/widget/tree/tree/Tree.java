@@ -23,6 +23,8 @@ import javax.swing.event.TreeWillExpandListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import lib.editor.data.editor.DataEditorTreeItem;
@@ -139,13 +141,7 @@ public abstract class Tree extends JXTree{
     public void itemExpanded(TreeItem item){
     }
         
-    public boolean itemWillExpanded(TreeItem item){
-        return true;
-    }
-    
-    public boolean itemWillCollapsed(TreeItem item){
-        return true;
-    }
+
     
     public TreeItem getRoot(){
         return (TreeItem) getModel().getRoot();
@@ -217,6 +213,16 @@ public abstract class Tree extends JXTree{
         return result;
     }
     
+    public void expandPath(TreePath path) {
+        for(Object node : path.getPath()){
+            TreeItem parentItem = (TreeItem) node;
+            if(parentItem != path.getLastPathComponent() && !isExpanded(new TreePath(parentItem.getPath()))){
+                return;
+            }
+        }
+        super.expandPath(path);
+    }
+    
     public void setItemExpanded(TreeItem item, boolean expanded){
         if(expanded){
             expandPath(new TreePath(item.getPath()));
@@ -227,5 +233,22 @@ public abstract class Tree extends JXTree{
         
     }
     
-  
+    public boolean itemWillExpanded(TreeItem item){
+        /*
+        System.out.println("--------------------------------" + item.getText());
+        for(TreeNode node : item.getPath()){
+            TreeItem parentItem = (TreeItem) node;
+            boolean parentExpanded = isExpanded(new TreePath(parentItem.getPath()));
+            System.out.println(parentItem.getText() + "   " + parentExpanded);
+            if(parentItem != item && !parentExpanded){
+                return false;
+            }
+        }*/
+        return true;
+    }
+    
+    public boolean itemWillCollapsed(TreeItem item){
+        return true;
+    }
+    
 }
