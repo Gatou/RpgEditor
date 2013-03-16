@@ -4,8 +4,10 @@
  */
 package lib.editor.ui.assetmanager;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.io.File;
+import java.util.List;
 import java.util.Properties;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -28,8 +30,10 @@ import org.apache.commons.io.FilenameUtils;
 public class AssetManagerWindow extends Dialog {
 
     boolean readOnly;
+    String defaultFilename;
+    List<String> formatFilter;
     
-    public AssetManagerWindow(Frame parent, boolean readOnly) {
+    public AssetManagerWindow(Frame parent, boolean readOnly, String defaultFilename, List<String> formatFilter) {
         super(parent, true);
         initComponents();
         setLocationRelativeTo(null);
@@ -53,9 +57,18 @@ public class AssetManagerWindow extends Dialog {
         if(readOnly){
             setDialogButton(new String[]{"close"});
         }
+        
+        this.defaultFilename = defaultFilename;
+        this.formatFilter = formatFilter;
+        
+        assetTree.setFormatFilter(formatFilter);
     }
-
     
+    public static String getAssetFilename(Frame parent, String defaultFilename, List<String> formatFilter){
+        AssetManagerWindow window = new AssetManagerWindow(parent, false, defaultFilename, formatFilter);
+        window.setVisible(true);
+        return window.getCurrentAssetRelativeFilename();
+    }
 
     
     /**
@@ -212,21 +225,27 @@ public class AssetManagerWindow extends Dialog {
     private javax.swing.JButton refreshButton;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public boolean ok() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public void ok() {
+        if(!isCurrentAssetValid()){
+            return;
+        }
+        super.ok();
     }
 
-    @Override
-    public boolean cancel() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    /*
+    public void cancel() {
+        super.
+    }*/
 
     @Override
     public void refresh() {
         folderList.refresh();
         assetTree.refresh();
-        setCurrentPath("Tiles/Graphics/Battlers/Dummy_Character.png");
+        
+        if(defaultFilename != null){
+            setCurrentPath(defaultFilename);
+            defaultFilename = null;
+        }
     }
 
     @Override
@@ -286,7 +305,7 @@ public class AssetManagerWindow extends Dialog {
         setCurrentTreeItemByPath(relativePath);
     }
     
-    public void setCurrentTreeItemByPath(String relativePath){
+    private void setCurrentTreeItemByPath(String relativePath){
         for(TreeItem item : assetTree.getItems()){
             if(((FilePathTreeItem) item).getFilePath().equals(relativePath)){
                 assetTree.setCurrentItem(item);
@@ -305,4 +324,35 @@ public class AssetManagerWindow extends Dialog {
         assetTree.refresh();
     }
     
+    public boolean isCurrentAssetValid(){
+        if(readOnly){
+            return false;
+        }
+        
+        String relativePath = getCurrentAssetRelativeFilename();
+        if(relativePath == null){
+            return false;
+        }
+        
+        File file = new File(ProjectMgr.getAssetsPath(), relativePath);
+        
+        if(file.isDirectory()){
+            return false;
+        }
+        
+        return true;
+    }
+    
+    public String getCurrentAssetRelativeFilename(){
+        if((FilePathTreeItem)assetTree.getCurrentItem() == null){
+            return null;
+        }
+        return ((FilePathTreeItem)assetTree.getCurrentItem()).getFilePath();
+    }
+    /*
+    public String currentAssetAbsoluteFilename(){
+        String relativePath = ((FilePathTreeItem)assetTree.getCurrentItem()).getFilePath();
+        File file = new File(ProjectMgr.getAssetsPath(), relativePath);
+        return file.getAbsolutePath();
+    }*/
 }

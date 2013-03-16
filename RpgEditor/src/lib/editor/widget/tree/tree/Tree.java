@@ -83,10 +83,11 @@ public abstract class Tree extends JXTree{
             }
 
             @Override
-            public void treeCollapsed(TreeExpansionEvent event) {
+            public void treeCollapsed(TreeExpansionEvent evt) {
+                itemCollapsed((TreeItem)evt.getPath().getLastPathComponent());
             }
         });
-                        
+        /*
         addTreeWillExpandListener(new TreeWillExpandListener () {
 
             @Override
@@ -104,7 +105,7 @@ public abstract class Tree extends JXTree{
                     throw new ExpandVetoException(evt);
                 }
             }
-        });
+        });*/
         
         //improve item selection (click is detected on all the row of the iem)
         MouseListener ml = new MouseAdapter() {
@@ -122,11 +123,17 @@ public abstract class Tree extends JXTree{
                         setSelectionRow(selRow);
 
                         if( e.getClickCount() == 2) {
-                                if( isCollapsed(selRow)){
-                                        expandRow( selRow);}
-                                else if( isExpanded( selRow)){
-                                        collapseRow( selRow);}
+                            if( isCollapsed(selRow)){
+                                    expandRow( selRow);
+                            }
+                            else if( isExpanded( selRow)){
+                                    collapseRow( selRow);
+                            }
+                            
                         }
+                    }
+                    if( e.getClickCount() == 2) {
+                        itemDoubleClicked(getCurrentItem()); 
                     }
                 }
             }
@@ -141,7 +148,8 @@ public abstract class Tree extends JXTree{
     public void itemExpanded(TreeItem item){
     }
         
-
+    public void itemCollapsed(TreeItem item){
+    }
     
     public TreeItem getRoot(){
         return (TreeItem) getModel().getRoot();
@@ -232,9 +240,9 @@ public abstract class Tree extends JXTree{
         }
         
     }
-    
+    /*
     public boolean itemWillExpanded(TreeItem item){
-        /*
+        
         System.out.println("--------------------------------" + item.getText());
         for(TreeNode node : item.getPath()){
             TreeItem parentItem = (TreeItem) node;
@@ -243,12 +251,15 @@ public abstract class Tree extends JXTree{
             if(parentItem != item && !parentExpanded){
                 return false;
             }
-        }*/
+        }
         return true;
     }
     
     public boolean itemWillCollapsed(TreeItem item){
         return true;
+    }*/
+    
+    public void itemDoubleClicked(TreeItem item){
     }
     
 }

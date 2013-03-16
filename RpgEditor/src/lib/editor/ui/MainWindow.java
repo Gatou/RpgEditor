@@ -42,6 +42,7 @@ import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.SaveMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
+import lib.editor.util.Cst;
 import lib.editor.util.SwingUtil;
 import lib.editor.widget.inspector.Inspector;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
@@ -254,7 +255,8 @@ public class MainWindow extends javax.swing.JFrame {
     public void openWindow(String window){
         statusBarLabel.setText("");
         if(window.equals("resourceManager")){
-            (new AssetManagerWindow(this, true)).setVisible(true);
+            System.out.println(AssetManagerWindow.getAssetFilename(this, "Tiles/Graphics/Battlers/Dummy_Character.png", Cst.VALID_IMAGE_FORMAT));
+            //(new AssetManagerWindow(this, true)).setVisible(true);
         }
     }
     

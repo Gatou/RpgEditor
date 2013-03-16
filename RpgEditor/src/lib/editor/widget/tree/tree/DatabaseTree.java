@@ -91,7 +91,24 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         super.removeItem(item);
     }*/
     
+    public void itemCollapsed(TreeItem item){
+        super.itemCollapsed(item);
+        
+        if(item instanceof DatabaseTreeItem){
+            DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
+            DataEditorTreeItem data = (DataEditorTreeItem) dataItem.editorData;
+            data.expanded = false;
+        }
+    }
+    
     public void itemExpanded(TreeItem item){
+        super.itemExpanded(item);
+        
+        if(item instanceof DatabaseTreeItem){
+            DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
+            DataEditorTreeItem data = (DataEditorTreeItem) dataItem.editorData;
+            data.expanded = true;
+        }
         
         for(int i=0; i<item.getChildCount(); i++){
             DatabaseTreeItem childItem = (DatabaseTreeItem) item.getChildAt(i);
@@ -101,6 +118,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
         }
     }
     
+    /*
     public boolean itemWillExpanded(TreeItem item){
         if(item instanceof DatabaseTreeItem){
             DatabaseTreeItem dataItem = (DatabaseTreeItem) item;
@@ -118,7 +136,7 @@ public abstract class DatabaseTree extends TreeMenu implements TreeWithDatabase{
             data.expanded = false;
         }
         return true;
-    }
+    }*/
     /*
     public void setItemExpanded(TreeItem item, boolean expanded){
         

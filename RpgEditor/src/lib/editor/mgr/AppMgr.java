@@ -4,11 +4,13 @@
  */
 package lib.editor.mgr;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+import javax.swing.UIManager;
 
 /**
  *
@@ -20,7 +22,7 @@ public class AppMgr {
     final public static String VERSION = "0.1";
     
     public static void init(){
-        
+        UIManager.put("Item.disableText", new Color(150, 150, 150));
     }
     
     public static String getNameVersion(){

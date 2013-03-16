@@ -8,7 +8,9 @@ import java.awt.Color;
 import java.awt.Component;
 import javax.swing.JLabel;
 import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.tree.DefaultTreeCellRenderer;
+import lib.editor.mgr.Mgr;
 import lib.editor.widget.tree.item.TreeItem;
 
 /**
@@ -34,13 +36,21 @@ public class TreeItemRenderer extends DefaultTreeCellRenderer{
                 boolean hasFocus) {
 
         TreeItem item = (TreeItem) value;
-        label.setIcon(item.getIcon());
+        
         label.setText(item.getText());
         
         if (sel) {
             label.setForeground(textSelectionColor);
         } else {
             label.setForeground(textNonSelectionColor);
+        }
+        
+        if(item.isEnabled()){
+            label.setIcon(Mgr.icon.getIcon(item.getIconFilename()));
+        }
+        else{
+            label.setForeground(UIManager.getColor("Item.disableText"));
+            label.setIcon(Mgr.icon.getIcon(item.getIconFilename(), true));
         }
         
         return label;

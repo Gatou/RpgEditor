@@ -4,10 +4,13 @@
  */
 package lib.editor.widget.tree.item;
 
+import java.awt.Image;
+import javax.swing.GrayFilter;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import lib.editor.mgr.Mgr;
 import lib.editor.widget.tree.tree.Tree;
 
 /**
@@ -17,22 +20,28 @@ import lib.editor.widget.tree.tree.Tree;
 public class TreeItem extends DefaultMutableTreeNode{
     
     private String text;
-    private Icon icon;
+    private String iconFilename;
+    //private ImageIcon disableIcon;
     private Tree tree;
+    private boolean enabled;
+    //private boolean canBeDisable;
     
-    public TreeItem(Tree tree, String text, ImageIcon icon){
+    public TreeItem(Tree tree, String text, String iconFilename){
         super();
         this.tree = tree;
-        this.text = text;
-        this.icon = icon;
+        
+        setText(text);
+        setIcon(iconFilename);
+        setEnabled(true);
     }
     
-    public Icon getIcon(){
-        return icon;
+    public String getIconFilename(){
+        return iconFilename;
     }
     
-    public void setIcon(ImageIcon icon){
-        this.icon = icon;
+    public void setIcon(String filename){
+        iconFilename = filename;//Mgr.icon.getIcon(filename);
+        //this.icon = icon;
         itemChanged();
     }
     
@@ -43,6 +52,25 @@ public class TreeItem extends DefaultMutableTreeNode{
     public void setText(String text){
         this.text = text;
         itemChanged();
+    }
+    
+    public void setEnabled(boolean enabled){
+        this.enabled = enabled;
+        itemChanged();
+        /*
+        if(enabled){
+            setIcon(icon);
+        }
+        else{
+            if(disableIcon == null){
+
+            }
+            setIcon(disableIcon);
+        }*/
+    }
+    
+    public boolean isEnabled(){
+        return enabled;
     }
     
     private void itemChanged(){

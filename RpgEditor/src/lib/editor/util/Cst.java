@@ -4,16 +4,36 @@
  */
 package lib.editor.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author gaetan
  */
 public class Cst {
     
-    public static final String[] VALID_IMAGE_FORMAT = {"png", "jpg", "bmp"};
-    public static final String[] VALID_SOUND_FORMAT = {"ogg", "mp3", "wma", "wav"};
-    public static final String[] VALID_SCRIPT_FORMAT = {"rb"};
-    //public static final String[] VALID_ASSET_FORMAT = {
+    public static final List<String> VALID_IMAGE_FORMAT = new ArrayList<String>() {{
+        add("png"); add("jpg"); add("bmp");
+    }};
+    public static final List<String> VALID_SOUND_FORMAT = new ArrayList<String>() {{
+        add("ogg"); add("mp3"); add("wma"); add("wav");
+    }};
+    public static final List<String> VALID_SCRIPT_FORMAT = new ArrayList<String>() {{
+        add("rb");
+    }}; 
+    
+    public static final List<String> ALL_ASSET_FORMAT = new ArrayList<String>() {{
+        for(String format : VALID_IMAGE_FORMAT){
+            add(format);
+        }
+        for(String format : VALID_SOUND_FORMAT){
+            add(format);
+        }
+        for(String format : VALID_SCRIPT_FORMAT){
+            add(format);
+        }
+    }}; 
        
     public static final int MAX_MAP_SIZE = 400;
     

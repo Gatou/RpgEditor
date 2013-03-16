@@ -5,10 +5,12 @@
 package lib.editor.ui.assetmanager;
 
 import java.io.File;
+import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
+import lib.editor.mgr.WidgetMgr;
 import lib.editor.util.Cst;
 import lib.editor.widget.tree.item.FilePathTreeItem;
 import lib.editor.widget.tree.item.TreeItem;
@@ -25,6 +27,7 @@ public class AssetManagerAssetsTree extends Tree{
     AssetManagerAssetFolderList folderList;
     public TreeExpandMemorizer expandMemorizer;
     String filterText;
+    List<String> formatFilter;
     
     public AssetManagerAssetsTree() {
         setRowHeight(20);
@@ -54,7 +57,7 @@ public class AssetManagerAssetsTree extends Tree{
         }
         
         
-        expandMemorizer.applyExpensions();
+        //expandMemorizer.applyExpensions();
     }
     
     private void refreshRec(File parentFile, TreeItem parentItem){
@@ -66,10 +69,14 @@ public class AssetManagerAssetsTree extends Tree{
             FilePathTreeItem item = generateFileItem(child);
             parentItem.addChild(item);
             if(child.isDirectory()){
-                refreshRec(child, item);
+                if(expandMemorizer.isExpanded(item.getFilePath())){
+                    item.setExpanded(true);
+                    //refreshRec(child, item);
+                }
             }
         }
     }
+    
     
     public void refreshFilterRec(File parentFile){
         for(File child : parentFile.listFiles()){
@@ -96,40 +103,30 @@ public class AssetManagerAssetsTree extends Tree{
     public FilePathTreeItem generateFileItem(File file){
         String relativePath = new File(ProjectMgr.getAssetsPath()).toURI().relativize(new File(file.getAbsolutePath()).toURI()).getPath();
         
-        ImageIcon icon = null;
+        boolean enabled = true;
+        String iconFilename = null;
+        
         if(file.isDirectory()){
-            icon = Mgr.icon.getIcon("folder.png");
+            iconFilename = "folder.png";
         }
         else{
             String ext = FilenameUtils.getExtension(file.getName());
-            icon = Mgr.icon.getIcon(ext + ".png");
+            iconFilename = ext + ".png";
+            enabled = formatFilter.contains(ext);
         }
         
         String text = FilenameUtils.getBaseName(file.getAbsolutePath());
         
-        FilePathTreeItem item = new FilePathTreeItem(this, text, icon, relativePath);
+        FilePathTreeItem item = new FilePathTreeItem(this, text, iconFilename, relativePath);
+        
+        item.setEnabled(enabled);
+            
         return item;
     }
     
     public boolean isValidFormat(String filename){
         String ext = FilenameUtils.getExtension(filename);
-        
-        for(String format : Cst.VALID_IMAGE_FORMAT){
-            if(format.equals(ext)){
-                return true;
-            }
-        }
-        for(String format : Cst.VALID_SOUND_FORMAT){
-            if(format.equals(ext)){
-                return true;
-            }
-        }
-        for(String format : Cst.VALID_SCRIPT_FORMAT){
-            if(format.equals(ext)){
-                return true;
-            }
-        }
-        return false;
+        return Cst.ALL_ASSET_FORMAT.contains(ext);
     }
     
     public void setFolderList(AssetManagerAssetFolderList folderList){
@@ -142,8 +139,26 @@ public class AssetManagerAssetsTree extends Tree{
         }
         
         FilePathTreeItem pathItem = (FilePathTreeItem) item;
-        System.out.println(pathItem.getFilePath());
+        //System.out.println(pathItem.getFilePath());
     }
 
+    public void itemDoubleClicked(TreeItem item){
+        super.itemDoubleClicked(item);
+        WidgetMgr.ASSET_MANAGER_WINDOW.ok();
+    }
+
+    void setFormatFilter(List<String> formatFilter) {
+        this.formatFilter = formatFilter;
+    }
+    
+    public void itemExpanded(TreeItem item){
+        if(item instanceof FilePathTreeItem){
+            FilePathTreeItem pathItem = (FilePathTreeItem) item;
+            File file = new File(ProjectMgr.getAssetsPath(), pathItem.getFilePath());
+            refreshRec(file, item);
+        }
+        
+        super.itemExpanded(item);
+    }
     
 }

@@ -19,8 +19,8 @@ public class DatabaseTreeItem extends TreeItem{
     public DataBase gameData;
     public DataEditorTreeItem editorData;
     
-    public DatabaseTreeItem(Tree tree, String text, ImageIcon icon, DataBase gameData, DataEditorTreeItem editorData) {
-        super(tree, text, icon);
+    public DatabaseTreeItem(Tree tree, String text, String iconFilename, DataBase gameData, DataEditorTreeItem editorData) {
+        super(tree, text, iconFilename);
         this.gameData = gameData;
         this.editorData = editorData;
         

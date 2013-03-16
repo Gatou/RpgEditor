@@ -238,16 +238,16 @@ public class ProjectWindow extends Dialog {
     private javax.swing.JLabel warningLabel;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public boolean ok() {
+    public void ok() {
         ProjectMgr.createNewProject(completePath());
-        return true;
+        super.ok();
     }
 
+    /*
     @Override
     public boolean cancel() {
         return true;
-    }
+    }*/
 
     @Override
     public JPanel getMainPanel() {

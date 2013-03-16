@@ -34,6 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 import lib.editor.data.editor.DataEditorBase;
 import lib.editor.data.editor.DataEditorMap;
 import lib.editor.data.editor.DataEditorTreeItem;
@@ -194,7 +195,7 @@ public class MapTree extends DatabaseTree {
     
     public void setup(){
         DataEditorBase rootMapEditorData = (DataEditorBase) DataMgr.load(new File(ProjectMgr.getDataEditorPath(), "MapInfos" + "." + AppMgr.getExtension("data file")).getAbsolutePath());
-        rootItem = new DatabaseTreeItem(this, ROOT_NAME, Mgr.icon.getIcon("project_root.png"), null, null);
+        rootItem = new DatabaseTreeItem(this, ROOT_NAME, "project_root.png", null, null);
         
         rootItem.editorData = (DataEditorTreeItem) rootMapEditorData;
         
@@ -379,13 +380,20 @@ public class MapTree extends DatabaseTree {
         }
         deletedItems.clear();
     }
-        
+      
+    public void collapsePath(TreePath path) {
+        if(path.getLastPathComponent() == rootItem){
+            return;
+        }
+        super.collapsePath(path);
+    }
+    /*
     public boolean itemWillCollapsed(TreeItem item){
         if(item == rootItem){
             return false;
         }
         return super.itemWillCollapsed(item);
-    }
+    }*/
     
     public DataBase getGameData(TreeItem item){
         if(item == null || item == rootItem){

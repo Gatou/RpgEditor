@@ -12,8 +12,8 @@ import javax.swing.JPanel;
  */
 public interface IDialog {
     
-    public boolean ok();
-    public boolean cancel();
+    public void ok();
+    public void cancel();
     public void refresh();
     public JPanel getMainPanel();
     

@@ -131,4 +131,9 @@ public class TreeExpandMemorizer {
     public void collapse(String path){
         expanded.remove(path);
     }
+    
+    public boolean isExpanded(String path){
+        return expanded.containsKey(path);
+    }
+    
 }

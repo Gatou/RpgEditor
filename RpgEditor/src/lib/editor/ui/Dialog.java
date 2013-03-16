@@ -156,24 +156,24 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_okButtonActionPerformed
-        boolean close = ok();
-        if(close){
-            close();
-        }
+        ok();
     }//GEN-LAST:event_okButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
-        boolean close = cancel();
-        if(close){
-            close();
-        }
+        cancel();
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void closeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_closeButtonActionPerformed
         close();
     }//GEN-LAST:event_closeButtonActionPerformed
 
+    public void ok(){
+        close();
+    }
     
+    public void cancel(){
+        close();
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel bodyPanel;
