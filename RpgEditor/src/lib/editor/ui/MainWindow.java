@@ -255,7 +255,7 @@ public class MainWindow extends javax.swing.JFrame {
     public void openWindow(String window){
         statusBarLabel.setText("");
         if(window.equals("resourceManager")){
-            System.out.println(AssetManagerWindow.getAssetFilename(this, "Tiles/Graphics/Battlers/Dummy_Character.png", Cst.VALID_IMAGE_FORMAT));
+            System.out.println(AssetManagerWindow.getAssetFilename(this, "Tiles/Graphics/Battlers/Dummy_Character.png", Cst.VALID_SOUND_FORMAT));
             //(new AssetManagerWindow(this, true)).setVisible(true);
         }
     }

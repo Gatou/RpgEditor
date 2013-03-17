@@ -5,6 +5,7 @@
 package lib.editor.ui.assetmanager;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -12,6 +13,7 @@ import lib.editor.mgr.Mgr;
 import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.util.Cst;
+import lib.editor.util.Util;
 import lib.editor.widget.tree.item.FilePathTreeItem;
 import lib.editor.widget.tree.item.TreeItem;
 import lib.editor.widget.tree.tree.Tree;
@@ -28,11 +30,13 @@ public class AssetManagerAssetsTree extends Tree{
     public TreeExpandMemorizer expandMemorizer;
     String filterText;
     List<String> formatFilter;
+    //boolean refreshing;
     
     public AssetManagerAssetsTree() {
         setRowHeight(20);
         expandMemorizer = new TreeExpandMemorizer(this);
         filterText = "";
+        //refreshing = false;
     }
     
     public void setFilterText(String filterText){
@@ -40,6 +44,7 @@ public class AssetManagerAssetsTree extends Tree{
     }
     
     public void refresh(){
+        //refreshing = true;
         clear();
         if(folderList.getCurrentItem() == null){
             return;
@@ -55,7 +60,7 @@ public class AssetManagerAssetsTree extends Tree{
         else{
             refreshFilterRec(file);
         }
-        
+        //refreshing = false;
         
         //expandMemorizer.applyExpensions();
     }
@@ -70,8 +75,8 @@ public class AssetManagerAssetsTree extends Tree{
             parentItem.addChild(item);
             if(child.isDirectory()){
                 if(expandMemorizer.isExpanded(item.getFilePath())){
-                    item.setExpanded(true);
                     //refreshRec(child, item);
+                    item.setExpanded(true);
                 }
             }
         }
@@ -101,7 +106,8 @@ public class AssetManagerAssetsTree extends Tree{
     }
     
     public FilePathTreeItem generateFileItem(File file){
-        String relativePath = new File(ProjectMgr.getAssetsPath()).toURI().relativize(new File(file.getAbsolutePath()).toURI()).getPath();
+        String relativePath = Util.getRelativePath(file, new File(ProjectMgr.getAssetsPath()));
+        //String relativePath = new File(ProjectMgr.getAssetsPath()).toURI().relativize(new File(file.getAbsolutePath()).toURI()).getPath();
         
         boolean enabled = true;
         String iconFilename = null;
@@ -117,7 +123,7 @@ public class AssetManagerAssetsTree extends Tree{
         
         String text = FilenameUtils.getBaseName(file.getAbsolutePath());
         
-        FilePathTreeItem item = new FilePathTreeItem(this, text, iconFilename, relativePath);
+        FilePathTreeItem item = new FilePathTreeItem(this, text, iconFilename, relativePath, file);
         
         item.setEnabled(enabled);
             
@@ -152,13 +158,53 @@ public class AssetManagerAssetsTree extends Tree{
     }
     
     public void itemExpanded(TreeItem item){
-        if(item instanceof FilePathTreeItem){
-            FilePathTreeItem pathItem = (FilePathTreeItem) item;
-            File file = new File(ProjectMgr.getAssetsPath(), pathItem.getFilePath());
-            refreshRec(file, item);
-        }
+        //if(!refreshing){
+            if(item instanceof FilePathTreeItem){
+                FilePathTreeItem pathItem = (FilePathTreeItem) item;
+                File file = new File(ProjectMgr.getAssetsPath(), pathItem.getFilePath());
+                refreshRec(file, item);
+            }
+        //}
         
         super.itemExpanded(item);
+    }
+    
+    public void setCurrentItemByPath(String relativePath){
+        File file = new File(ProjectMgr.getAssetsPath(), relativePath);
+        
+        if(!file.exists()){return;}
+        
+        List<File> files = new ArrayList<File>();
+        while(!file.getParent().equals(ProjectMgr.getAssetsPath())){
+            files.add(file);
+            file = file.getParentFile();
+        }
+        
+        for(int i=files.size()-1; i>=0; i--){
+            
+            file = files.get(i);
+            String relPath = Util.getRelativePath(file, new File(ProjectMgr.getAssetsPath()));
+            FilePathTreeItem item = getItemByPath(relPath);
+            
+            
+            
+            if(i==0){
+                setCurrentItem(item);
+            }
+            else{
+                item.setExpanded(true);
+            }
+        }
+        
+    }
+    
+    public FilePathTreeItem getItemByPath(String relativePath){
+        for(TreeItem item : getItems()){
+            if(((FilePathTreeItem) item).getFilePath().equals(relativePath)){
+                return (FilePathTreeItem) item;
+            }
+        }
+        return null;
     }
     
 }

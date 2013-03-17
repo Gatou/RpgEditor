@@ -204,6 +204,15 @@ public abstract class Tree extends JXTree{
     }
     
     public void setCurrentItem(TreeItem item){
+        /*
+        System.out.println("zefds");
+        for(Object node : item.getPath()){
+            TreeItem parentItem = (TreeItem) node;
+            System.out.println(parentItem.getText());
+            if(parentItem != item){
+                parentItem.setExpanded(true);
+            }
+        }*/
         setSelectionPath(new TreePath(item.getPath()));
     }
     

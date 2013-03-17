@@ -7,6 +7,7 @@ package lib.editor.ui.assetmanager;
 import java.awt.Component;
 import java.awt.Frame;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import javax.swing.JFrame;
@@ -199,7 +200,7 @@ public class AssetManagerWindow extends Dialog {
         }
         
         if(assetSelectedPath != null){
-            setCurrentTreeItemByPath(assetSelectedPath);
+            assetTree.setCurrentItemByPath(assetSelectedPath);
         }
     }//GEN-LAST:event_refreshButtonActionPerformed
 
@@ -302,17 +303,10 @@ public class AssetManagerWindow extends Dialog {
         String folder = file.getName();
         folderList.setCurrentItem(folder);
         
-        setCurrentTreeItemByPath(relativePath);
+        assetTree.setCurrentItemByPath(relativePath);
     }
     
-    private void setCurrentTreeItemByPath(String relativePath){
-        for(TreeItem item : assetTree.getItems()){
-            if(((FilePathTreeItem) item).getFilePath().equals(relativePath)){
-                assetTree.setCurrentItem(item);
-                return;
-            }
-        }
-    }
+
     
     public void clearFilter(){
         assetFilterTextField.setText("");

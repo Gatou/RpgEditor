@@ -56,7 +56,7 @@ public class TreeItem extends DefaultMutableTreeNode{
     
     public void setEnabled(boolean enabled){
         this.enabled = enabled;
-        itemChanged();
+        //itemChanged();
         /*
         if(enabled){
             setIcon(icon);

@@ -43,24 +43,25 @@ public class IconMgr {
             return null;
         }
         
-        //System.out.println(filename);
-        addIcon(filename, disabledVersion);
-        
+        String trueFilename = filename;
         if(disabledVersion){
-            filename = filename + "-disabled";
+            trueFilename = filename + "-disabled___";
         }
         
-        return cache.get(filename);
+        //System.out.println(filename);
+        addIcon(filename, trueFilename, disabledVersion);
+        
+        return cache.get(trueFilename);
     }
     
-    private void addIcon(String filename, boolean disabledVersion){
+    private void addIcon(String filename, String trueFilename, boolean disabledVersion){
         ImageIcon icon = null;
         
-        if(!cache.containsKey(filename)){
+        if(!cache.containsKey(trueFilename)){
             if(disabledVersion){
                 ImageIcon baseicon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
                 Image normalImage = baseicon.getImage();
-                filename = filename + "-disabled";
+                
                 Image grayImage = GrayFilter.createDisabledImage(normalImage);
                 icon = new ImageIcon(grayImage);
             }
@@ -68,7 +69,7 @@ public class IconMgr {
                 icon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
             }
             
-            cache.put(filename, icon);
+            cache.put(trueFilename, icon);
         }
     }
     
