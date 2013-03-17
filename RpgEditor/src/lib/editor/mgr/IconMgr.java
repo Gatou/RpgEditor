@@ -55,21 +55,26 @@ public class IconMgr {
     }
     
     private void addIcon(String filename, String trueFilename, boolean disabledVersion){
+        try{
         ImageIcon icon = null;
         
-        if(!cache.containsKey(trueFilename)){
-            if(disabledVersion){
-                ImageIcon baseicon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
-                Image normalImage = baseicon.getImage();
-                
-                Image grayImage = GrayFilter.createDisabledImage(normalImage);
-                icon = new ImageIcon(grayImage);
+            if(!cache.containsKey(trueFilename)){
+
+                if(disabledVersion){
+                    ImageIcon baseicon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
+                    Image normalImage = baseicon.getImage();
+
+                    Image grayImage = GrayFilter.createDisabledImage(normalImage);
+                    icon = new ImageIcon(grayImage);
+                }
+                else{
+                    icon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
+                }
+                cache.put(trueFilename, icon);
             }
-            else{
-                icon = new ImageIcon(getClass().getResource(ICON_PATH + filename));
-            }
-            
-            cache.put(trueFilename, icon);
+        }
+        catch(NullPointerException e){
+            //Icon filename doesn't exist
         }
     }
     

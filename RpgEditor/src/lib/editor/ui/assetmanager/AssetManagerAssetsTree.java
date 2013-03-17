@@ -145,6 +145,8 @@ public class AssetManagerAssetsTree extends Tree{
         }
         
         FilePathTreeItem pathItem = (FilePathTreeItem) item;
+        
+        WidgetMgr.ASSET_MANAGER_WINDOW.setAsset(pathItem.getFilePath());
         //System.out.println(pathItem.getFilePath());
     }
 
@@ -175,9 +177,13 @@ public class AssetManagerAssetsTree extends Tree{
         if(!file.exists()){return;}
         
         List<File> files = new ArrayList<File>();
-        while(!file.getParent().equals(ProjectMgr.getAssetsPath())){
+        while(file.getParent() != null && !file.getParent().equals(ProjectMgr.getAssetsPath())){
             files.add(file);
             file = file.getParentFile();
+        }
+        
+        if(file.getParent() == null){
+            return;
         }
         
         for(int i=files.size()-1; i>=0; i--){

@@ -13,6 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -255,8 +256,8 @@ public class MainWindow extends javax.swing.JFrame {
     public void openWindow(String window){
         statusBarLabel.setText("");
         if(window.equals("resourceManager")){
-            System.out.println(AssetManagerWindow.getAssetFilename(this, "Tiles/Graphics/Battlers/Dummy_Character.png", Cst.VALID_SOUND_FORMAT));
-            //(new AssetManagerWindow(this, true)).setVisible(true);
+            //System.out.println(AssetManagerWindow.getAssetFilename(this, "Tiles/Graphics/Battlers/Dummy_Character.png", Cst.VALID_SOUND_FORMAT));
+            (new AssetManagerWindow(this, true, "", Cst.ALL_ASSET_FORMAT)).setVisible(true);
         }
     }
     

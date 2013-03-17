@@ -7,9 +7,15 @@ package lib.editor.ui.assetmanager;
 import java.awt.Component;
 import java.awt.Frame;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JRootPane;
@@ -19,10 +25,14 @@ import lib.editor.mgr.AppMgr;
 import lib.editor.mgr.ProjectMgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.ui.Dialog;
+import lib.editor.util.Cst;
 import lib.editor.util.SwingUtil;
 import lib.editor.widget.tree.item.FilePathTreeItem;
 import lib.editor.widget.tree.item.TreeItem;
 import org.apache.commons.io.FilenameUtils;
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
+import org.fife.ui.rtextarea.RTextScrollPane;
 
 /**
  *
@@ -34,9 +44,20 @@ public class AssetManagerWindow extends Dialog {
     String defaultFilename;
     List<String> formatFilter;
     
+    private RSyntaxTextArea textArea;
+    private RTextScrollPane textAreaScrollPane;
+    JPanel panel;
+    
     public AssetManagerWindow(Frame parent, boolean readOnly, String defaultFilename, List<String> formatFilter) {
         super(parent, true);
         initComponents();
+        textArea  = new RSyntaxTextArea();
+        
+        textAreaScrollPane = new RTextScrollPane();
+        textAreaScrollPane.setViewportView(textArea);
+        assetPanel.add(textAreaScrollPane);
+        textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY);
+
         setLocationRelativeTo(null);
         layoutDialog(0);
         
@@ -63,6 +84,7 @@ public class AssetManagerWindow extends Dialog {
         this.formatFilter = formatFilter;
         
         assetTree.setFormatFilter(formatFilter);
+        
     }
     
     public static String getAssetFilename(Frame parent, String defaultFilename, List<String> formatFilter){
@@ -91,9 +113,7 @@ public class AssetManagerWindow extends Dialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         assetTree = new lib.editor.ui.assetmanager.AssetManagerAssetsTree();
         jPanel7 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        assetPanel = new javax.swing.JPanel();
         jPanel8 = new javax.swing.JPanel();
         refreshButton = new javax.swing.JButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
@@ -134,15 +154,8 @@ public class AssetManagerWindow extends Dialog {
 
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
 
-        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane3.setViewportView(jTextArea1);
-
-        jPanel3.add(jScrollPane3);
-
-        jPanel7.add(jPanel3);
+        assetPanel.setLayout(new javax.swing.BoxLayout(assetPanel, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel7.add(assetPanel);
 
         jPanel8.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
         jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.PAGE_AXIS));
@@ -206,20 +219,18 @@ public class AssetManagerWindow extends Dialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private lib.editor.widget.textfield.IconTextField assetFilterTextField;
+    private javax.swing.JPanel assetPanel;
     private lib.editor.ui.assetmanager.AssetManagerAssetsTree assetTree;
     private javax.swing.Box.Filler filler1;
     private lib.editor.ui.assetmanager.AssetManagerAssetFolderList folderList;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JSplitPane leftSplitPane;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JSplitPane middleSplitPane;
@@ -297,7 +308,7 @@ public class AssetManagerWindow extends Dialog {
         
         if(!file.exists()){return;}
         
-        while(!file.getParent().equals(ProjectMgr.getAssetsPath())){
+        while(file.getParent() != null && !file.getParent().equals(ProjectMgr.getAssetsPath())){
             file = file.getParentFile();
         }
         String folder = file.getName();
@@ -349,4 +360,31 @@ public class AssetManagerWindow extends Dialog {
         File file = new File(ProjectMgr.getAssetsPath(), relativePath);
         return file.getAbsolutePath();
     }*/
+
+    public void setAsset(String relativePath) {
+        File file = new File(ProjectMgr.getAssetsPath(), relativePath);
+        
+        String ext = FilenameUtils.getExtension(file.getName());
+        
+        if(Cst.VALID_SCRIPT_FORMAT.contains(ext)){
+            setTextAsset(file);
+        }
+        
+    }
+    
+    public void setTextAsset(File file){
+        
+        textArea.setVisible(true);
+        FileReader reader = null;
+        try {
+            reader = new FileReader(file.getAbsolutePath());
+            textArea.read(reader, file.getAbsolutePath());
+            System.out.println("qdsfdsf");
+        } catch (FileNotFoundException ex) {
+            System.err.println("AssetManagerWindow -> setAsset() -> failed to read text asset file");
+        } catch (IOException e) {
+            System.err.println("AssetManagerWindow -> setAsset() -> failed to read text asset file");
+        }
+    }
+    
 }
