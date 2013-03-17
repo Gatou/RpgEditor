@@ -17,7 +17,7 @@ public class Cst {
         add("png"); add("jpg"); add("bmp");
     }};
     public static final List<String> VALID_SOUND_FORMAT = new ArrayList<String>() {{
-        add("ogg"); add("mp3"); add("wma"); add("wav");
+        add("ogg"); add("mp3"); add("wav");
     }};
     public static final List<String> VALID_SCRIPT_FORMAT = new ArrayList<String>() {{
         add("rb");

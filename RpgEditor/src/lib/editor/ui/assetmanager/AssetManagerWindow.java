@@ -4,6 +4,10 @@
  */
 package lib.editor.ui.assetmanager;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import java.awt.Component;
 import java.awt.Frame;
 import java.io.File;
@@ -48,6 +52,10 @@ public class AssetManagerWindow extends Dialog {
     private RTextScrollPane textAreaScrollPane;
     JPanel panel;
     
+    Sound sound;
+    long lastSoundId;
+    Music music;
+    
     public AssetManagerWindow(Frame parent, boolean readOnly, String defaultFilename, List<String> formatFilter) {
         super(parent, true);
         initComponents();
@@ -57,7 +65,8 @@ public class AssetManagerWindow extends Dialog {
         textAreaScrollPane.setViewportView(textArea);
         assetPanel.add(textAreaScrollPane);
         textArea.setSyntaxEditingStyle(SyntaxConstants.SYNTAX_STYLE_RUBY);
-
+        textArea.setEditable(false);
+                
         setLocationRelativeTo(null);
         layoutDialog(0);
         
@@ -84,7 +93,7 @@ public class AssetManagerWindow extends Dialog {
         this.formatFilter = formatFilter;
         
         assetTree.setFormatFilter(formatFilter);
-        
+        setAsset("");
     }
     
     public static String getAssetFilename(Frame parent, String defaultFilename, List<String> formatFilter){
@@ -113,10 +122,47 @@ public class AssetManagerWindow extends Dialog {
         jScrollPane1 = new javax.swing.JScrollPane();
         assetTree = new lib.editor.ui.assetmanager.AssetManagerAssetsTree();
         jPanel7 = new javax.swing.JPanel();
+        filler17 = new javax.swing.Box.Filler(new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 32767));
+        assetFiller = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
         assetPanel = new javax.swing.JPanel();
+        audioPanel = new javax.swing.JPanel();
+        filler15 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 4), new java.awt.Dimension(0, 4), new java.awt.Dimension(32767, 4));
+        jPanel15 = new javax.swing.JPanel();
+        jPanel1 = new javax.swing.JPanel();
+        stopButton = new javax.swing.JButton();
+        playButton = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        filler2 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        volumeSlider = new javax.swing.JSlider();
+        filler3 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel10 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        filler4 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jLabel2 = new javax.swing.JLabel();
+        filler5 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jLabel3 = new javax.swing.JLabel();
+        jPanel11 = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        filler6 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        pitchSlider = new javax.swing.JSlider();
+        filler7 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(32767, 0));
+        jPanel13 = new javax.swing.JPanel();
+        jLabel4 = new javax.swing.JLabel();
+        filler8 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jLabel5 = new javax.swing.JLabel();
+        filler9 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        jLabel6 = new javax.swing.JLabel();
+        filler16 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 4), new java.awt.Dimension(0, 4), new java.awt.Dimension(32767, 4));
+        filler13 = new javax.swing.Box.Filler(new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 32767));
         jPanel8 = new javax.swing.JPanel();
+        filler11 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 4), new java.awt.Dimension(0, 4), new java.awt.Dimension(32767, 4));
+        jPanel14 = new javax.swing.JPanel();
+        filler14 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 4), new java.awt.Dimension(0, 4), new java.awt.Dimension(32767, 4));
         refreshButton = new javax.swing.JButton();
         filler1 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 0), new java.awt.Dimension(0, 32767));
+        filler12 = new javax.swing.Box.Filler(new java.awt.Dimension(0, 4), new java.awt.Dimension(0, 4), new java.awt.Dimension(32767, 4));
+        filler10 = new javax.swing.Box.Filler(new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 0), new java.awt.Dimension(4, 32767));
         jPanel4 = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
         folderList = new lib.editor.ui.assetmanager.AssetManagerAssetFolderList();
@@ -153,24 +199,166 @@ public class AssetManagerWindow extends Dialog {
         middleSplitPane.setLeftComponent(jPanel6);
 
         jPanel7.setLayout(new javax.swing.BoxLayout(jPanel7, javax.swing.BoxLayout.LINE_AXIS));
+        jPanel7.add(filler17);
+        jPanel7.add(assetFiller);
 
         assetPanel.setLayout(new javax.swing.BoxLayout(assetPanel, javax.swing.BoxLayout.LINE_AXIS));
-        jPanel7.add(assetPanel);
 
-        jPanel8.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        audioPanel.setMaximumSize(new java.awt.Dimension(120, 32881));
+        audioPanel.setMinimumSize(new java.awt.Dimension(120, 109));
+        audioPanel.setPreferredSize(new java.awt.Dimension(120, 146));
+        audioPanel.setLayout(new javax.swing.BoxLayout(audioPanel, javax.swing.BoxLayout.PAGE_AXIS));
+        audioPanel.add(filler15);
+
+        jPanel15.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel15.setLayout(new javax.swing.BoxLayout(jPanel15, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jPanel1.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel1.setMaximumSize(new java.awt.Dimension(32767, 46));
+
+        stopButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/stop.png"))); // NOI18N
+        stopButton.setMargin(null);
+        stopButton.setMaximumSize(new java.awt.Dimension(36, 36));
+        stopButton.setMinimumSize(new java.awt.Dimension(36, 36));
+        stopButton.setPreferredSize(new java.awt.Dimension(36, 36));
+        stopButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stopButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(stopButton);
+
+        playButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/play_pause.png"))); // NOI18N
+        playButton.setMargin(null);
+        playButton.setMaximumSize(new java.awt.Dimension(36, 36));
+        playButton.setMinimumSize(new java.awt.Dimension(36, 36));
+        playButton.setPreferredSize(new java.awt.Dimension(36, 36));
+        playButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(playButton);
+
+        jPanel15.add(jPanel1);
+
+        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Volume", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.BELOW_TOP));
+        jPanel3.setLayout(new javax.swing.BoxLayout(jPanel3, javax.swing.BoxLayout.LINE_AXIS));
+
+        jPanel9.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel9.setLayout(new javax.swing.BoxLayout(jPanel9, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanel9.add(filler2);
+
+        volumeSlider.setBackground(new java.awt.Color(204, 204, 204));
+        volumeSlider.setMajorTickSpacing(10);
+        volumeSlider.setMinorTickSpacing(5);
+        volumeSlider.setOrientation(javax.swing.JSlider.VERTICAL);
+        volumeSlider.setPaintTicks(true);
+        volumeSlider.setValue(100);
+        volumeSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                volumeSliderStateChanged(evt);
+            }
+        });
+        jPanel9.add(volumeSlider);
+        jPanel9.add(filler3);
+
+        jPanel3.add(jPanel9);
+
+        jPanel10.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel10.setLayout(new javax.swing.BoxLayout(jPanel10, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jLabel1.setText("100%");
+        jPanel10.add(jLabel1);
+        jPanel10.add(filler4);
+
+        jLabel2.setText("50%");
+        jPanel10.add(jLabel2);
+        jPanel10.add(filler5);
+
+        jLabel3.setText("0%");
+        jPanel10.add(jLabel3);
+
+        jPanel3.add(jPanel10);
+
+        jPanel15.add(jPanel3);
+
+        jPanel11.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Pitch", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.BELOW_TOP));
+        jPanel11.setLayout(new javax.swing.BoxLayout(jPanel11, javax.swing.BoxLayout.LINE_AXIS));
+
+        jPanel12.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel12.setLayout(new javax.swing.BoxLayout(jPanel12, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanel12.add(filler6);
+
+        pitchSlider.setBackground(new java.awt.Color(204, 204, 204));
+        pitchSlider.setMajorTickSpacing(10);
+        pitchSlider.setMaximum(150);
+        pitchSlider.setMinimum(50);
+        pitchSlider.setMinorTickSpacing(5);
+        pitchSlider.setOrientation(javax.swing.JSlider.VERTICAL);
+        pitchSlider.setPaintTicks(true);
+        pitchSlider.setValue(100);
+        jPanel12.add(pitchSlider);
+        jPanel12.add(filler7);
+
+        jPanel11.add(jPanel12);
+
+        jPanel13.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel13.setLayout(new javax.swing.BoxLayout(jPanel13, javax.swing.BoxLayout.PAGE_AXIS));
+
+        jLabel4.setText("150%");
+        jPanel13.add(jLabel4);
+        jPanel13.add(filler8);
+
+        jLabel5.setText("100%");
+        jPanel13.add(jLabel5);
+        jPanel13.add(filler9);
+
+        jLabel6.setText("50%");
+        jPanel13.add(jLabel6);
+
+        jPanel11.add(jPanel13);
+
+        jPanel15.add(jPanel11);
+
+        audioPanel.add(jPanel15);
+        audioPanel.add(filler16);
+
+        assetPanel.add(audioPanel);
+
+        jPanel7.add(assetPanel);
+        jPanel7.add(filler13);
+
+        jPanel8.setAutoscrolls(true);
+        jPanel8.setMaximumSize(new java.awt.Dimension(108, 32813));
+        jPanel8.setMinimumSize(new java.awt.Dimension(108, 46));
+        jPanel8.setPreferredSize(new java.awt.Dimension(108, 108));
         jPanel8.setLayout(new javax.swing.BoxLayout(jPanel8, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanel8.add(filler11);
+
+        jPanel14.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel14.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        jPanel14.setLayout(new javax.swing.BoxLayout(jPanel14, javax.swing.BoxLayout.PAGE_AXIS));
+        jPanel14.add(filler14);
 
         refreshButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/refresh.png"))); // NOI18N
         refreshButton.setText("Refresh");
+        refreshButton.setAlignmentX(0.5F);
         refreshButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 refreshButtonActionPerformed(evt);
             }
         });
-        jPanel8.add(refreshButton);
-        jPanel8.add(filler1);
+        jPanel14.add(refreshButton);
+        jPanel14.add(filler1);
+
+        jPanel8.add(jPanel14);
+        jPanel8.add(filler12);
 
         jPanel7.add(jPanel8);
+        jPanel7.add(filler10);
 
         middleSplitPane.setRightComponent(jPanel7);
 
@@ -217,24 +405,109 @@ public class AssetManagerWindow extends Dialog {
         }
     }//GEN-LAST:event_refreshButtonActionPerformed
 
+    public void clearAudio(){
+        if(sound != null){
+            sound.dispose();
+            sound = null;
+        }
+        if(music != null){
+            music.dispose();
+            music = null;
+        }
+    }
+    
+    private void playButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playButtonActionPerformed
+        String relativePath = ((FilePathTreeItem)assetTree.getCurrentItem()).getFilePath();
+        String assetPath = new File(ProjectMgr.getAssetsPath(), relativePath).getAbsolutePath();
+        
+        boolean isSound = folderList.getCurrentItem().getText().equals("Sounds");
+        System.out.println(isSound);
+        
+        clearAudio();
+        
+        if(isSound){
+            sound = Gdx.audio.newSound(new FileHandle(assetPath));
+            lastSoundId = sound.play();
+            sound.setVolume(lastSoundId, volumeSlider.getValue()/100f);
+            sound.setPitch(lastSoundId, pitchSlider.getValue()/100f);
+        }
+        else{
+            music = Gdx.audio.newMusic(new FileHandle(assetPath));
+            music.setLooping(true);
+            music.setVolume(volumeSlider.getValue()/100f);
+            music.play();
+        }
+        
+    }//GEN-LAST:event_playButtonActionPerformed
+
+    private void volumeSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_volumeSliderStateChanged
+        if(music != null){
+            music.setVolume(volumeSlider.getValue()/100f);
+        }
+        if(sound != null){
+            sound.setVolume(lastSoundId, volumeSlider.getValue()/100f);
+        }
+    }//GEN-LAST:event_volumeSliderStateChanged
+
+    private void stopButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopButtonActionPerformed
+        clearAudio();
+    }//GEN-LAST:event_stopButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.Box.Filler assetFiller;
     private lib.editor.widget.textfield.IconTextField assetFilterTextField;
     private javax.swing.JPanel assetPanel;
     private lib.editor.ui.assetmanager.AssetManagerAssetsTree assetTree;
+    private javax.swing.JPanel audioPanel;
     private javax.swing.Box.Filler filler1;
+    private javax.swing.Box.Filler filler10;
+    private javax.swing.Box.Filler filler11;
+    private javax.swing.Box.Filler filler12;
+    private javax.swing.Box.Filler filler13;
+    private javax.swing.Box.Filler filler14;
+    private javax.swing.Box.Filler filler15;
+    private javax.swing.Box.Filler filler16;
+    private javax.swing.Box.Filler filler17;
+    private javax.swing.Box.Filler filler2;
+    private javax.swing.Box.Filler filler3;
+    private javax.swing.Box.Filler filler4;
+    private javax.swing.Box.Filler filler5;
+    private javax.swing.Box.Filler filler6;
+    private javax.swing.Box.Filler filler7;
+    private javax.swing.Box.Filler filler8;
+    private javax.swing.Box.Filler filler9;
     private lib.editor.ui.assetmanager.AssetManagerAssetFolderList folderList;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel10;
+    private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
+    private javax.swing.JPanel jPanel14;
+    private javax.swing.JPanel jPanel15;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JPanel jPanel7;
     private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JSplitPane leftSplitPane;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JSplitPane middleSplitPane;
+    private javax.swing.JSlider pitchSlider;
+    private javax.swing.JButton playButton;
     private javax.swing.JButton refreshButton;
+    private javax.swing.JButton stopButton;
+    private javax.swing.JSlider volumeSlider;
     // End of variables declaration//GEN-END:variables
 
     public void ok() {
@@ -288,6 +561,7 @@ public class AssetManagerWindow extends Dialog {
     }
     
     public void dispose(){
+        clearAudio();
         saveSettings();
         super.dispose();
     }
@@ -354,32 +628,45 @@ public class AssetManagerWindow extends Dialog {
         }
         return ((FilePathTreeItem)assetTree.getCurrentItem()).getFilePath();
     }
-    /*
-    public String currentAssetAbsoluteFilename(){
-        String relativePath = ((FilePathTreeItem)assetTree.getCurrentItem()).getFilePath();
-        File file = new File(ProjectMgr.getAssetsPath(), relativePath);
-        return file.getAbsolutePath();
-    }*/
+
 
     public void setAsset(String relativePath) {
+        textAreaScrollPane.setVisible(false);
+        audioPanel.setVisible(false);
+        
         File file = new File(ProjectMgr.getAssetsPath(), relativePath);
         
         String ext = FilenameUtils.getExtension(file.getName());
         
-        if(Cst.VALID_SCRIPT_FORMAT.contains(ext)){
+        if(Cst.VALID_IMAGE_FORMAT.contains(ext)){
+            setImageAsset(file);
+        }
+        else if(Cst.VALID_SOUND_FORMAT.contains(ext)){
+            setAudioAsset(file);
+        }
+        else if(Cst.VALID_SCRIPT_FORMAT.contains(ext)){
             setTextAsset(file);
         }
         
     }
     
+    public void setImageAsset(File file){
+        //assetFiller.setVisible(false);
+    }
+    
+    public void setAudioAsset(File file){
+        assetFiller.setVisible(true);
+        audioPanel.setVisible(true);
+    }
+    
     public void setTextAsset(File file){
+        assetFiller.setVisible(false);
+        textAreaScrollPane.setVisible(true);
         
-        textArea.setVisible(true);
         FileReader reader = null;
         try {
             reader = new FileReader(file.getAbsolutePath());
             textArea.read(reader, file.getAbsolutePath());
-            System.out.println("qdsfdsf");
         } catch (FileNotFoundException ex) {
             System.err.println("AssetManagerWindow -> setAsset() -> failed to read text asset file");
         } catch (IOException e) {
