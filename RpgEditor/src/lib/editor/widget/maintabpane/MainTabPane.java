@@ -2,6 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
+/*
+ * MEGA ATTENTIOn:
+ *          Verifier qui y'a pas des pb quand un drag est en train de bouger
+ *          et qu'on fait certaine action..
+ * 
+ * 
+ * 
+ * 
+ */
 package lib.editor.widget.maintabpane;
 
 import aurelienribon.tweenengine.BaseTween;
@@ -298,12 +308,31 @@ public class MainTabPane extends JPanel{
     }
     
     public void tabDrop(TabButtonPanel buttonPanel){
+        //tabDragging(buttonPanel, buttonPanel.button.draggingXOffset);
+        System.out.println("---------------------");
+        boolean ok = false;
+        
+        while(!ok){
+            ok = true;
+            
+            for(TabButtonPanel buttonP : tabButtons){
+                if(buttonP.isMoving){
+                    ok = false;
+                    //break;
+                }
+            }
+            
+            WidgetMgr.MAIN_WINDOW.tweenManager.update(1000/60);
+        }
+        
         List<TabButtonPanel> memoTabs = new ArrayList<TabButtonPanel>(tabButtons);
         for(int i=0; i<tabButtons.size(); i++){
             tabButtons.set(i, null);
         }
         
         for(TabButtonPanel buttonP : memoTabs){
+            if(buttonP == buttonPanel){continue;}
+            
             if(buttonP.hasMoveToTheLeft){
                 tabButtons.set(memoTabs.indexOf(buttonP)-1, buttonP);
             }
@@ -320,9 +349,7 @@ public class MainTabPane extends JPanel{
             
             if(buttonP == null){
                 tabButtons.set(i, buttonPanel);
-                startTabMoveTo(buttonPanel, 0, i);
-                buttonPanel.hasMoveToTheLeft = false;
-                buttonPanel.hasMoveToTheRight = false;
+                //break;
             }
             else{
                 buttonP.hasMoveToTheLeft = false;
@@ -330,6 +357,10 @@ public class MainTabPane extends JPanel{
             }
         }
         
+        startTabMoveTo(buttonPanel, 0, tabButtons.indexOf(buttonPanel));
+        buttonPanel.hasMoveToTheLeft = false;
+        buttonPanel.hasMoveToTheRight = false;
+                
         for(int i=0; i<tabButtons.size(); i++){
             TabButtonPanel buttonP = tabButtons.get(i);
             System.out.println(buttonP.button.label.getText());
