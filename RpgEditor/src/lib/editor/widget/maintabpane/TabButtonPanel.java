@@ -19,10 +19,14 @@ public class TabButtonPanel extends JPanel{
     public static final int BUTTON_SPACING = 2;
     
     TabButton button;
+    boolean isMoving;
+    boolean hasMoveToTheLeft;
+    boolean hasMoveToTheRight;
     
     public TabButtonPanel(TabButton button) {
         this.button = button;
         button.panel = this;
+        
         
         setLayout(new BoxLayout(this, BoxLayout.LINE_AXIS));
         Dimension dim = new Dimension(BUTTON_SPACING, 0);
@@ -31,6 +35,11 @@ public class TabButtonPanel extends JPanel{
         add(new Filler(dim, dim, dim));
         
         setOpaque(false);
+        isMoving = false;
+        hasMoveToTheLeft = false;
+        hasMoveToTheRight = false;
+        
+        setSize(MainTabPane.TOTAL_BUTTON_WIDTH, TabButton.BUTTON_ACTIVE_HEIGHT);
     }
     
 }

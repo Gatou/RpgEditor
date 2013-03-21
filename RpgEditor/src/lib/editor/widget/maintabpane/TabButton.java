@@ -50,6 +50,7 @@ public class TabButton extends JPanel{
     boolean isActive;
     boolean isFocused;
     boolean isMenuButton;
+    boolean isDragging;
     
     DataTabButton data;
     TabButtonPanel panel;
@@ -84,6 +85,7 @@ public class TabButton extends JPanel{
         isActive = false;
         isFocused = false;
         isMenuButton = false;
+        isDragging = false;
         
         addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
@@ -93,6 +95,10 @@ public class TabButton extends JPanel{
             public void mousePressed(MouseEvent e) {}
             public void mouseReleased(MouseEvent e) {
                 draggingXOffset = -1;
+                if(isDragging){
+                    isDragging = false;
+                    tabDrop();
+                }
             }
 
             public void mouseEntered(MouseEvent e) {
@@ -108,6 +114,7 @@ public class TabButton extends JPanel{
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                isDragging = true;
                 if(draggingXOffset == -1){
                     draggingXOffset = e.getX();
                 }
@@ -242,5 +249,10 @@ public class TabButton extends JPanel{
     public void tabDragging(){
         WidgetMgr.MAIN_TAB_PANE.tabDragging(this.panel, draggingXOffset);
     }
+    
+    public void tabDrop(){
+        WidgetMgr.MAIN_TAB_PANE.tabDrop(this.panel);
+    }
+    
     
 }

@@ -1,5 +1,8 @@
 package lib.editor.ui;
 
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenManager;
+import aurelienribon.tweenengine.equations.Cubic;
 import lib.editor.ui.assetmanager.AssetManagerWindow;
 import com.badlogic.gdx.Gdx;
 import java.awt.BorderLayout;
@@ -9,6 +12,7 @@ import java.awt.Desktop;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -32,6 +36,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.Timer;
 import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import lib.editor.data.game.DataMap;
@@ -45,6 +50,7 @@ import lib.editor.mgr.WidgetMgr;
 import lib.editor.mgr.WindowMgr;
 import lib.editor.util.Cst;
 import lib.editor.util.SwingUtil;
+import lib.editor.util.tween.ComponentAccessor;
 import lib.editor.widget.inspector.Inspector;
 import lib.editor.widget.mapeditor.MapEditorGraphicsView;
 import lib.editor.widget.menu.MenuItem;
@@ -54,6 +60,8 @@ import org.jdesktop.swingx.MultiSplitLayout.Divider;
 import org.jdesktop.swingx.MultiSplitLayout.Leaf;
 import org.jdesktop.swingx.MultiSplitLayout.Split;
 import org.jdesktop.swingx.multisplitpane.DefaultSplitPaneModel;
+
+
 
 /*
  * To change this template, choose Tools | Templates
@@ -69,20 +77,42 @@ public class MainWindow extends javax.swing.JFrame {
     MapEditorGraphicsView mapEditor;
     Inspector inspector;
     
+    public final TweenManager tweenManager;
+    private final Timer tweenTimer;
     /**
      * Creates new form NewJFrame
      */
     public MainWindow() {
-        
+        //Tween.enablePooling(false);
+        //Tween.registerAccessor(Component.class, new ComponentAccessor());
+
+                
+        tweenManager = new TweenManager();
+        tweenTimer = new Timer(1000/60, new ActionListener() {
+
+            public void actionPerformed(ActionEvent e) {
+                tweenManager.update(1000/60);
+            }
+        });
+        //timer.setInitialDelay(pause);
+        tweenTimer.start(); 
         
         setLocationRelativeTo( null );
         
+
+
         
     }
     
     public void init(){
         initComponents();
         
+
+
+        Tween.registerAccessor(Component.class, new ComponentAccessor());
+        
+
+                
         WidgetMgr.MAIN_TAB_PANE = mainTabPane;
         
         mapEditor = new MapEditorGraphicsView();
@@ -174,6 +204,8 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     private void exit(){
+        tweenTimer.stop();
+        //tweenTimer = null;
         AppMgr.saveSettings();
         ProjectMgr.closeProject();
         dispose();
@@ -535,13 +567,15 @@ public class MainWindow extends javax.swing.JFrame {
         jXStatusBar1.setMaximumSize(new java.awt.Dimension(2147483647, 24));
         jXStatusBar1.setMinimumSize(new java.awt.Dimension(31, 24));
         jXStatusBar1.setPreferredSize(new java.awt.Dimension(31, 24));
-        jXStatusBar1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jXStatusBar1.setLayout(null);
 
         statusBarLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 4, 0, 0));
-        jXStatusBar1.add(statusBarLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 4, -1, 16));
+        jXStatusBar1.add(statusBarLabel);
+        statusBarLabel.setBounds(5, 4, 4, 16);
 
         jButton1.setText("jButton1");
-        jXStatusBar1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 0, -1, -1));
+        jXStatusBar1.add(jButton1);
+        jButton1.setBounds(0, 0, 73, 23);
 
         getContentPane().add(jXStatusBar1, java.awt.BorderLayout.PAGE_END);
 

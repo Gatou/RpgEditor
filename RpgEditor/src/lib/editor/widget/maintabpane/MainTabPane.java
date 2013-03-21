@@ -4,6 +4,10 @@
  */
 package lib.editor.widget.maintabpane;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
+import aurelienribon.tweenengine.equations.Cubic;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -14,11 +18,14 @@ import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import lib.editor.mgr.Mgr;
+import lib.editor.mgr.WidgetMgr;
+import lib.editor.util.tween.ComponentAccessor;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
 import org.netbeans.lib.awtextra.AbsoluteLayout;
 
@@ -107,7 +114,7 @@ public class MainTabPane extends JPanel{
         panel.setOpaque(false);
         
         //panel.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        panel.setLayout(new AbsoluteLayout());
+        panel.setLayout(null);
         
         return panel;
     }
@@ -148,6 +155,7 @@ public class MainTabPane extends JPanel{
         
         topPanel.validate();
         bottomPanel.validate();
+        
     }
     
     public int fillTabs(JPanel panel, int tabIndex){
@@ -168,9 +176,12 @@ public class MainTabPane extends JPanel{
             buttonPanel.button.label.setText(tabData.text);
             buttonPanel.button.label.setIcon(Mgr.icon.getTabIcon(tabData.iconFilename, false));
             //buttonPanel.button.setMenuButton(false);
-                    
-            AbsoluteConstraints constraint = new AbsoluteConstraints(currentWidth, 0, -1, -1);
-            panel.add(buttonPanel, constraint);
+               
+            
+            //AbsoluteConstraints constraint = new AbsoluteConstraints(currentWidth, 0, -1, -1);
+            panel.add(buttonPanel);//, constraint);
+            buttonPanel.setLocation(currentWidth, 0);
+            
             currentWidth += TOTAL_BUTTON_WIDTH;
             tabIndex += 1;
         }
@@ -209,8 +220,9 @@ public class MainTabPane extends JPanel{
             int buttonNumber = bottomPanel.getComponents().length-1;
             bottomPanel.remove(buttonNumber);
             int w = buttonNumber * TOTAL_BUTTON_WIDTH;
-            AbsoluteConstraints constraint = new AbsoluteConstraints(w, 0, -1, -1);
-            bottomPanel.add(menu.menuButtonPanel, constraint);
+            //AbsoluteConstraints constraint = new AbsoluteConstraints(w, 0, -1, -1);
+            bottomPanel.add(menu.menuButtonPanel);//, constraint);
+            menu.menuButtonPanel.setLocation(w, 0);
         }
         else{
             
@@ -222,12 +234,129 @@ public class MainTabPane extends JPanel{
             return;
         }
         
-        topPanel.remove(buttonPanel);
+        //topPanel.remove(buttonPanel);
         int w = getMousePosition().x;
-        AbsoluteConstraints constraint = new AbsoluteConstraints(w-xOffset, 0, -1, -1);
+        //AbsoluteConstraints constraint = new AbsoluteConstraints(w-xOffset, 0, -1, -1);
         
-        topPanel.add(buttonPanel, constraint);
-        topPanel.validate();
+        //topPanel.add(buttonPanel, constraint);
+        //topPanel.validate();
+        buttonPanel.setLocation(w-xOffset, 0);
+        int maximumIndexToTheRight = tabButtons.indexOf(buttonPanel);
+        int minimumIndexToTheLeft = tabButtons.indexOf(buttonPanel);
+        
+        //int newIndex = buttonPanel.getX()/TOTAL_BUTTON_WIDTH;
+        int x = buttonPanel.getX();
+                
+        for(final TabButtonPanel buttonP : tabButtons){
+            if(buttonP == buttonPanel){continue;}
+            if(tabButtons.indexOf(buttonP) > maximumIndexToTheRight){continue;}
+                
+            if(!buttonP.hasMoveToTheRight && x-TOTAL_BUTTON_WIDTH/3 < buttonP.getX()){
+                startTabMoveTo(buttonP, 1, -1);
+            }
+            
+            if(buttonP.hasMoveToTheRight && x+TOTAL_BUTTON_WIDTH/3 > buttonP.getX()){
+                startTabMoveTo(buttonP, 0, -1);
+            }
+            
+        }
+        
+        for(final TabButtonPanel buttonP : tabButtons){
+            if(buttonP == buttonPanel){continue;}
+            if(tabButtons.indexOf(buttonP) < minimumIndexToTheLeft){continue;}
+                
+            if(!buttonP.hasMoveToTheLeft && buttonP.getX() < x+TOTAL_BUTTON_WIDTH/3){
+                startTabMoveTo(buttonP, -1, -1);
+            }
+            
+            if(buttonP.hasMoveToTheLeft && buttonP.getX() > x-TOTAL_BUTTON_WIDTH/3){
+                startTabMoveTo(buttonP, 0, -1);
+            }
+            
+        }
+        
     }
     
+    public void startTabMoveTo(final TabButtonPanel buttonP, final int indexOffset, int forceIndex){
+        if(!buttonP.isMoving){
+
+            buttonP.isMoving = true;
+            int index;
+            if(forceIndex == -1){
+               index = tabButtons.indexOf(buttonP)+indexOffset;
+            }
+            else{
+                index = forceIndex;
+            }
+            
+            Tween.to(buttonP, ComponentAccessor.POSITION, 200)
+                .target(index*TOTAL_BUTTON_WIDTH, 0)
+                .setCallback(new TweenCallback() {public void onEvent(int type, BaseTween<?> source){endButtonMove(buttonP, indexOffset);}})
+                .start(WidgetMgr.MAIN_WINDOW.tweenManager);
+
+        }
+    }
+    
+    public void tabDrop(TabButtonPanel buttonPanel){
+        List<TabButtonPanel> memoTabs = new ArrayList<TabButtonPanel>(tabButtons);
+        for(int i=0; i<tabButtons.size(); i++){
+            tabButtons.set(i, null);
+        }
+        
+        for(TabButtonPanel buttonP : memoTabs){
+            if(buttonP.hasMoveToTheLeft){
+                tabButtons.set(memoTabs.indexOf(buttonP)-1, buttonP);
+            }
+            else if(buttonP.hasMoveToTheRight){
+                tabButtons.set(memoTabs.indexOf(buttonP)+1, buttonP);
+            }
+            else{
+                tabButtons.set(memoTabs.indexOf(buttonP), buttonP);
+            }
+        }
+        
+        for(int i=0; i<tabButtons.size(); i++){
+            TabButtonPanel buttonP = tabButtons.get(i);
+            
+            if(buttonP == null){
+                tabButtons.set(i, buttonPanel);
+                startTabMoveTo(buttonPanel, 0, i);
+                buttonPanel.hasMoveToTheLeft = false;
+                buttonPanel.hasMoveToTheRight = false;
+            }
+            else{
+                buttonP.hasMoveToTheLeft = false;
+                buttonP.hasMoveToTheRight = false;
+            }
+        }
+        
+        for(int i=0; i<tabButtons.size(); i++){
+            TabButtonPanel buttonP = tabButtons.get(i);
+            System.out.println(buttonP.button.label.getText());
+        }
+    }
+    
+    
+    public void endButtonMove(TabButtonPanel buttonPanel, int indexOffset){
+        int index = tabButtons.indexOf(buttonPanel);
+        buttonPanel.isMoving = false;
+        if(indexOffset == 1){
+            buttonPanel.hasMoveToTheRight = true;
+        }
+        else if(indexOffset == -1){
+            buttonPanel.hasMoveToTheLeft = true;
+        }
+        else{
+            buttonPanel.hasMoveToTheLeft = false;
+            buttonPanel.hasMoveToTheRight = false;
+        }
+        
+        
+        /*TabButtonPanel b = tabButtons.get(index+newIndexOffset);
+        tabButtons.set(index+newIndexOffset, buttonPanel);
+        tabButtons.set(index, b);*/
+    }
+    
+
+
 }
