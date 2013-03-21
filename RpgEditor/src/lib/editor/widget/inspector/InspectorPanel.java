@@ -31,7 +31,7 @@ public abstract class InspectorPanel extends JPanel{
         collapsible = new JXTaskPane();
         //collapsible.setPreferredSize(new Dimension(160, 50));
         //collapsible.setMinimumSize(getPreferredSize());
-        collapsible.setIcon(Mgr.icon.getIcon(iconFilename));//new javax.swing.ImageIcon(getClass().getResource("/assets/icons/project_root.png")));
+        collapsible.setIcon(Mgr.icon.getSystemIcon(iconFilename, false));//new javax.swing.ImageIcon(getClass().getResource("/assets/icons/project_root.png")));
         collapsible.setScrollOnExpand(true);
         collapsible.setSpecial(true);
         collapsible.setTitle(title);

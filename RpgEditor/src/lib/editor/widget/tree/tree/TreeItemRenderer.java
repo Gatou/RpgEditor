@@ -46,11 +46,11 @@ public class TreeItemRenderer extends DefaultTreeCellRenderer{
         }
         
         if(item.isEnabled()){
-            label.setIcon(Mgr.icon.getIcon(item.getIconFilename()));
+            label.setIcon(Mgr.icon.getSystemIcon(item.getIconFilename(), false));
         }
         else{
             label.setForeground(UIManager.getColor("Item.disableText"));
-            label.setIcon(Mgr.icon.getIcon(item.getIconFilename(), true));
+            label.setIcon(Mgr.icon.getSystemIcon(item.getIconFilename(), true));
         }
         
         return label;

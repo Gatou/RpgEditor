@@ -33,6 +33,7 @@ public class ToolBarButton extends JButton{
         setMinimumSize(new Dimension(28, 28));
         setMaximumSize(new Dimension(28, 28));
         setPreferredSize(new Dimension(28, 28));
+        setOpaque(false);
     }
     
     public String getStatusText(){

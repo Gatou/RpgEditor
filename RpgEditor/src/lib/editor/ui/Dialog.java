@@ -24,6 +24,11 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
         initComponents();
         refreshing = false;
         setDialogButton(new String[]{"ok", "cancel"});
+        
+        //setBackground(Style.windowBackgroundColor);
+        //jPanel1.setBackground(Style.windowBackgroundColor);
+        //dialogButtonsPanel.setBackground(Style.windowBackgroundColor);
+        //bodyPanel.setBackground(Style.windowBackgroundColor);
     }
 
     public void close(){
@@ -59,6 +64,10 @@ public abstract class Dialog extends javax.swing.JDialog implements IDialog{
         if(borderSize > 0){
             getMainPanel().setBorder(javax.swing.BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
         }
+        else if(borderSize < 0){
+            bodyPanel.setBorder(null);
+        }
+        
         getBodyPanel().add(getMainPanel());
         pack();
         setMinimumSize(getSize());

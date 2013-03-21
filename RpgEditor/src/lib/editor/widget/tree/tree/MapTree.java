@@ -91,7 +91,7 @@ public class MapTree extends DatabaseTree {
         menu.add(new Separator());
         
         
-        copyItem = new MenuItem("Copy", Mgr.icon.getIcon("copy.png"), "Copy the selection and put it on the clipboard.", KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
+        copyItem = new MenuItem("Copy", Mgr.icon.getSystemIcon("copy.png", false), "Copy the selection and put it on the clipboard.", KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK));
         copyItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.STATUS_LABEL.setText("");
@@ -100,7 +100,7 @@ public class MapTree extends DatabaseTree {
         });
         menu.add(copyItem);
         
-        pasteItem = new MenuItem("Paste", Mgr.icon.getIcon("paste.png"), "Insert clipboard contents.", KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
+        pasteItem = new MenuItem("Paste", Mgr.icon.getSystemIcon("paste.png", false), "Insert clipboard contents.", KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK));
         pasteItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.STATUS_LABEL.setText("");
@@ -109,7 +109,7 @@ public class MapTree extends DatabaseTree {
         });
         menu.add(pasteItem);
         
-        deleteItem = new MenuItem("Delete", Mgr.icon.getIcon("delete.png"), "Delete the selection.", KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+        deleteItem = new MenuItem("Delete", Mgr.icon.getSystemIcon("delete.png", false), "Delete the selection.", KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
         deleteItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 WidgetMgr.STATUS_LABEL.setText("");

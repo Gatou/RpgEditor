@@ -83,6 +83,8 @@ public class MainWindow extends javax.swing.JFrame {
     public void init(){
         initComponents();
         
+        WidgetMgr.MAIN_TAB_PANE = mainTabPane;
+        
         mapEditor = new MapEditorGraphicsView();
         WidgetMgr.MAP_EDITOR = mapEditor;
         jPanel3.add(mapEditor.getCanvas());
@@ -276,6 +278,17 @@ public class MainWindow extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        middlePanel = new javax.swing.JPanel();
+        jSplitPane3 = new javax.swing.JSplitPane();
+        jSplitPane2 = new javax.swing.JSplitPane();
+        jPanel3 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        mapTree = new lib.editor.widget.tree.tree.MapTree();
+        jPanel5 = new javax.swing.JPanel();
+        mapTreeCreateMapButton = new lib.editor.widget.button.ToolBarButton();
+        mapTreeFilterTextField = new lib.editor.widget.textfield.IconTextField();
+        jXTaskPaneContainer2 = new org.jdesktop.swingx.JXTaskPaneContainer();
         mainToolBar = new javax.swing.JToolBar();
         toolBarNew = new lib.editor.widget.button.ToolBarButton();
         toolBarOpen = new lib.editor.widget.button.ToolBarButton();
@@ -290,19 +303,10 @@ public class MainWindow extends javax.swing.JFrame {
         toolBarRedo = new lib.editor.widget.button.ToolBarButton();
         jSeparator3 = new javax.swing.JToolBar.Separator();
         toolBarButton1 = new lib.editor.widget.button.ToolBarButton();
-        jPanel1 = new javax.swing.JPanel();
+        mainTabPane = new lib.editor.widget.maintabpane.MainTabPane();
+        jXStatusBar1 = new org.jdesktop.swingx.JXStatusBar();
         statusBarLabel = new javax.swing.JLabel();
-        middlePanel = new javax.swing.JPanel();
-        jSplitPane3 = new javax.swing.JSplitPane();
-        jSplitPane2 = new javax.swing.JSplitPane();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        mapTree = new lib.editor.widget.tree.tree.MapTree();
-        jPanel5 = new javax.swing.JPanel();
-        mapTreeCreateMapButton = new lib.editor.widget.button.ToolBarButton();
-        mapTreeFilterTextField = new lib.editor.widget.textfield.IconTextField();
-        jXTaskPaneContainer2 = new org.jdesktop.swingx.JXTaskPaneContainer();
+        jButton1 = new javax.swing.JButton();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileNew = new lib.editor.widget.menu.MenuItem();
@@ -323,6 +327,68 @@ public class MainWindow extends javax.swing.JFrame {
         menuItem2 = new lib.editor.widget.menu.MenuItem();
         jMenu1 = new javax.swing.JMenu();
         menuItem1 = new lib.editor.widget.menu.MenuItem();
+
+        middlePanel.setLayout(new java.awt.GridLayout(1, 0));
+
+        jSplitPane3.setResizeWeight(1.0);
+
+        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        jPanel3.setMinimumSize(new java.awt.Dimension(300, 300));
+        jPanel3.setPreferredSize(new java.awt.Dimension(300, 300));
+        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
+        jSplitPane2.setRightComponent(jPanel3);
+
+        jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        jPanel2.setMinimumSize(new java.awt.Dimension(160, 50));
+        jPanel2.setPreferredSize(new java.awt.Dimension(160, 362));
+        jPanel2.setLayout(new java.awt.BorderLayout());
+
+        jScrollPane1.setAutoscrolls(true);
+
+        mapTree.setAutoscrolls(true);
+        mapTree.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
+        mapTree.setMaximumSize(null);
+        mapTree.setMinimumSize(null);
+        mapTree.setPreferredSize(null);
+        mapTree.setRowHeight(18);
+        jScrollPane1.setViewportView(mapTree);
+
+        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
+
+        mapTreeCreateMapButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
+        mapTreeCreateMapButton.setToolTipText("Create a new map.");
+        mapTreeCreateMapButton.setFocusable(false);
+        mapTreeCreateMapButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        mapTreeCreateMapButton.setStatusText("Create a new map.");
+        mapTreeCreateMapButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        mapTreeCreateMapButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mapTreeCreateMapButtonActionPerformed(evt);
+            }
+        });
+        jPanel5.add(mapTreeCreateMapButton);
+
+        mapTreeFilterTextField.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/find.png"))); // NOI18N
+        mapTreeFilterTextField.setMaximumSize(new java.awt.Dimension(2147483647, 28));
+        mapTreeFilterTextField.setMinimumSize(new java.awt.Dimension(20, 28));
+        mapTreeFilterTextField.setPreferredSize(new java.awt.Dimension(24, 28));
+        mapTreeFilterTextField.setStatusText("Live search filtering maps name.");
+        jPanel5.add(mapTreeFilterTextField);
+
+        jPanel2.add(jPanel5, java.awt.BorderLayout.PAGE_END);
+
+        jSplitPane2.setLeftComponent(jPanel2);
+
+        jSplitPane3.setLeftComponent(jSplitPane2);
+
+        org.jdesktop.swingx.VerticalLayout verticalLayout2 = new org.jdesktop.swingx.VerticalLayout();
+        verticalLayout2.setGap(14);
+        jXTaskPaneContainer2.setLayout(verticalLayout2);
+        jSplitPane3.setRightComponent(jXTaskPaneContainer2);
+
+        middlePanel.add(jSplitPane3);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(400, 200));
@@ -464,79 +530,20 @@ public class MainWindow extends javax.swing.JFrame {
         mainToolBar.add(toolBarButton1);
 
         getContentPane().add(mainToolBar, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(mainTabPane, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        jPanel1.setPreferredSize(new java.awt.Dimension(35, 24));
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.LINE_AXIS));
+        jXStatusBar1.setMaximumSize(new java.awt.Dimension(2147483647, 24));
+        jXStatusBar1.setMinimumSize(new java.awt.Dimension(31, 24));
+        jXStatusBar1.setPreferredSize(new java.awt.Dimension(31, 24));
+        jXStatusBar1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         statusBarLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 4, 0, 0));
-        jPanel1.add(statusBarLabel);
+        jXStatusBar1.add(statusBarLabel, new org.netbeans.lib.awtextra.AbsoluteConstraints(5, 4, -1, 16));
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
+        jButton1.setText("jButton1");
+        jXStatusBar1.add(jButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 0, -1, -1));
 
-        middlePanel.setLayout(new java.awt.GridLayout(1, 0));
-
-        jSplitPane3.setResizeWeight(1.0);
-
-        jPanel3.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        jPanel3.setMinimumSize(new java.awt.Dimension(300, 300));
-        jPanel3.setPreferredSize(new java.awt.Dimension(300, 300));
-        jPanel3.setLayout(new java.awt.GridLayout(1, 0));
-        jSplitPane2.setRightComponent(jPanel3);
-
-        jPanel2.setBorder(javax.swing.BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        jPanel2.setMinimumSize(new java.awt.Dimension(160, 50));
-        jPanel2.setPreferredSize(new java.awt.Dimension(160, 362));
-        jPanel2.setLayout(new java.awt.BorderLayout());
-
-        jScrollPane1.setAutoscrolls(true);
-
-        mapTree.setAutoscrolls(true);
-        mapTree.setDropMode(javax.swing.DropMode.ON_OR_INSERT);
-        mapTree.setMaximumSize(null);
-        mapTree.setMinimumSize(null);
-        mapTree.setPreferredSize(null);
-        mapTree.setRowHeight(18);
-        jScrollPane1.setViewportView(mapTree);
-
-        jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
-
-        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.LINE_AXIS));
-
-        mapTreeCreateMapButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/new.png"))); // NOI18N
-        mapTreeCreateMapButton.setToolTipText("Create a new map.");
-        mapTreeCreateMapButton.setFocusable(false);
-        mapTreeCreateMapButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        mapTreeCreateMapButton.setStatusText("Create a new map.");
-        mapTreeCreateMapButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        mapTreeCreateMapButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                mapTreeCreateMapButtonActionPerformed(evt);
-            }
-        });
-        jPanel5.add(mapTreeCreateMapButton);
-
-        mapTreeFilterTextField.setIcon(new javax.swing.ImageIcon(getClass().getResource("/assets/icons/find.png"))); // NOI18N
-        mapTreeFilterTextField.setMaximumSize(new java.awt.Dimension(2147483647, 28));
-        mapTreeFilterTextField.setMinimumSize(new java.awt.Dimension(20, 28));
-        mapTreeFilterTextField.setPreferredSize(new java.awt.Dimension(24, 28));
-        mapTreeFilterTextField.setStatusText("Live search filtering maps name.");
-        jPanel5.add(mapTreeFilterTextField);
-
-        jPanel2.add(jPanel5, java.awt.BorderLayout.PAGE_END);
-
-        jSplitPane2.setLeftComponent(jPanel2);
-
-        jSplitPane3.setLeftComponent(jSplitPane2);
-
-        org.jdesktop.swingx.VerticalLayout verticalLayout2 = new org.jdesktop.swingx.VerticalLayout();
-        verticalLayout2.setGap(14);
-        jXTaskPaneContainer2.setLayout(verticalLayout2);
-        jSplitPane3.setRightComponent(jXTaskPaneContainer2);
-
-        middlePanel.add(jSplitPane3);
-
-        getContentPane().add(middlePanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(jXStatusBar1, java.awt.BorderLayout.PAGE_END);
 
         fileMenu.setText("File");
 
@@ -822,9 +829,9 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.menu.MenuItem fileNew;
     private lib.editor.widget.menu.MenuItem fileOpen;
     private lib.editor.widget.menu.MenuItem fileSave;
+    private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel5;
@@ -836,8 +843,10 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JSplitPane jSplitPane3;
+    private org.jdesktop.swingx.JXStatusBar jXStatusBar1;
     private org.jdesktop.swingx.JXTaskPaneContainer jXTaskPaneContainer2;
     private javax.swing.JMenuBar mainMenuBar;
+    private lib.editor.widget.maintabpane.MainTabPane mainTabPane;
     private javax.swing.JToolBar mainToolBar;
     private lib.editor.widget.tree.tree.MapTree mapTree;
     private lib.editor.widget.button.ToolBarButton mapTreeCreateMapButton;

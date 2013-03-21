@@ -28,7 +28,7 @@ public class AssetManagerAssetFolderList extends List{
         
         File assetsFolder = new File(ProjectMgr.getAssetsPath());
         for (String name : assetsFolder.list()) {
-            addItem(new ListItem(name, Mgr.icon.getIcon("folder.png")));
+            addItem(new ListItem(name, Mgr.icon.getSystemIcon("folder.png", false)));
         }
     }
     

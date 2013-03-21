@@ -141,6 +141,7 @@ public class AssetManagerAssetsTree extends Tree{
     
     public void currentItemChanged(TreeItem item){
         if(item == null){
+            WidgetMgr.ASSET_MANAGER_WINDOW.setAsset(null);
             return;
         }
         
