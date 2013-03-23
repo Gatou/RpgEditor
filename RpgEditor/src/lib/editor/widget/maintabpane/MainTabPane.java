@@ -19,11 +19,13 @@ import aurelienribon.tweenengine.Tween;
 import aurelienribon.tweenengine.TweenCallback;
 import aurelienribon.tweenengine.equations.Cubic;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -45,31 +47,51 @@ import org.netbeans.lib.awtextra.AbsoluteLayout;
  */
 public class MainTabPane extends JPanel{
 
+    private class DropHighlightInfo{
+        public int x;
+        public int orientation;
+        public boolean visible;
+
+        public DropHighlightInfo() {
+            x = -1;
+            orientation = 0;
+            visible = false;
+        }
+        
+        
+    }
     
+    private DropHighlightInfo dropHighlightInfo;
     
-    public static final int TOTAL_BUTTON_WIDTH = TabButton.BUTTON_WIDTH + TabButtonPanel.BUTTON_SPACING*2;
+    public static final int TOTAL_BUTTON_WIDTH = TabButton.BUTTON_WIDTH + 4;
          
     List<DataTabButton> tabsDatabase;
-    List<TabButtonPanel> tabButtons;
+    //List<TabButton> tabButtons;
+    List<TabButton> topTabs;
+    List<TabButton> bottomTabs;
+    
     
     JPanel topPanel;
     JPanel middlePanel;
     JPanel bottomPanel;
     
-    public MainTabMenu menu;
+    public TabButtonMenu topMenu;
+    public TabButtonMenu bottomMenu;
+    
+    boolean tabDragging;
     
     public MainTabPane() {
         tabsDatabase = new ArrayList<DataTabButton>();
-        tabsDatabase.add(new DataTabButton("Maps", "map.png"));
-        tabsDatabase.add(new DataTabButton("Actors", "actor.png"));
-        tabsDatabase.add(new DataTabButton("Classes", "class.png"));
-        tabsDatabase.add(new DataTabButton("Skills", "skill.png"));
-        tabsDatabase.add(new DataTabButton("Items", "item.png"));
-        tabsDatabase.add(new DataTabButton("Weapons", "weapon.png"));
-        tabsDatabase.add(new DataTabButton("Armors", "armor.png"));
-        tabsDatabase.add(new DataTabButton("Enemies", "enemy.png"));
-        tabsDatabase.add(new DataTabButton("Tiles", "tile.png"));
-        tabsDatabase.add(new DataTabButton("System", "system.png"));
+        tabsDatabase.add(new DataTabButton("Maps", "map.png", 0, 0));
+        tabsDatabase.add(new DataTabButton("Actors", "actor.png", 0, 1));
+        tabsDatabase.add(new DataTabButton("Classes", "class.png", 0, 2));
+        tabsDatabase.add(new DataTabButton("Skills", "skill.png", 0, 3));
+        tabsDatabase.add(new DataTabButton("Items", "item.png", 0, 4));
+        tabsDatabase.add(new DataTabButton("Weapons", "weapon.png", 0, 5));
+        tabsDatabase.add(new DataTabButton("Armors", "armor.png", 1, 0));
+        tabsDatabase.add(new DataTabButton("Enemies", "enemy.png", 1, 1));
+        tabsDatabase.add(new DataTabButton("Tiles", "tile.png", 1, 2));
+        tabsDatabase.add(new DataTabButton("System", "system.png", 1, 3));
         
         setLayout(new java.awt.BorderLayout());
         
@@ -82,11 +104,11 @@ public class MainTabPane extends JPanel{
         add(middlePanel, java.awt.BorderLayout.CENTER);
         add(bottomPanel, java.awt.BorderLayout.PAGE_END);
         
-        menu = new MainTabMenu();
-        
+        topMenu = new TabButtonMenu(new DataTabButton("Other", "arrow_up.png", 0, 0));
+        bottomMenu = new TabButtonMenu(new DataTabButton("Other", "arrow_up.png", 1, 0));
 
-        
-
+        tabDragging = false;
+        dropHighlightInfo = new DropHighlightInfo();
         
         middlePanel.setOpaque(false);
         
@@ -112,6 +134,7 @@ public class MainTabPane extends JPanel{
 
         });
         
+        
         rebuild();
     }
     
@@ -132,14 +155,17 @@ public class MainTabPane extends JPanel{
     public void rebuild(){
         topPanel.removeAll();
         bottomPanel.removeAll();
-        tabButtons = new ArrayList<TabButtonPanel>();
+        topTabs = new ArrayList<TabButton>();
+        bottomTabs = new ArrayList<TabButton>();
         
         for(DataTabButton tabData : tabsDatabase){
-            TabButtonPanel buttonPanel = new TabButtonPanel(new TabButton(tabData));
-            buttonPanel.button.label.setText(tabData.text);
-            buttonPanel.button.label.setIcon(Mgr.icon.getTabIcon(tabData.iconFilename, false));
-            tabButtons.add(buttonPanel);
-            //topPanel.add(button1);
+            TabButton tab = new TabButton(tabData);
+            if(tabData.orientation == 0){
+                topTabs.add(tab);
+            }
+            else if(tabData.orientation == 1){
+                bottomTabs.add(tab);
+            }
         }
 
         layoutTabs();
@@ -153,52 +179,55 @@ public class MainTabPane extends JPanel{
         topPanel.removeAll();
         bottomPanel.removeAll();
         
+        for(TabButton tab : topTabs){
+            topPanel.add(tab);
+            tab.setLocation(tab.data.index*TOTAL_BUTTON_WIDTH+4, tab.getLocation().y);
+        }
+        
+        
+        for(TabButton tab : bottomTabs){
+            bottomPanel.add(tab);
+            tab.setLocation(tab.data.index*TOTAL_BUTTON_WIDTH+4, tab.getLocation().y);
+        }
         
 
         
-        int tabIndex = 0;
-        
-        tabIndex = fillTabs(topPanel, tabIndex);
-        tabIndex = fillTabs(bottomPanel, tabIndex);
-
-        menu.refresh(tabIndex, tabButtons, tabsDatabase);
+   
+        checkNeedMenu(topPanel, topTabs, topMenu);
+        checkNeedMenu(bottomPanel, bottomTabs, bottomMenu);
         
         topPanel.validate();
         bottomPanel.validate();
         
     }
-    
-    public int fillTabs(JPanel panel, int tabIndex){
-        int currentWidth = 0;
-        
-        while(tabIndex < tabButtons.size() && currentWidth + TOTAL_BUTTON_WIDTH < getWidth()){
-            TabButton button = tabButtons.get(tabIndex).button;
-            
-            if(panel == topPanel){
-                button.setOrientation(TabButton.Orientation.TOP);
-            }
-            else if(panel == bottomPanel){
-                button.setOrientation(TabButton.Orientation.BOTTOM);
-            }
-            
-            DataTabButton tabData = tabsDatabase.get(tabIndex);
-            TabButtonPanel buttonPanel = tabButtons.get(tabIndex);
-            buttonPanel.button.label.setText(tabData.text);
-            buttonPanel.button.label.setIcon(Mgr.icon.getTabIcon(tabData.iconFilename, false));
-            //buttonPanel.button.setMenuButton(false);
-               
-            
-            //AbsoluteConstraints constraint = new AbsoluteConstraints(currentWidth, 0, -1, -1);
-            panel.add(buttonPanel);//, constraint);
-            buttonPanel.setLocation(currentWidth, 0);
-            
-            currentWidth += TOTAL_BUTTON_WIDTH;
-            tabIndex += 1;
-        }
-        
-        return tabIndex;
-    }
 
+    public void checkNeedMenu(JPanel panel, List<TabButton> tabs, TabButtonMenu menuTab){
+        List<TabButton> outScreenTabs = new ArrayList<TabButton>();
+        int lastVisibleIndex = (getWidth()+TOTAL_BUTTON_WIDTH/2)/TOTAL_BUTTON_WIDTH - 1;
+        
+        outScreenTabs.clear();
+        for(TabButton tab : tabs){
+            if(tab.data.index > lastVisibleIndex){
+                outScreenTabs.add(tab);
+            }
+        }
+        if(outScreenTabs.size() > 0){
+            for(TabButton tab : tabs){
+                if(tab.data.index > lastVisibleIndex-1){
+                    panel.remove(tab);
+                }
+            }
+            menuTab.data.index = lastVisibleIndex;
+            menuTab.setLocation(menuTab.data.index*TOTAL_BUTTON_WIDTH+4, menuTab.getLocation().y);
+            menuTab.visible = true;
+            panel.add(menuTab);
+        }
+        else{
+            menuTab.visible = false;
+            panel.remove(menuTab);
+        }
+    }
+    /*
     public void setTabFocused(TabButton button, boolean menuButtonFocused){
         for(TabButtonPanel tabPanel : tabButtons){
             tabPanel.button.setFocused(tabPanel.button == button);
@@ -206,8 +235,13 @@ public class MainTabPane extends JPanel{
         }
         menu.menuButtonPanel.button.setFocused(menuButtonFocused);
         menu.menuButtonPanel.button.repaint();
-    }
+    }*/
     
+    /*
+    public void setDropPosition(int dropPosition){
+        this.dropPosition = dropPosition;
+    }*/
+            
     public void paintComponent(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -218,8 +252,18 @@ public class MainTabPane extends JPanel{
 
         g2d.setPaint(gp);
         g2d.fillRect(0, 0, getWidth(), getHeight());
+        
+        if(dropHighlightInfo.visible){
+            if(dropHighlightInfo.orientation == 0){
+                g.drawImage(TabButton.topDropBgImage, dropHighlightInfo.x, 0, null);
+            }
+            else if(dropHighlightInfo.orientation == 1){
+                g.drawImage(TabButton.bottomDropBgImage, dropHighlightInfo.x, getHeight()-TabButton.BUTTON_ACTIVE_HEIGHT, null);
+            }
+        }
     }
     
+    /*
     public void menuTabClick(TabButton button){
         //button.setFocused(true);
         menu.show(button, 0, -menu.getHeight()+5);
@@ -238,156 +282,199 @@ public class MainTabPane extends JPanel{
             
         }
     }
+    */
     
-    public void tabDragging(TabButtonPanel buttonPanel, int xOffset){
+    public void checkDropLocationValid(){
+        if(dropHighlightInfo.x + TOTAL_BUTTON_WIDTH/2 > getWidth()){
+            dropHighlightInfo.visible = false;
+            return;
+        }
+        
+        int dropIndex = dropHighlightInfo.x/TOTAL_BUTTON_WIDTH;
+        if(topMenu.visible && dropHighlightInfo.orientation == 0 && dropIndex >= topMenu.data.index){
+            dropHighlightInfo.visible = false;
+            return;
+        }
+        if(bottomMenu.visible && dropHighlightInfo.orientation == 1 && dropIndex >= bottomMenu.data.index){
+            dropHighlightInfo.visible = false;
+            return;
+        }
+    }
+    
+    public void tabDragging(TabButton draggingTab, int xOffset){
         if(getMousePosition() == null){
             return;
         }
         
-        //topPanel.remove(buttonPanel);
         int w = getMousePosition().x;
-        //AbsoluteConstraints constraint = new AbsoluteConstraints(w-xOffset, 0, -1, -1);
+        draggingTab.setLocation(w-xOffset, draggingTab.getLocation().y);
         
-        //topPanel.add(buttonPanel, constraint);
-        //topPanel.validate();
-        buttonPanel.setLocation(w-xOffset, 0);
-        int maximumIndexToTheRight = tabButtons.indexOf(buttonPanel);
-        int minimumIndexToTheLeft = tabButtons.indexOf(buttonPanel);
+        dropHighlightInfo.visible = true;
+        dropHighlightInfo.x = (getMousePosition().x/TOTAL_BUTTON_WIDTH) * TOTAL_BUTTON_WIDTH + 4;
+        checkDropLocationValid();
         
-        //int newIndex = buttonPanel.getX()/TOTAL_BUTTON_WIDTH;
-        int x = buttonPanel.getX();
-                
-        for(final TabButtonPanel buttonP : tabButtons){
-            if(buttonP == buttonPanel){continue;}
-            if(tabButtons.indexOf(buttonP) > maximumIndexToTheRight){continue;}
-                
-            if(!buttonP.hasMoveToTheRight && x-TOTAL_BUTTON_WIDTH/3 < buttonP.getX()){
-                startTabMoveTo(buttonP, 1, -1);
+        boolean mouseOnTop = getMousePosition().y < getHeight()/2;
+        if(mouseOnTop){
+            dropHighlightInfo.orientation = 0;
+            if(draggingTab.data.orientation != 0){
+                draggingTab.setOrientation(0);
+                bottomPanel.remove(draggingTab);
+                topPanel.add(draggingTab);
             }
-            
-            if(buttonP.hasMoveToTheRight && x+TOTAL_BUTTON_WIDTH/3 > buttonP.getX()){
-                startTabMoveTo(buttonP, 0, -1);
+        }
+        else{
+            dropHighlightInfo.orientation = 1;
+            if(draggingTab.data.orientation != 1){
+                draggingTab.setOrientation(1);
+                topPanel.remove(draggingTab);
+                bottomPanel.add(draggingTab);
             }
-            
         }
         
-        for(final TabButtonPanel buttonP : tabButtons){
-            if(buttonP == buttonPanel){continue;}
-            if(tabButtons.indexOf(buttonP) < minimumIndexToTheLeft){continue;}
-                
-            if(!buttonP.hasMoveToTheLeft && buttonP.getX() < x+TOTAL_BUTTON_WIDTH/3){
-                startTabMoveTo(buttonP, -1, -1);
-            }
-            
-            if(buttonP.hasMoveToTheLeft && buttonP.getX() > x-TOTAL_BUTTON_WIDTH/3){
-                startTabMoveTo(buttonP, 0, -1);
-            }
-            
+        if(draggingTab.data.orientation == 0){
+            topPanel.setComponentZOrder(draggingTab, 0);
+        }
+        else if(draggingTab.data.orientation == 1){
+            bottomPanel.setComponentZOrder(draggingTab, 0);
         }
         
+        topPanel.repaint();
+        bottomPanel.repaint();
     }
     
-    public void startTabMoveTo(final TabButtonPanel buttonP, final int indexOffset, int forceIndex){
-        if(!buttonP.isMoving){
+    public void startTabMoveTo(final TabButton tab, int index){
+        if(!tab.isMoving){
 
-            buttonP.isMoving = true;
-            int index;
-            if(forceIndex == -1){
-               index = tabButtons.indexOf(buttonP)+indexOffset;
-            }
-            else{
-                index = forceIndex;
-            }
+            tab.isMoving = true;
             
-            Tween.to(buttonP, ComponentAccessor.POSITION, 200)
-                .target(index*TOTAL_BUTTON_WIDTH, 0)
-                .setCallback(new TweenCallback() {public void onEvent(int type, BaseTween<?> source){endButtonMove(buttonP, indexOffset);}})
+            int targetX = index*TOTAL_BUTTON_WIDTH+4;
+                    
+            Tween.to(tab, ComponentAccessor.POSITION, 200)
+                .target(targetX, tab.getY())
+                .setCallback(new TweenCallback() {public void onEvent(int type, BaseTween<?> source){endButtonMove(tab);}})
                 .start(WidgetMgr.MAIN_WINDOW.tweenManager);
 
         }
     }
     
-    public void tabDrop(TabButtonPanel buttonPanel){
+    public void tabDrop(TabButton draggingTab){
+        for(Component comp : topPanel.getComponents()){
+            topPanel.setComponentZOrder(comp, 2);
+        }
+        for(Component comp : bottomPanel.getComponents()){
+            bottomPanel.setComponentZOrder(comp, 2);
+        }
         //tabDragging(buttonPanel, buttonPanel.button.draggingXOffset);
-        System.out.println("---------------------");
+        //System.out.println("---------------------");
+        /*
         boolean ok = false;
         
         while(!ok){
             ok = true;
             
-            for(TabButtonPanel buttonP : tabButtons){
-                if(buttonP.isMoving){
+            for(TabButton tab : getAllTabs()){
+                if(tab.isMoving){
                     ok = false;
                     //break;
                 }
             }
             
             WidgetMgr.MAIN_WINDOW.tweenManager.update(1000/60);
-        }
+        }*/
+        int oldIndex = draggingTab.data.index;
+        int oldOrientation = draggingTab.lastOrientation;
+        bottomTabs.remove(draggingTab);
+        topTabs.remove(draggingTab);
         
-        List<TabButtonPanel> memoTabs = new ArrayList<TabButtonPanel>(tabButtons);
-        for(int i=0; i<tabButtons.size(); i++){
-            tabButtons.set(i, null);
-        }
         
-        for(TabButtonPanel buttonP : memoTabs){
-            if(buttonP == buttonPanel){continue;}
+        int dropIndex = dropHighlightInfo.x/TOTAL_BUTTON_WIDTH;
+        
+        if(dropHighlightInfo.visible){ //valid drop location
+            TabButton tab = null;
             
-            if(buttonP.hasMoveToTheLeft){
-                tabButtons.set(memoTabs.indexOf(buttonP)-1, buttonP);
+            if(draggingTab.data.orientation == 0){
+                topTabs.add(draggingTab);
+                topPanel.setComponentZOrder(draggingTab, 0);
+                tab = getTabAtIndex(topTabs, dropIndex);       
             }
-            else if(buttonP.hasMoveToTheRight){
-                tabButtons.set(memoTabs.indexOf(buttonP)+1, buttonP);
+            else if(draggingTab.data.orientation == 1){
+                bottomTabs.add(draggingTab);
+                bottomPanel.setComponentZOrder(draggingTab, 0);
+                tab = getTabAtIndex(bottomTabs, dropIndex);
             }
-            else{
-                tabButtons.set(memoTabs.indexOf(buttonP), buttonP);
-            }
-        }
-        
-        for(int i=0; i<tabButtons.size(); i++){
-            TabButtonPanel buttonP = tabButtons.get(i);
+
             
-            if(buttonP == null){
-                tabButtons.set(i, buttonPanel);
-                //break;
+            draggingTab.data.index = dropIndex;
+            
+            if(tab != draggingTab && tab != null){
+                bottomTabs.remove(tab);
+                topTabs.remove(tab);
+                tab.data.index = oldIndex;
+                tab.setOrientation(oldOrientation);
+                startTabMoveTo(tab, tab.data.index);
+                if(tab.data.orientation == 0){
+                    topTabs.add(tab);
+                    topPanel.setComponentZOrder(tab, 1);
+                }
+                else if(tab.data.orientation == 1){
+                    bottomTabs.add(tab);
+                    bottomPanel.setComponentZOrder(tab, 1);
+                }
             }
-            else{
-                buttonP.hasMoveToTheLeft = false;
-                buttonP.hasMoveToTheRight = false;
+            
+        }
+        else{ //invalid drop location
+            draggingTab.setOrientation(oldOrientation);
+            
+            if(draggingTab.data.orientation == 0){
+                topTabs.add(draggingTab);
+                topPanel.setComponentZOrder(draggingTab, 0);           
+            }
+            else if(draggingTab.data.orientation == 1){
+                bottomTabs.add(draggingTab);
+                bottomPanel.setComponentZOrder(draggingTab, 0);
             }
         }
         
-        startTabMoveTo(buttonPanel, 0, tabButtons.indexOf(buttonPanel));
-        buttonPanel.hasMoveToTheLeft = false;
-        buttonPanel.hasMoveToTheRight = false;
-                
-        for(int i=0; i<tabButtons.size(); i++){
-            TabButtonPanel buttonP = tabButtons.get(i);
-            System.out.println(buttonP.button.label.getText());
-        }
+        
+
+
+        
+        
+
+            
+        dropHighlightInfo.visible = false;
+        startTabMoveTo(draggingTab, draggingTab.data.index);
+           
+        /*
+        for(int i=0; i<getAllTabs().size(); i++){
+            TabButton tab = getAllTabs().get(i);
+            System.out.println(tab.label.getText());
+        }*/
+        
+        repaint();
     }
     
     
-    public void endButtonMove(TabButtonPanel buttonPanel, int indexOffset){
-        int index = tabButtons.indexOf(buttonPanel);
-        buttonPanel.isMoving = false;
-        if(indexOffset == 1){
-            buttonPanel.hasMoveToTheRight = true;
-        }
-        else if(indexOffset == -1){
-            buttonPanel.hasMoveToTheLeft = true;
-        }
-        else{
-            buttonPanel.hasMoveToTheLeft = false;
-            buttonPanel.hasMoveToTheRight = false;
-        }
-        
-        
-        /*TabButtonPanel b = tabButtons.get(index+newIndexOffset);
-        tabButtons.set(index+newIndexOffset, buttonPanel);
-        tabButtons.set(index, b);*/
+    public void endButtonMove(TabButton tab){
+        tab.isMoving = false;
     }
+
     
 
-
+    public List<TabButton> getAllTabs(){
+        List<TabButton> result = new ArrayList<TabButton>();
+        result.addAll(topTabs);
+        result.addAll(bottomTabs);
+        return result;
+    }
+    
+    public TabButton getTabAtIndex(List<TabButton> tabs, int index){
+        for(TabButton tab : tabs){
+            if(tab.data.index == index){
+                return tab;
+            }
+        }
+        return null;
+    }
 }

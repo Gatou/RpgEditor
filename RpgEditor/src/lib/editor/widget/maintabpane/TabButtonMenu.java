@@ -19,10 +19,10 @@ import lib.editor.mgr.WidgetMgr;
  *
  * @author gaetan
  */
-public class MainTabMenu extends JPopupMenu{
+public class TabButtonMenu extends TabButton{
 
     //public TabButton menuButton;
-    public TabButtonPanel menuButtonPanel;
+    public TabButton menuButtonPanel;
     
     private class Item extends JMenuItem{
 
@@ -34,12 +34,14 @@ public class MainTabMenu extends JPopupMenu{
         }
     }
     
-    public MainTabMenu() {
-        menuButtonPanel = new TabButtonPanel(new TabButton(null));
-        menuButtonPanel.button.label.setText("Other...");
-        menuButtonPanel.button.label.setIcon(Mgr.icon.getTabIcon("arrow_up.png", false));
-        menuButtonPanel.button.setMenuButton(true);
-        menuButtonPanel.button.setOrientation(TabButton.Orientation.BOTTOM);
+    public TabButtonMenu(DataTabButton data) {
+        super(data);
+        /*
+        menuButtonPanel = new TabButton(null);
+        menuButtonPanel.label.setText("Other...");
+        menuButtonPanel.label.setIcon(Mgr.icon.getTabIcon("arrow_up.png", false));
+        menuButtonPanel.setMenuButton(true);
+        //menuButtonPanel.button.setOrientation(TabButton.Orientation.BOTTOM);
                 
         addPopupMenuListener(new PopupMenuListener() {
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {}
@@ -49,12 +51,12 @@ public class MainTabMenu extends JPopupMenu{
             }
 
             public void popupMenuCanceled(PopupMenuEvent e) {}
-        });
+        });*/
         
     }
     
     
-    public void refresh(int tabIndex, List<TabButtonPanel> tabButtons, List<DataTabButton> tabsDatabase){
+    public void refresh(int tabIndex, List<TabButton> tabButtons, List<DataTabButton> tabsDatabase){
         removeAll();
         
         //if(menuButton != null){
@@ -66,7 +68,7 @@ public class MainTabMenu extends JPopupMenu{
         //for(TabButtonPanel buttonPanel : tabButtons){
         //    buttonPanel.button.setMenuButton(false);
         //}
-        
+        /*
         if(tabIndex > 0 && tabIndex < tabButtons.size()){
             
             boolean focusedTabInMenu = false;
@@ -88,30 +90,17 @@ public class MainTabMenu extends JPopupMenu{
             }
             
             WidgetMgr.MAIN_TAB_PANE.setMenuButtonVisible(true);
-            /*
-            if(menuButton != null){
-                menuButton.setFocused(false);
-            }
-            
-            TabButtonPanel lastButtonPanel = tabButtons.get(tabIndex-1);
-            menuButton = lastButtonPanel.button;
-            menuButton.label.setText("Other...");
-            menuButton.label.setIcon(Mgr.icon.getTabIcon("arrow_up.png", false));
-            menuButton.setMenuButton(true); 
-            if(focusedTabInMenu){
-                WidgetMgr.MAIN_TAB_PANE.setTabFocused(null, menuButton);
-            }
-            */
+
             setVisible(true);
             setVisible(false);
         
         }
         
-
+        */
     }
     
     public void menuClose(){
-        menuButtonPanel.button.repaint();
+        menuButtonPanel.repaint();
         //if(WidgetMgr.MAIN_TAB_PANE == null){return;}
         /*
         for(TabButtonPanel buttonPanel : WidgetMgr.MAIN_TAB_PANE.tabButtons){
@@ -122,7 +111,7 @@ public class MainTabMenu extends JPopupMenu{
     }
     
     public void itemClick(TabButton button){
-        WidgetMgr.MAIN_TAB_PANE.setTabFocused(button, true);
+        //WidgetMgr.MAIN_TAB_PANE.setTabFocused(button, true);
     }
 
 }

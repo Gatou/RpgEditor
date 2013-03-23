@@ -12,12 +12,14 @@ public class DataTabButton {
     
     public String text;
     public String iconFilename;
-    //public boolean focused;
-
-    public DataTabButton(String text, String iconFilename) {
+    public int orientation; //0: top, 1: bottom
+    int index;
+    
+    public DataTabButton(String text, String iconFilename, int orientation, int index) {
         this.text = text;
         this.iconFilename = iconFilename;
-        //focused = false;
+        this.orientation = orientation;
+        this.index = index;
     }
     
     

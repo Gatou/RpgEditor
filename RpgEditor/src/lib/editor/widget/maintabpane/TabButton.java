@@ -4,6 +4,9 @@
  */
 package lib.editor.widget.maintabpane;
 
+import aurelienribon.tweenengine.BaseTween;
+import aurelienribon.tweenengine.Tween;
+import aurelienribon.tweenengine.TweenCallback;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -25,7 +28,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import lib.editor.mgr.Mgr;
 import lib.editor.mgr.WidgetMgr;
+import lib.editor.util.tween.ComponentAccessor;
 
 /**
  *
@@ -42,30 +47,32 @@ public class TabButton extends JPanel{
     public static final BufferedImage topBgImageFocused = loadImage("src/assets/tab/button_bg_focused.png", false);
     public static final BufferedImage bottomBgImageFocused = loadImage("src/assets/tab/button_bg_focused.png", true);
     
+    public static final BufferedImage topDropBgImage = loadImage("src/assets/tab/button_drop_bg.png", false);
+    public static final BufferedImage bottomDropBgImage = loadImage("src/assets/tab/button_drop_bg.png", true);
+    
     public static final int TOP_LABEL_Y_OFFSET = BUTTON_INACTIVE_HEIGHT/2 - 16/2 - 3;
     public static final int BOTTOM_LABEL_Y_OFFSET = (BUTTON_ACTIVE_HEIGHT-BUTTON_INACTIVE_HEIGHT) + BUTTON_INACTIVE_HEIGHT/2 - 16/2 + 3;
     
-    Orientation orientation;
     public JLabel label;
     boolean isActive;
     boolean isFocused;
     boolean isMenuButton;
     boolean isDragging;
+    boolean visible;
+    
+    boolean isMoving;
+    int lastOrientation;
+    //boolean hasMoveToTheLeft;
+    //boolean hasMoveToTheRight;
+    //boolean startDraggingOnTop;
     
     DataTabButton data;
-    TabButtonPanel panel;
     
     int draggingXOffset;
-    
-    public enum Orientation{
-        TOP,
-        BOTTOM,
-    }
     
     public TabButton(DataTabButton data) {
         draggingXOffset = -1;
         
-        this.panel = panel;
         this.data = data;
         
         setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_ACTIVE_HEIGHT));
@@ -74,29 +81,42 @@ public class TabButton extends JPanel{
         
         
         //setMargin(new Insets(0, -5, 0, -10));
-        setLayout(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        setLayout(null);
         
         setOpaque(false);
         //setContentAreaFilled(false);
         label = new JLabel();
         label.setForeground(new Color(200,200,100));
+        //label.setBackground(Color.red);
+        //label.setOpaque(true);
+        label.setSize(BUTTON_WIDTH-8*2, BUTTON_ACTIVE_HEIGHT);
+        label.setText(data.text);
+        label.setIcon(Mgr.icon.getTabIcon(data.iconFilename, false));
+            
         add(label);
         
         isActive = false;
         isFocused = false;
         isMenuButton = false;
         isDragging = false;
+        visible = true;
+        isMoving = false;
+        lastOrientation = -1;
+        //startDraggingOnTop = false;
         
         addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
+                //System.out.println(e.getClickCount());
                 mouseClick(e);
             }
             
-            public void mousePressed(MouseEvent e) {}
+            public void mousePressed(MouseEvent e) {
+                if(e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2){
+                    dragStart(e);
+                }
+            }
             public void mouseReleased(MouseEvent e) {
-                draggingXOffset = -1;
-                if(isDragging){
-                    isDragging = false;
+                if(e.getButton() == MouseEvent.BUTTON1 && isDragging){
                     tabDrop();
                 }
             }
@@ -114,18 +134,46 @@ public class TabButton extends JPanel{
 
             @Override
             public void mouseDragged(MouseEvent e) {
-                isDragging = true;
-                if(draggingXOffset == -1){
-                    draggingXOffset = e.getX();
-                }
-                
-                tabDragging();
+                tabDragging(e);
             }
 
             @Override
             public void mouseMoved(MouseEvent e) {
+                mouseMove(e);
             }
         });
+        
+        setLocation(getX(), getTargetY(0));
+        setSize(BUTTON_WIDTH, BUTTON_ACTIVE_HEIGHT);
+        setOrientation(data.orientation);
+    }
+    
+    public int getTargetY(int type){
+        if(type == 0){ //inactive
+            if(data.orientation == 0){
+                return -10;
+            }
+            else if(data.orientation == 1){
+                return 10;
+            }
+        }
+        else if(type == 1){ //active
+            if(data.orientation == 0){
+                return -5;
+            }
+            else if(data.orientation == 1){
+                return 5;
+            }
+        }
+        else if(type == 2){ //focused
+            if(data.orientation == 0){
+                return 0;
+            }
+            else if(data.orientation == 1){
+                return 0;
+            }
+        }
+        return 50;
     }
     
     private static BufferedImage loadImage(String filename, boolean flip){
@@ -145,39 +193,29 @@ public class TabButton extends JPanel{
         return null;
     }
     
-    public void setOrientation(Orientation orientation){
-        this.orientation = orientation;
-        /*
-        if(orientation == Orientation.TOP){
-            FlowLayout layout = (FlowLayout) getLayout();
-            layout.setVgap(TOP_LABEL_Y_OFFSET+yOffset);
-            
-            //setLayout(new FlowLayout(FlowLayout.LEFT, 8, TOP_LABEL_Y_OFFSET+yOffset));
+    public void setOrientation(int orientation){
+        data.orientation = orientation;
+        setLocation(getX(), getTargetY(0));
+        
+        if(orientation == 0){
+            label.setLocation(8, 3);
         }
-        else if(orientation == Orientation.BOTTOM){
-            //setLayout(new FlowLayout(FlowLayout.LEFT, 8, BOTTOM_LABEL_Y_OFFSET-yOffset));
+        else if(orientation == 1){
+            label.setLocation(8, -3);
         }
-        */
-        //setLayout(getLayout());
-        //validate();
     }
     
     public void paintComponent(Graphics g){
         int yOffset = 0;
         int yGap = 0;
         BufferedImage image = null;
-        boolean active = isActive || (isMenuButton && WidgetMgr.MAIN_TAB_PANE.menu.isShowing());
+        //boolean active = !WidgetMgr.MAIN_TAB_PANE.tabDragging && (isActive || (isMenuButton && WidgetMgr.MAIN_TAB_PANE.menu.isShowing()));
         
-        if(orientation == Orientation.TOP){
+        if(data.orientation == 0){
             if(isFocused()){
                 yOffset = 0;
                 yGap = TOP_LABEL_Y_OFFSET+10;
                 image = topBgImageFocused;
-            }
-            else if(active){
-                yOffset = -5;
-                yGap = TOP_LABEL_Y_OFFSET+5;
-                image = topBgImage;
             }
             else{
                 yOffset = -10;
@@ -185,16 +223,11 @@ public class TabButton extends JPanel{
                 image = topBgImage;
             }
         }
-        else if(orientation == Orientation.BOTTOM){
+        else if(data.orientation == 1){
             if(isFocused()){
                 yOffset = 0;
                 yGap = BOTTOM_LABEL_Y_OFFSET-10;
                 image = bottomBgImageFocused;
-            }
-            else if(active){
-                yOffset = 5;
-                yGap = BOTTOM_LABEL_Y_OFFSET-5;
-                image = bottomBgImage;
             }
             else{
                 yOffset = 10;
@@ -204,32 +237,47 @@ public class TabButton extends JPanel{
             
         }
         
-        g.drawImage(image, 0, yOffset, null);
+        
+        //g.drawImage(image, 0, 0, null);
+        /*
         FlowLayout layout = (FlowLayout) getLayout();
         layout.setVgap(yGap);
         
         setLayout(getLayout());
-        validate();
+        validate();*/
         
+        g.drawImage(image, 0, 0, null);
         super.paintComponent(g);
     }
     
     public void mouseEnter(MouseEvent e){
-        isActive = true;
-        repaint();
+        /*
+        if(WidgetMgr.MAIN_TAB_PANE.tabDragging){return;}
+        
+        if(!isMoving){
+            Tween.to(this, ComponentAccessor.POSITION, 50)
+                    .target(getX(), getTargetY(1))
+                    .start(WidgetMgr.MAIN_WINDOW.tweenManager);
+        }*/
     }
     
     public void mouseExit(MouseEvent e){
-        isActive = false;
-        repaint();
+        if(WidgetMgr.MAIN_TAB_PANE.tabDragging){return;}
+        
+        if(!isMoving){
+            Tween.to(this, ComponentAccessor.POSITION, 50)
+                    .target(getX(), getTargetY(0))
+                    .start(WidgetMgr.MAIN_WINDOW.tweenManager);
+        }
+        
     }
     
     public void mouseClick(MouseEvent e){
         if(isMenuButton){
-            WidgetMgr.MAIN_TAB_PANE.menuTabClick(this);
+            //WidgetMgr.MAIN_TAB_PANE.menuTabClick(this);
         }
         else{
-            WidgetMgr.MAIN_TAB_PANE.setTabFocused(this, false);
+            //WidgetMgr.MAIN_TAB_PANE.setTabFocused(this, false);
         }
     }
     
@@ -246,13 +294,46 @@ public class TabButton extends JPanel{
         isMenuButton = menu;
     }
     
-    public void tabDragging(){
-        WidgetMgr.MAIN_TAB_PANE.tabDragging(this.panel, draggingXOffset);
+    public void dragStart(MouseEvent e){
+        if(this instanceof TabButtonMenu){
+            return;
+        }
+        //setOrientation(data.orientation);
+        lastOrientation = data.orientation;
+        mouseExit(e);
+        isDragging = true;
+        WidgetMgr.MAIN_TAB_PANE.tabDragging = true;
+        draggingXOffset = e.getX();
+        WidgetMgr.MAIN_TAB_PANE.tabDragging(this, draggingXOffset);
+        
+        //WidgetMgr.MAIN_TAB_PANE.repaint();
     }
+    
+    public void tabDragging(MouseEvent e){
+        if(isDragging){
+            WidgetMgr.MAIN_TAB_PANE.tabDragging(this, draggingXOffset);
+        }
+    }
+    
     
     public void tabDrop(){
-        WidgetMgr.MAIN_TAB_PANE.tabDrop(this.panel);
+        draggingXOffset = -1;
+        isDragging = false;
+        WidgetMgr.MAIN_TAB_PANE.tabDrop(this);
+        WidgetMgr.MAIN_TAB_PANE.tabDragging = false;
     }
     
+    public void mouseMove(MouseEvent e){
+        if(WidgetMgr.MAIN_TAB_PANE.tabDragging){return;}
+        
+        if(getY() == getTargetY(0)){
+            
+            if(!isMoving){
+                Tween.to(this, ComponentAccessor.POSITION, 50)
+                        .target(getX(), getTargetY(1))
+                        .start(WidgetMgr.MAIN_WINDOW.tweenManager);
+            }
+        }
+    }
     
 }
