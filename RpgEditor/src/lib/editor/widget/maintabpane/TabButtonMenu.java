@@ -4,8 +4,10 @@
  */
 package lib.editor.widget.maintabpane;
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
@@ -20,98 +22,77 @@ import lib.editor.mgr.WidgetMgr;
  * @author gaetan
  */
 public class TabButtonMenu extends TabButton{
-
-    //public TabButton menuButton;
-    public TabButton menuButtonPanel;
+    
+    JPopupMenu menu;
     
     private class Item extends JMenuItem{
 
-        public TabButton button;
+        public TabButton tab;
         
-        public Item(String text, Icon icon, TabButton button) {
+        public Item(String text, Icon icon, TabButton tab) {
             super(text, icon);
-            this.button = button;
+            this.tab = tab;
         }
     }
     
     public TabButtonMenu(DataTabButton data) {
         super(data);
-        /*
-        menuButtonPanel = new TabButton(null);
-        menuButtonPanel.label.setText("Other...");
-        menuButtonPanel.label.setIcon(Mgr.icon.getTabIcon("arrow_up.png", false));
-        menuButtonPanel.setMenuButton(true);
-        //menuButtonPanel.button.setOrientation(TabButton.Orientation.BOTTOM);
-                
-        addPopupMenuListener(new PopupMenuListener() {
+        
+        menu = new JPopupMenu();
+        
+        menu.addPopupMenuListener(new PopupMenuListener() {
             public void popupMenuWillBecomeVisible(PopupMenuEvent e) {}
 
             public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                menuClose();
+                
             }
 
-            public void popupMenuCanceled(PopupMenuEvent e) {}
-        });*/
+            public void popupMenuCanceled(PopupMenuEvent e) {
+                menuClose();
+            }
+        });
         
     }
     
     
-    public void refresh(int tabIndex, List<TabButton> tabButtons, List<DataTabButton> tabsDatabase){
-        removeAll();
+    public void refresh(List<TabButton> tabs){
+        menu.removeAll();
+        if(tabs == null){return;}
         
-        //if(menuButton != null){
-            
-        //    menuButton = null;
-        //}
-        
-        
-        //for(TabButtonPanel buttonPanel : tabButtons){
-        //    buttonPanel.button.setMenuButton(false);
-        //}
-        /*
-        if(tabIndex > 0 && tabIndex < tabButtons.size()){
-            
-            boolean focusedTabInMenu = false;
-            
-            for(int i=tabIndex; i<tabButtons.size(); i++){
-                DataTabButton tabData = tabsDatabase.get(i);
-                TabButton button = tabButtons.get(i).button;
-                Item item = new Item(tabData.text, Mgr.icon.getTabIcon(tabData.iconFilename, false), button);
-                item.addActionListener(new ActionListener() {
+        for(TabButton tab : tabs){
+            Item item = new Item(tab.data.text, Mgr.icon.getTabIcon(tab.data.iconFilename, false), tab);
+            item.addActionListener(new ActionListener() {
 
-                    public void actionPerformed(ActionEvent e) {
-                        itemClick(((Item)e.getSource()).button);
-                    }
-                });
-                add(item);
-                if(button.isFocused()){
-                    focusedTabInMenu = true;
+                public void actionPerformed(ActionEvent e) {
+                    itemClick(((Item)e.getSource()).tab);
                 }
+            });
+            menu.add(item);
+        }
+        menu.setVisible(true);
+        menu.setVisible(false);
+    }
+    
+    public void mouseClick(MouseEvent e){
+        if(e.getButton() == MouseEvent.BUTTON1){
+            if(data.orientation == 0){
+                menu.show(this, 0, TabButton.BUTTON_ACTIVE_HEIGHT);
             }
-            
-            WidgetMgr.MAIN_TAB_PANE.setMenuButtonVisible(true);
-
-            setVisible(true);
-            setVisible(false);
-        
+            else if(data.orientation == 1){
+                menu.show(this, 0, -menu.getHeight());
+            }
         }
         
-        */
     }
     
     public void menuClose(){
-        menuButtonPanel.repaint();
-        //if(WidgetMgr.MAIN_TAB_PANE == null){return;}
-        /*
-        for(TabButtonPanel buttonPanel : WidgetMgr.MAIN_TAB_PANE.tabButtons){
-            if(buttonPanel.button.isMenuButton){
-                buttonPanel.button.repaint();
-            }
-        }*/
+        menu.setVisible(false);
+        mouseExit(null);
     }
     
     public void itemClick(TabButton button){
-        //WidgetMgr.MAIN_TAB_PANE.setTabFocused(button, true);
+        mouseExit(null);
+        WidgetMgr.MAIN_TAB_PANE.setTabFocused(null);
     }
 
 }

@@ -338,7 +338,6 @@ public class MainWindow extends javax.swing.JFrame {
         mainTabPane = new lib.editor.widget.maintabpane.MainTabPane();
         jXStatusBar1 = new org.jdesktop.swingx.JXStatusBar();
         statusBarLabel = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
         mainMenuBar = new javax.swing.JMenuBar();
         fileMenu = new javax.swing.JMenu();
         fileNew = new lib.editor.widget.menu.MenuItem();
@@ -572,10 +571,6 @@ public class MainWindow extends javax.swing.JFrame {
         statusBarLabel.setBorder(javax.swing.BorderFactory.createEmptyBorder(0, 4, 0, 0));
         jXStatusBar1.add(statusBarLabel);
         statusBarLabel.setBounds(5, 4, 4, 16);
-
-        jButton1.setText("jButton1");
-        jXStatusBar1.add(jButton1);
-        jButton1.setBounds(0, 0, 73, 23);
 
         getContentPane().add(jXStatusBar1, java.awt.BorderLayout.PAGE_END);
 
@@ -863,7 +858,6 @@ public class MainWindow extends javax.swing.JFrame {
     private lib.editor.widget.menu.MenuItem fileNew;
     private lib.editor.widget.menu.MenuItem fileOpen;
     private lib.editor.widget.menu.MenuItem fileSave;
-    private javax.swing.JButton jButton1;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JPanel jPanel2;

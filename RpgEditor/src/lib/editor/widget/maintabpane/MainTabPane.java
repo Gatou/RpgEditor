@@ -32,12 +32,15 @@ import java.awt.event.ComponentListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.border.EmptyBorder;
 import lib.editor.mgr.Mgr;
 import lib.editor.mgr.WidgetMgr;
 import lib.editor.util.tween.ComponentAccessor;
+import lib.editor.widget.datapane.MainDataPanel;
 import org.netbeans.lib.awtextra.AbsoluteConstraints;
 import org.netbeans.lib.awtextra.AbsoluteLayout;
 
@@ -77,10 +80,13 @@ public class MainTabPane extends JPanel{
     
     public TabButtonMenu topMenu;
     public TabButtonMenu bottomMenu;
+    public MainDataPanel mainDataPanel;
     
     boolean tabDragging;
     
     public MainTabPane() {
+        
+        
         tabsDatabase = new ArrayList<DataTabButton>();
         tabsDatabase.add(new DataTabButton("Maps", "map.png", 0, 0));
         tabsDatabase.add(new DataTabButton("Actors", "actor.png", 0, 1));
@@ -97,8 +103,14 @@ public class MainTabPane extends JPanel{
         
         
         topPanel = createTabContainer();
-        middlePanel = new JPanel();
         bottomPanel = createTabContainer();
+        
+        mainDataPanel = new MainDataPanel();
+        middlePanel = new JPanel();
+        middlePanel.setOpaque(false);
+        middlePanel.setBorder(new EmptyBorder(8, 24, 8, 24));
+        middlePanel.setLayout(new BoxLayout(middlePanel, BoxLayout.LINE_AXIS));
+        middlePanel.add(mainDataPanel);
         
         add(topPanel, java.awt.BorderLayout.PAGE_START);
         add(middlePanel, java.awt.BorderLayout.CENTER);
@@ -110,7 +122,7 @@ public class MainTabPane extends JPanel{
         tabDragging = false;
         dropHighlightInfo = new DropHighlightInfo();
         
-        middlePanel.setOpaque(false);
+        
         
 
         addComponentListener(new ComponentListener() {
@@ -167,8 +179,6 @@ public class MainTabPane extends JPanel{
                 bottomTabs.add(tab);
             }
         }
-
-        layoutTabs();
     }
     
     public void resized(ComponentEvent e) {
@@ -202,18 +212,22 @@ public class MainTabPane extends JPanel{
     }
 
     public void checkNeedMenu(JPanel panel, List<TabButton> tabs, TabButtonMenu menuTab){
-        List<TabButton> outScreenTabs = new ArrayList<TabButton>();
+        boolean tabOutScreen = false;
         int lastVisibleIndex = (getWidth()+TOTAL_BUTTON_WIDTH/2)/TOTAL_BUTTON_WIDTH - 1;
         
-        outScreenTabs.clear();
         for(TabButton tab : tabs){
             if(tab.data.index > lastVisibleIndex){
-                outScreenTabs.add(tab);
+                tabOutScreen = true;
+                break;
             }
         }
-        if(outScreenTabs.size() > 0){
+        
+        if(tabOutScreen){
+            List<TabButton> outScreenTabs = new ArrayList<TabButton>();
+            
             for(TabButton tab : tabs){
-                if(tab.data.index > lastVisibleIndex-1){
+                if(tab.data.index >= lastVisibleIndex){
+                    outScreenTabs.add(tab);
                     panel.remove(tab);
                 }
             }
@@ -221,26 +235,22 @@ public class MainTabPane extends JPanel{
             menuTab.setLocation(menuTab.data.index*TOTAL_BUTTON_WIDTH+4, menuTab.getLocation().y);
             menuTab.visible = true;
             panel.add(menuTab);
+            menuTab.refresh(outScreenTabs);
         }
         else{
             menuTab.visible = false;
             panel.remove(menuTab);
+            menuTab.refresh(null);
         }
     }
-    /*
-    public void setTabFocused(TabButton button, boolean menuButtonFocused){
-        for(TabButtonPanel tabPanel : tabButtons){
-            tabPanel.button.setFocused(tabPanel.button == button);
-            tabPanel.button.repaint();
-        }
-        menu.menuButtonPanel.button.setFocused(menuButtonFocused);
-        menu.menuButtonPanel.button.repaint();
-    }*/
     
-    /*
-    public void setDropPosition(int dropPosition){
-        this.dropPosition = dropPosition;
-    }*/
+    public void setTabFocused(TabButton focusedTab){
+        for(TabButton tab : getAllTabs()){
+            tab.setFocused(tab == focusedTab);
+        }
+        repaint();
+    }
+    
             
     public void paintComponent(Graphics g){
         Graphics2D g2d = (Graphics2D) g;
@@ -301,13 +311,13 @@ public class MainTabPane extends JPanel{
         }
     }
     
-    public void tabDragging(TabButton draggingTab, int xOffset){
+    public void tabDragging(TabButton draggingTab){
         if(getMousePosition() == null){
             return;
         }
         
         int w = getMousePosition().x;
-        draggingTab.setLocation(w-xOffset, draggingTab.getLocation().y);
+        draggingTab.setLocation(w-draggingTab.dragXOffset, draggingTab.getLocation().y);
         
         dropHighlightInfo.visible = true;
         dropHighlightInfo.x = (getMousePosition().x/TOTAL_BUTTON_WIDTH) * TOTAL_BUTTON_WIDTH + 4;
@@ -343,26 +353,24 @@ public class MainTabPane extends JPanel{
     }
     
     public void startTabMoveTo(final TabButton tab, int index){
-        if(!tab.isMoving){
+        if(!tab.moving){
+            tab.moving = true;
 
-            tab.isMoving = true;
-            
             int targetX = index*TOTAL_BUTTON_WIDTH+4;
-                    
+
             Tween.to(tab, ComponentAccessor.POSITION, 200)
                 .target(targetX, tab.getY())
                 .setCallback(new TweenCallback() {public void onEvent(int type, BaseTween<?> source){endButtonMove(tab);}})
                 .start(WidgetMgr.MAIN_WINDOW.tweenManager);
-
         }
     }
     
     public void tabDrop(TabButton draggingTab){
         for(Component comp : topPanel.getComponents()){
-            topPanel.setComponentZOrder(comp, 2);
+            topPanel.setComponentZOrder(comp, Math.min(2, topPanel.getComponents().length-1));
         }
         for(Component comp : bottomPanel.getComponents()){
-            bottomPanel.setComponentZOrder(comp, 2);
+            bottomPanel.setComponentZOrder(comp, Math.min(2, bottomPanel.getComponents().length-1));
         }
         //tabDragging(buttonPanel, buttonPanel.button.draggingXOffset);
         //System.out.println("---------------------");
@@ -457,7 +465,7 @@ public class MainTabPane extends JPanel{
     
     
     public void endButtonMove(TabButton tab){
-        tab.isMoving = false;
+        tab.moving = false;
     }
 
     
@@ -476,5 +484,9 @@ public class MainTabPane extends JPanel{
             }
         }
         return null;
+    }
+    
+    public boolean isAnyMenuShowing(){
+        return topMenu.menu.isVisible() || bottomMenu.menu.isVisible();
     }
 }

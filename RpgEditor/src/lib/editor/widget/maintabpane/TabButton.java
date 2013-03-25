@@ -12,6 +12,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -50,74 +51,61 @@ public class TabButton extends JPanel{
     public static final BufferedImage topDropBgImage = loadImage("src/assets/tab/button_drop_bg.png", false);
     public static final BufferedImage bottomDropBgImage = loadImage("src/assets/tab/button_drop_bg.png", true);
     
-    public static final int TOP_LABEL_Y_OFFSET = BUTTON_INACTIVE_HEIGHT/2 - 16/2 - 3;
-    public static final int BOTTOM_LABEL_Y_OFFSET = (BUTTON_ACTIVE_HEIGHT-BUTTON_INACTIVE_HEIGHT) + BUTTON_INACTIVE_HEIGHT/2 - 16/2 + 3;
-    
     public JLabel label;
-    boolean isActive;
-    boolean isFocused;
-    boolean isMenuButton;
-    boolean isDragging;
-    boolean visible;
     
-    boolean isMoving;
+    boolean focused;
+    boolean dragging;
+    boolean visible;
+    boolean moving;
     int lastOrientation;
-    //boolean hasMoveToTheLeft;
-    //boolean hasMoveToTheRight;
-    //boolean startDraggingOnTop;
+    int dragXOffset;
     
     DataTabButton data;
     
-    int draggingXOffset;
-    
     public TabButton(DataTabButton data) {
-        draggingXOffset = -1;
-        
         this.data = data;
         
         setPreferredSize(new Dimension(BUTTON_WIDTH, BUTTON_ACTIVE_HEIGHT));
         setMinimumSize(getPreferredSize());
         setMaximumSize(getPreferredSize());
         
-        
-        //setMargin(new Insets(0, -5, 0, -10));
         setLayout(null);
         
         setOpaque(false);
-        //setContentAreaFilled(false);
+        
         label = new JLabel();
         label.setForeground(new Color(200,200,100));
-        //label.setBackground(Color.red);
-        //label.setOpaque(true);
         label.setSize(BUTTON_WIDTH-8*2, BUTTON_ACTIVE_HEIGHT);
         label.setText(data.text);
         label.setIcon(Mgr.icon.getTabIcon(data.iconFilename, false));
-            
         add(label);
         
-        isActive = false;
-        isFocused = false;
-        isMenuButton = false;
-        isDragging = false;
+        focused = false;
+        dragging = false;
         visible = true;
-        isMoving = false;
+        moving = false;
         lastOrientation = -1;
-        //startDraggingOnTop = false;
         
         addMouseListener(new MouseListener() {
             public void mouseClicked(MouseEvent e) {
-                //System.out.println(e.getClickCount());
-                mouseClick(e);
+                
             }
             
             public void mousePressed(MouseEvent e) {
-                if(e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() == 2){
+                if(e.getButton() == MouseEvent.BUTTON3){
                     dragStart(e);
                 }
             }
+            
             public void mouseReleased(MouseEvent e) {
-                if(e.getButton() == MouseEvent.BUTTON1 && isDragging){
+                if(dragging && e.getButton() == MouseEvent.BUTTON3){
                     tabDrop();
+                }
+                else{
+                    if(getMousePosition() != null && new Rectangle(0, 0, BUTTON_WIDTH, BUTTON_ACTIVE_HEIGHT).contains(getMousePosition())){
+                        mouseClick(e);
+                    }
+                    
                 }
             }
 
@@ -143,12 +131,20 @@ public class TabButton extends JPanel{
             }
         });
         
-        setLocation(getX(), getTargetY(0));
         setSize(BUTTON_WIDTH, BUTTON_ACTIVE_HEIGHT);
         setOrientation(data.orientation);
     }
     
     public int getTargetY(int type){
+        if(WidgetMgr.MAIN_TAB_PANE != null && WidgetMgr.MAIN_TAB_PANE.isAnyMenuShowing()){
+            if(this instanceof TabButtonMenu && ((TabButtonMenu) this).menu.isVisible()){
+                type = 1;
+            }
+            else{
+                type = 0;
+            }
+        }
+        
         if(type == 0){ //inactive
             if(data.orientation == 0){
                 return -10;
@@ -206,65 +202,37 @@ public class TabButton extends JPanel{
     }
     
     public void paintComponent(Graphics g){
-        int yOffset = 0;
-        int yGap = 0;
         BufferedImage image = null;
-        //boolean active = !WidgetMgr.MAIN_TAB_PANE.tabDragging && (isActive || (isMenuButton && WidgetMgr.MAIN_TAB_PANE.menu.isShowing()));
         
         if(data.orientation == 0){
-            if(isFocused()){
-                yOffset = 0;
-                yGap = TOP_LABEL_Y_OFFSET+10;
+            if(focused){
                 image = topBgImageFocused;
             }
             else{
-                yOffset = -10;
-                yGap = TOP_LABEL_Y_OFFSET;
                 image = topBgImage;
             }
         }
         else if(data.orientation == 1){
-            if(isFocused()){
-                yOffset = 0;
-                yGap = BOTTOM_LABEL_Y_OFFSET-10;
+            if(focused){
                 image = bottomBgImageFocused;
             }
             else{
-                yOffset = 10;
-                yGap = BOTTOM_LABEL_Y_OFFSET;
                 image = bottomBgImage;
             }
             
         }
-        
-        
-        //g.drawImage(image, 0, 0, null);
-        /*
-        FlowLayout layout = (FlowLayout) getLayout();
-        layout.setVgap(yGap);
-        
-        setLayout(getLayout());
-        validate();*/
         
         g.drawImage(image, 0, 0, null);
         super.paintComponent(g);
     }
     
     public void mouseEnter(MouseEvent e){
-        /*
-        if(WidgetMgr.MAIN_TAB_PANE.tabDragging){return;}
-        
-        if(!isMoving){
-            Tween.to(this, ComponentAccessor.POSITION, 50)
-                    .target(getX(), getTargetY(1))
-                    .start(WidgetMgr.MAIN_WINDOW.tweenManager);
-        }*/
     }
     
     public void mouseExit(MouseEvent e){
         if(WidgetMgr.MAIN_TAB_PANE.tabDragging){return;}
         
-        if(!isMoving){
+        if(!moving){
             Tween.to(this, ComponentAccessor.POSITION, 50)
                     .target(getX(), getTargetY(0))
                     .start(WidgetMgr.MAIN_WINDOW.tweenManager);
@@ -273,25 +241,13 @@ public class TabButton extends JPanel{
     }
     
     public void mouseClick(MouseEvent e){
-        if(isMenuButton){
-            //WidgetMgr.MAIN_TAB_PANE.menuTabClick(this);
-        }
-        else{
-            //WidgetMgr.MAIN_TAB_PANE.setTabFocused(this, false);
+        if(e.getButton() == MouseEvent.BUTTON1){
+            WidgetMgr.MAIN_TAB_PANE.setTabFocused(this);
         }
     }
     
     public void setFocused(boolean focused){
-        isFocused = focused;
-        //data.focused = focused;
-    }
-    
-    public boolean isFocused(){
-        return isFocused;
-    }
-    
-    public void setMenuButton(boolean menu){
-        isMenuButton = menu;
+        this.focused = focused;
     }
     
     public void dragStart(MouseEvent e){
@@ -299,26 +255,27 @@ public class TabButton extends JPanel{
             return;
         }
         //setOrientation(data.orientation);
+        dragXOffset = e.getX();
         lastOrientation = data.orientation;
         mouseExit(e);
-        isDragging = true;
+        dragging = true;
         WidgetMgr.MAIN_TAB_PANE.tabDragging = true;
-        draggingXOffset = e.getX();
-        WidgetMgr.MAIN_TAB_PANE.tabDragging(this, draggingXOffset);
+        //draggingXOffset = e.getX();
+        WidgetMgr.MAIN_TAB_PANE.tabDragging(this);
         
         //WidgetMgr.MAIN_TAB_PANE.repaint();
     }
     
     public void tabDragging(MouseEvent e){
-        if(isDragging){
-            WidgetMgr.MAIN_TAB_PANE.tabDragging(this, draggingXOffset);
+        if(dragging){
+            //System.out.println(e.getX());
+            WidgetMgr.MAIN_TAB_PANE.tabDragging(this);
         }
     }
     
     
     public void tabDrop(){
-        draggingXOffset = -1;
-        isDragging = false;
+        dragging = false;
         WidgetMgr.MAIN_TAB_PANE.tabDrop(this);
         WidgetMgr.MAIN_TAB_PANE.tabDragging = false;
     }
@@ -327,8 +284,7 @@ public class TabButton extends JPanel{
         if(WidgetMgr.MAIN_TAB_PANE.tabDragging){return;}
         
         if(getY() == getTargetY(0)){
-            
-            if(!isMoving){
+            if(!moving){
                 Tween.to(this, ComponentAccessor.POSITION, 50)
                         .target(getX(), getTargetY(1))
                         .start(WidgetMgr.MAIN_WINDOW.tweenManager);
